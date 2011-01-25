@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Injector
+ * Injector base class
  *
  * @package TYPO3
  * @subpackage Fluid
  * @version
  */
-class Tx_WildsideExtbase_ViewHelpers_InjectViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+abstract class Tx_WildsideExtbase_ViewHelpers_InjectViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
 	 * Void

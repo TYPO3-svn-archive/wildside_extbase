@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Formats timestamps/dates
+ * Renders $value or children as a string with first character 'Uppercased'
  *
  * @package TYPO3
  * @subpackage Fluid
@@ -10,7 +10,7 @@
 class Tx_WildsideExtbase_ViewHelpers_Format_UcfirstViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
-	 * Render a select
+	 * Renders $value or children as a string with first character 'Uppercased'
 	 * @param string $value The string to be formatted
 	 * @return string
 	 */

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Injector
+ * Injector, CSS
  *
  * @package TYPO3
  * @subpackage Fluid
@@ -10,7 +10,8 @@
 class Tx_WildsideExtbase_ViewHelpers_Inject_CssViewHelper extends Tx_WildsideExtbase_ViewHelpers_InjectViewHelper {
 	
 	/**
-	 * Inject CSS file in header or code
+	 * Inject CSS file in header or code. See examples in Inject/JsViewHelper.php;
+	 * the pragma is identical - only the output wrapper tags are different.
 	 * 
 	 * @param string $file
 	 * @param string $css
