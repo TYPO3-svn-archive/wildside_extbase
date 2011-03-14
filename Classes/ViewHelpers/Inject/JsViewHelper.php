@@ -38,7 +38,7 @@ class Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper extends Tx_WildsideExtb
 	 * @param string $key
 	 */
 	public function render($js=NULL, $file=NULL, $header=TRUE, $key=NULL) {
-		if ($js === NULL) {
+		if ($js === NULL && $file === NULL) {
 			$js = $this->renderChildren();
 		}
 		if ($file && $header) {
