@@ -1,7 +1,7 @@
 
 
 dk.wildside.display.Field = function(name, jQueryElement) {
-	dk.wildside.display.DisplayObject.apply(this, jQueryElement);
+	dk.wildside.display.DisplayObject.apply(this, arguments);
 	this.name = name;
 	this.jQueryElement = jQueryElement;
 	this.value = this.getValue();

@@ -1,0 +1,3 @@
+dk.wildside.event.Event = {
+	
+};

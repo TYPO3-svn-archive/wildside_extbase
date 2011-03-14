@@ -13,7 +13,7 @@ dk.wildside.display.DisplayObject = function(jQuerySelector) {
 	if (jQuerySelector != undefined) {
 		this.setJQueryContext(jQuery(jQuerySelector));
 	};
-	dk.wildside.event.EventDispatcher.apply(this);
+	dk.wildside.event.EventDispatcher.apply(this, arguments);
 };
 
 dk.wildside.display.DisplayObject.prototype = new dk.wildside.event.EventDispatcher();

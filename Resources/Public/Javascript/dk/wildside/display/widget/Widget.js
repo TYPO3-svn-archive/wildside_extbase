@@ -10,7 +10,7 @@
 ***************************************************************/
 
 dk.wildside.display.widget.Widget = function() {
-	Dk_Wildside_Display_DisplayObject.apply(this, arguments);
+	dk.wildside.display.DisplayObject.apply(this, arguments);
 	this.values = {};
 	this.messages = {};
 	this.disabled = false;
@@ -77,7 +77,7 @@ dk.wildside.display.widget.Widget.prototype.create = function() {
 };
 
 dk.wildside.display.widget.Widget.prototype.displayErrors = function(messages) {
-	var parent = this.context.parents(dk.wildside.util.Configuration.guiSelectors.itemParentLookup + ":first").find("." + Dk_Wildside_Util_Configuration.guiSelectors.messageDisplayElement + ":first");
+	var parent = this.context.parents(dk.wildside.util.Configuration.guiSelectors.itemParentLookup + ":first").find("." + dk.wildside.util.Configuration.guiSelectors.messageDisplayElement + ":first");
 	messages.each(function(message) {
 		var msgObj = jQuery("<div>");
 		msgObj.html(message);
@@ -87,7 +87,7 @@ dk.wildside.display.widget.Widget.prototype.displayErrors = function(messages) {
 };
 
 dk.wildside.display.widget.Widget.prototype.displayMessages = function(messages) {
-	var parent = this.context.parents(dk.wildside.util.Configuration.guiSelectors.itemParentLookup + ":first").find("." + Dk_Wildside_Util_Configuration.guiSelectors.messageDisplayElement + ":first");
+	var parent = this.context.parents(dk.wildside.util.Configuration.guiSelectors.itemParentLookup + ":first").find("." + dk.wildside.util.Configuration.guiSelectors.messageDisplayElement + ":first");
 	messages.each(function(message) {
 		var msgObj = jQuery("<div>");
 		msgObj.html(message);
