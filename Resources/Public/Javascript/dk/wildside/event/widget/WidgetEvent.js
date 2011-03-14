@@ -1,4 +1,4 @@
-Dk_Wildside_Event_WidgetEvent = {
+dk.wildside.event.widget.WidgetEvent = {
 	COMPLETE : 'complete',
 	UPDATED : 'updated',
 	DELETED : 'deleted',

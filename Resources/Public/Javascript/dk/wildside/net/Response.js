@@ -1,4 +1,4 @@
-Dk_Wildside_Net_Response = function(request) {
+dk.wildside.net.Response = function(request) {
 	this.request = null;
 	this.raw = null;
 	this.json = null;
@@ -6,20 +6,20 @@ Dk_Wildside_Net_Response = function(request) {
 	return this;
 };
 
-Dk_Wildside_Net_Response.prototype.setRequest = function(request) {
+dk.wildside.net.Response.prototype.setRequest = function(request) {
 	this.request = request;
 	return this;
 };
 
-Dk_Wildside_Net_Response.prototype.getRequest = function() {
+dk.wildside.net.Response.prototype.getRequest = function() {
 	return this.request;
 };
 
-Dk_Wildside_Net_Response.prototype.getAjax = function() {
+dk.wildside.net.Response.prototype.getAjax = function() {
 	return this.getRequest().getAjax();
 };
 
-Dk_Wildside_Net_Response.prototype.getData = function() {
+dk.wildside.net.Response.prototype.getData = function() {
 	var ajax = this.getAjax();
 	console.log(ajax);
 	if (ajax.responseCode == 200) {

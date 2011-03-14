@@ -13,43 +13,43 @@
 * 
 ***************************************************************/
 
-Dk_Wildside_Display_Component = function() {
+dk.wildside.display.Component = function() {
 	
-	Dk_Wildside_Display_DisplayObject.apply(this, arguments);
+	dk.wildside.display.DisplayObject.apply(this, arguments);
 	
 	this.CONST_LOADING_EAGER = 0;
 	this.CONST_LOADING_LAZY = 1;
 	
 	this.loadingStrategy = false;
-	this.widgets = new Dk_Wildside_Util_Iterator();
+	this.widgets = new dk.wildside.util.Iterator();
 	this.uniqueID = Math.round(Math.random() * 100000);
 	this.setLoadingStrategy(this.CONST_LOADING_EAGER);
 };
 
-Dk_Wildside_Display_Component.prototype = new Dk_Wildside_Display_DisplayObject();
+dk.wildside.display.Component.prototype = new dk.wildside.display.DisplayObject();
 
-Dk_Wildside_Display_Component.prototype.setLoadingStrategy = function(strategy) {
+dk.wildside.display.Component.prototype.setLoadingStrategy = function(strategy) {
 	this.loadingStrategy = strategy;
 };
 
 
-Dk_Wildside_Display_Component.prototype.getDirtyWidgets = function() {
+dk.wildside.display.Component.prototype.getDirtyWidgets = function() {
 	return this.widgets.filter(function(widget) { return widget.getDirty(); });
 };
 
-Dk_Wildside_Display_Component.prototype.cleanDirtyWidgets = function() {
+dk.wildside.display.Component.prototype.cleanDirtyWidgets = function() {
 	this.getDirtyWidgets().each(function(widget) { return widget.setClean(); });
 	this.dirtyWidgets = [];
 	return this;
 };
 
-Dk_Wildside_Display_Component.prototype.registerWidget = function(widget) {
+dk.wildside.display.Component.prototype.registerWidget = function(widget) {
 	this.widgets.push(widget);
 	return this;
 };
 
 
-Dk_Wildside_Display_Component.prototype.update = function(forceUpdate) {
+dk.wildside.display.Component.prototype.update = function(forceUpdate) {
 	// Only run the update if the loading strategy is "eager", or if we're forcing
 	// the widgets to update (in case of lazy loading).
 	if ((this.loadingStrategy == this.CONST_LOADING_EAGER) || forceUpdate) {

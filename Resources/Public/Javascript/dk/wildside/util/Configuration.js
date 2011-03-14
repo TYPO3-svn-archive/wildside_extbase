@@ -1,6 +1,6 @@
 
 
-Dk_Wildside_Util_Configuration = {
+dk.wildside.Configuration = {
 	
 	// Selector names for objects. These are used by the entire system to add/remove and target
 	// classnames on objects

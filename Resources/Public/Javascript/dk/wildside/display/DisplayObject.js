@@ -7,25 +7,25 @@
 * 
 ***************************************************************/
 
-Dk_Wildside_Display_DisplayObject = function(jQuerySelector) {
+dk.wildside.display.DisplayObject = function(jQuerySelector) {
 	this.context = false;
 	this.payload = false;
 	if (jQuerySelector != undefined) {
 		this.setJQueryContext(jQuery(jQuerySelector));
 	};
-	Dk_Wildside_Event_EventDispatcher.apply(this);
+	dk.wildside.event.EventDispatcher.apply(this);
 };
 
-Dk_Wildside_Display_DisplayObject.prototype = new Dk_Wildside_Event_EventDispatcher();
+dk.wildside.display.DisplayObject.prototype = new dk.wildside.event.EventDispatcher();
 
-Dk_Wildside_Display_DisplayObject.prototype.setJQueryContext = function(context) {
+dk.wildside.display.DisplayObject.prototype.setJQueryContext = function(context) {
 	this.context = context;
 	
 	// Mark the jQuery element as having been registered
-	context.addClass(Dk_Wildside_Util_Configuration.guiSelectors.inUse);
+	context.addClass(dk.wildside.util.Configuration.guiSelectors.inUse);
 	
 	// Read JSON-payload, if it exists
-	var payloadElement = context.find("> ." + Dk_Wildside_Util_Configuration.guiSelectors.json);
+	var payloadElement = context.find("> ." + dk.wildside.util.Configuration.guiSelectors.json);
 	if (payloadElement.length) {
 		var temppayload = payloadElement.text().trim();
 		this.payload = (temppayload.length) ? jQuery.parseJSON(temppayload) : {};
@@ -33,43 +33,43 @@ Dk_Wildside_Display_DisplayObject.prototype.setJQueryContext = function(context)
 	
 	// Store a "this"-reference on the object itself. That way, we can always access the
 	// relevant JS data whenever we need it.
-	context.data(Dk_Wildside_Util_Configuration.guiSelectors.jQueryDataName, this);
+	context.data(dk.wildside.util.Configuration.guiSelectors.jQueryDataName, this);
 	
 	// Store a classname which we can use to make hierachical lookups to find the first
 	// parent. Basically, any sub-object triggering events can use this to report back to
 	// the JS object we just stored.
-	context.addClass(Dk_Wildside_Util_Configuration.guiSelectors.jsParent);
+	context.addClass(dk.wildside.util.Configuration.guiSelectors.jsParent);
 	
 	// Return "this" for awesome chaining power.
 	return this;
 };
 
 
-Dk_Wildside_Display_DisplayObject.prototype.getJQueryContext = function() {
+dk.wildside.display.DisplayObject.prototype.getJQueryContext = function() {
 	return this.context;
 };
 
-Dk_Wildside_Display_DisplayObject.prototype.fadeIn = function() {
+dk.wildside.display.DisplayObject.prototype.fadeIn = function() {
 	this.getJQueryContext().fadeIn();
 	return this;
 };
 
-Dk_Wildside_Display_DisplayObject.prototype.fadeOut = function() {
+dk.wildside.display.DisplayObject.prototype.fadeOut = function() {
 	this.getJQueryContext().fadeOut();
 	return this;
 };
 
-Dk_Wildside_Display_DisplayObject.prototype.replaceWith = function(source) {
+dk.wildside.display.DisplayObject.prototype.replaceWith = function(source) {
 	this.getJQueryContext().html(source);
 	return this;
 };
 
-Dk_Wildside_Display_DisplayObject.prototype.remove = function() {
+dk.wildside.display.DisplayObject.prototype.remove = function() {
 	this.replaceWith('');
 	return this;
 };
 
-Dk_Wildside_Display_DisplayObject.prototype.expose = function() {
+dk.wildside.display.DisplayObject.prototype.expose = function() {
 	console.info(this.context);
 	//alert(this.payload.data.title);
 };

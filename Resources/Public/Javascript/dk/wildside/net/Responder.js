@@ -1,28 +1,28 @@
-Dk_Wildside_Net_Responder = function(response, ajax) {
+dk.wildside.net.Responder = function(response, ajax) {
 	this.response = null;
 	this.setResponse(response);
 	this.ajax = ajax;
 	return this;
 };
 
-Dk_Wildside_Net_Responder.prototype.dispatchResponder = function() {
+dk.wildside.net.Responder.prototype.dispatchResponder = function() {
 	return this.response.getData();
 };
 
-Dk_Wildside_Net_Responder.prototype.getResponse = function() {
+dk.wildside.net.Responder.prototype.getResponse = function() {
 	return this.response;
 };
 
-Dk_Wildside_Net_Responder.prototype.setResponse = function(response) {
+dk.wildside.net.Responder.prototype.setResponse = function(response) {
 	this.response = response;
 	return this;
 };
 
-Dk_Wildside_Net_Responder.prototype.getAjax = function() {
+dk.wildside.net.Responder.prototype.getAjax = function() {
 	return this.getResponse().getAjax();
 };
 
-Dk_Wildside_Net_Responder.prototype.getData = function() {
+dk.wildside.net.Responder.prototype.getData = function() {
 	var data = this.response.getData(); 
 	if (data) {
 		var payload = data.payload;
@@ -32,8 +32,8 @@ Dk_Wildside_Net_Responder.prototype.getData = function() {
 	}
 };
 
-Dk_Wildside_Net_Responder.prototype.getMessages = function() {
-	var messages = new Dk_Wildside_Util_Iterator();
+dk.wildside.net.Responder.prototype.getMessages = function() {
+	var messages = new dk.wildside.util.Iterator();
 	var data = this.getData();
 	if (typeof data != 'undefined' && data.message) {
 		messages.merge(data.messages);
@@ -41,8 +41,8 @@ Dk_Wildside_Net_Responder.prototype.getMessages = function() {
 	return messages;
 };
 
-Dk_Wildside_Net_Responder.prototype.getErrors = function() {
-	var errors = new Dk_Wildside_Util_Iterator();
+dk.wildside.net.Responder.prototype.getErrors = function() {
+	var errors = new dk.wildside.util.Iterator();
 	var data = this.getData();
 	if (typeof data != 'undefined' && data.errors) {
 		errors.merge(data.errors);

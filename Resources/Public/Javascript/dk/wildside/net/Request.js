@@ -1,4 +1,4 @@
-Dk_Wildside_Net_Request = function(widget, action) {
+dk.wildside.net.Request = function(widget, action) {
 	this.ajax = false;
 	this.setWidget(widget);
 	if (typeof(action) != 'undefined') {
@@ -8,13 +8,13 @@ Dk_Wildside_Net_Request = function(widget, action) {
 	};
 };
 
-Dk_Wildside_Net_Request.prototype.getScope = function() {
+dk.wildside.net.Request.prototype.getScope = function() {
 	var configuration = this.getWidget().getConfiguration();
 	var plugin = configuration.plugin;
 	return plugin;
 };
 
-Dk_Wildside_Net_Request.prototype.getUrl = function() {
+dk.wildside.net.Request.prototype.getUrl = function() {
 	var base = Locus.configuration.apiURL;
 	var configuration = this.getWidget().getConfiguration();
 	var plugin = configuration.plugin;
@@ -24,19 +24,19 @@ Dk_Wildside_Net_Request.prototype.getUrl = function() {
 	return base + '&' + urlParameters.join('&');
 };
 
-Dk_Wildside_Net_Request.prototype.setWidget = function(widget) {
+dk.wildside.net.Request.prototype.setWidget = function(widget) {
 	this.widget = widget;
 };
 
-Dk_Wildside_Net_Request.prototype.getWidget = function(widget) {
+dk.wildside.net.Request.prototype.getWidget = function(widget) {
 	return this.widget;
 };
 
-Dk_Wildside_Net_Request.prototype.setAjax = function(ajaxObject) {
+dk.wildside.net.Request.prototype.setAjax = function(ajaxObject) {
 	this.ajax = ajaxObject;
 	return this;
 };
 
-Dk_Wildside_Net_Request.prototype.getAjax = function() {
+dk.wildside.net.Request.prototype.getAjax = function() {
 	return this.ajax;
 };

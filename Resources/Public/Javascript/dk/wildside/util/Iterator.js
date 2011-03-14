@@ -1,17 +1,17 @@
 
 
-Dk_Wildside_Util_Iterator = function(length) {
+dk.wildside.util.Iterator = function(length) {
 	try {
 		Array.apply(this, length);
 	} catch (e) {};
 	return this;
 };
 
-Dk_Wildside_Util_Iterator.prototype = new Array();
+dk.wildside.util.Iterator.prototype = new Array();
 
-Dk_Wildside_Util_Iterator.prototype.filter = function(func) {
+dk.wildside.util.Iterator.prototype.filter = function(func) {
 	
-	var returnData = new Dk_Wildside_Util_Iterator();
+	var returnData = new dk.wildside.util.Iterator();
 	
 	jQuery.each(this, function(iteration, data) {
 		
@@ -29,7 +29,7 @@ Dk_Wildside_Util_Iterator.prototype.filter = function(func) {
 	
 };
 
-Dk_Wildside_Util_Iterator.prototype.each = function(func) {
+dk.wildside.util.Iterator.prototype.each = function(func) {
 	
 	// Run the passed function ("func"), with "this" as scope, on each element in the
 	// object. Please note that the order of the objects is reversed compared to
@@ -42,31 +42,31 @@ Dk_Wildside_Util_Iterator.prototype.each = function(func) {
 	return this;
 };
 
-Dk_Wildside_Util_Iterator.prototype.copy = function() {
-	var copy = new Dk_Wildside_Util_Iterator();
+dk.wildside.util.Iterator.prototype.copy = function() {
+	var copy = new dk.wildside.util.Iterator();
 	this.each(function(element) { copy.push(element); });
 	return copy;
 };
 
-Dk_Wildside_Util_Iterator.prototype.toArray = function() {
+dk.wildside.util.Iterator.prototype.toArray = function() {
 	var arr = new Array();
 	this.each(function(element) { arr.push(element); });
 	return arr;
 };
 
-Dk_Wildside_Util_Iterator.prototype.remove = function(arg) {
+dk.wildside.util.Iterator.prototype.remove = function(arg) {
 	// Use internal filter to return everything that DOESN'T match the argument passed along
 	return this.filter(function(data){ return (data != arg); });
 	
 };
 
-Dk_Wildside_Util_Iterator.prototype.contains = function(arg) {
+dk.wildside.util.Iterator.prototype.contains = function(arg) {
 	// Use internal filter to count the entries that match the argument passed along.
 	return this.filter(function(data){ return (data == arg); }).length;
 };
 
 
-Dk_Wildside_Util_Iterator.prototype.merge = function(arr) {
+dk.wildside.util.Iterator.prototype.merge = function(arr) {
 	for (i = 0; i < arr.length; i++) {
 		this.push(arr[i]);
 	};

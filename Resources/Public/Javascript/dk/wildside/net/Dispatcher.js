@@ -1,21 +1,21 @@
-Dk_Wildside_Net_Dispatcher = function(request) {
-	if (request instanceof Dk_Wildside_Net_Request == false) {
-		this.request = new Dk_Wildside_Net_Request();
+dk.wildside.net.Dispatcher = function(request) {
+	if (request instanceof dk.wildside.net.Request == false) {
+		this.request = new dk.wildside.net.Request();
 	} else{
 		this.request = request;
 	}
-	this.response = new Dk_Wildside_Net_Response();
-	this.responder = new Dk_Wildside_Net_Responder();
+	this.response = new dk.wildside.net.Response();
+	this.responder = new dk.wildside.net.Responder();
 	return this;
 };
 
-Dk_Wildside_Net_Dispatcher.prototype.execute = function() {
+dk.wildside.net.Dispatcher.prototype.execute = function() {
 	var responder = this.dispatchRequest();
 	return responder.execute();
 };
 
-Dk_Wildside_Net_Dispatcher.prototype.dispatchRequest = function(request) {
-	if (request instanceof Dk_Wildside_Net_Request == false) {
+dk.wildside.net.Dispatcher.prototype.dispatchRequest = function(request) {
+	if (request instanceof dk.wildside.net.Request == false) {
 		request = this.request;
 	};
 	var controller = request.getWidget().getConfiguration().controller.toLowerCase();
@@ -31,37 +31,37 @@ Dk_Wildside_Net_Dispatcher.prototype.dispatchRequest = function(request) {
 	};
 	var ajax = jQuery.ajax(ajaxOptions); // all HTTP happens right away
 	request.setAjax(ajax);
-	var response = new Dk_Wildside_Net_Response(request);
-	var responder = new Dk_Wildside_Net_Responder(response);
+	var response = new dk.wildside.net.Response(request);
+	var responder = new dk.wildside.net.Responder(response);
 	this.setResponse(response);
 	this.setResponder(responder);
 	return responder;
 };
 
-Dk_Wildside_Net_Dispatcher.prototype.setRequest = function(request) {
+dk.wildside.net.Dispatcher.prototype.setRequest = function(request) {
 	this.request = request;
 	return this;
 };
 
-Dk_Wildside_Net_Dispatcher.prototype.getRequest = function() {
+dk.wildside.net.Dispatcher.prototype.getRequest = function() {
 	return this.request;
 };
 
-Dk_Wildside_Net_Dispatcher.prototype.setResponse = function(response) {
+dk.wildside.net.Dispatcher.prototype.setResponse = function(response) {
 	this.response = response;
 	return this;
 };
 
-Dk_Wildside_Net_Dispatcher.prototype.getResponse = function() {
+dk.wildside.net.Dispatcher.prototype.getResponse = function() {
 	return this.response;
 };
 
-Dk_Wildside_Net_Dispatcher.prototype.setResponder = function(responder) {
+dk.wildside.net.Dispatcher.prototype.setResponder = function(responder) {
 	this.responder = responder;
 	return this;
 };
 
-Dk_Wildside_Net_Dispatcher.prototype.getResponder = function() {
+dk.wildside.net.Dispatcher.prototype.getResponder = function() {
 	return this.responder;
 };
 

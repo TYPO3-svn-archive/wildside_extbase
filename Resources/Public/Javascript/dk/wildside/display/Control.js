@@ -6,10 +6,10 @@
 ***************************************************************/
 
 
-Dk_Wildside_Display_Control = function(jQuerySelector) {
+dk.wildside.display.Control = function(jQuerySelector) {
 	
 	
-	Tx_Wildside_Display_DisplayObject.apply(this, arguments);
+	dk.wildside.display.DisplayObject.apply(this, arguments);
 };
 
-Dk_Wildside_Display_Control.prototype = new Dk_Wildside_Display_DisplayObject();
+dk.wildside.display.Control.prototype = new dk.wildside.display.DisplayObject();
