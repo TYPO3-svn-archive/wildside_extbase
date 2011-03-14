@@ -3,7 +3,7 @@
 ########################################################################
 # Extension Manager/Repository config file for ext "wildside_extbase".
 #
-# Auto generated 14-03-2011 22:01
+# Auto generated 14-03-2011 22:06
 #
 # Manual updates:
 # Only the data in the array - everything else is removed by next
@@ -29,7 +29,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'modify_tables' => '',
 	'clearCacheOnLoad' => 0,
 	'lockType' => '',
-	'version' => '2.0.0',
+	'version' => '2.0.1',
 	'constraints' => array(
 		'depends' => array(
 			'extbase' => '',
