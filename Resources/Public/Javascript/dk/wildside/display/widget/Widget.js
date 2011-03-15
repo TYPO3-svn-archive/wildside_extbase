@@ -35,12 +35,13 @@ dk.wildside.display.widget.Widget.prototype.disableControls = function() {
 
 dk.wildside.display.widget.Widget.prototype.sync = function() {
 	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.PRE_SYNC);
+	//this.action = this.defaultAction;
 	
 	var request = new dk.wildside.net.Request(this);
-	var dispatcher = new dk.wildside.net.Dispatcher(request).dispatchRequest();
-	var data = dispatcher.getData();
-	var messages = dispatcher.getMessages();
-	var errors = dispatcher.getErrors();
+	var responder = new dk.wildside.net.Dispatcher(request).dispatchRequest();
+	var data = responder.getData();
+	var messages = responder.getMessages();
+	var errors = responder.getErrors();
 	
 	if (errors.length > 0) {
 		this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.ERROR);
@@ -50,10 +51,11 @@ dk.wildside.display.widget.Widget.prototype.sync = function() {
 		if (messages.length > 0) {
 			this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.MESSAGE);
 			this.displayMessages(messages);
+			this.clearMessages();
 		};
+		this.setClean();
 	};
 	
-	this.action = this.defaultAction;
 	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.COMPLETE);
 	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.SYNC);
 };

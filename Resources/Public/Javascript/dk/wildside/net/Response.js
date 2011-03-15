@@ -21,7 +21,6 @@ dk.wildside.net.Response.prototype.getAjax = function() {
 
 dk.wildside.net.Response.prototype.getData = function() {
 	var ajax = this.getAjax();
-	console.log(ajax);
 	if (ajax.responseCode == 200) {
 		return jQuery.parseJSON(ajax.responseText);
 	} else {

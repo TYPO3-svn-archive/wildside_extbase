@@ -15,8 +15,9 @@ dk.wildside.net.Request.prototype.getScope = function() {
 };
 
 dk.wildside.net.Request.prototype.getUrl = function() {
-	var base = Locus.configuration.apiURL;
+	//var base = Locus.configuration.apiURL;
 	var configuration = this.getWidget().getConfiguration();
+	var base = configuration.api;
 	var plugin = configuration.plugin;
 	var urlParameters = new Array();
 	urlParameters.push(plugin + '[controller]=' + configuration.controller);

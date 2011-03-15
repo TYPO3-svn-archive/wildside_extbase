@@ -23,10 +23,9 @@ dk.wildside.net.Responder.prototype.getAjax = function() {
 };
 
 dk.wildside.net.Responder.prototype.getData = function() {
-	var data = this.response.getData(); 
-	if (data) {
-		var payload = data.payload;
-		return payload;
+	var data = this.response.getData().payload; 
+	if (typeof data == 'object') {
+		return data;
 	} else {
 		return {};
 	}
@@ -44,7 +43,9 @@ dk.wildside.net.Responder.prototype.getMessages = function() {
 dk.wildside.net.Responder.prototype.getErrors = function() {
 	var errors = new dk.wildside.util.Iterator();
 	var data = this.getData();
-	if (typeof data != 'undefined' && data.errors) {
+	if (typeof data.errors == 'undefined') {
+		return errors;
+	} else if (typeof data != 'undefined' && data.errors.length > 0) {
 		errors.merge(data.errors);
 	} else {
 		errors.push('Invalid server response: ' + this.getAjax().responseText);

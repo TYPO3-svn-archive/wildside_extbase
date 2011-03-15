@@ -2,9 +2,14 @@
 
 dk.wildside.util.Configuration = {
 	
+	// Bootstrapper. Override to use your own bootstrapper
+	bootstrapper : 'dk.wildside.core.Bootstrap',
+		
 	// Selector names for objects. These are used by the entire system to add/remove and target
 	// classnames on objects
 	guiSelectors : {
+		bootstrapConfiguration: ".settings > .setting",
+		alohaRule : "wildside-extbase-aloha-rule",
 		json : "wildside-extbase-json",
 		widget : "wildside-extbase-widget",
 		component : "wildside-extbase-component",
@@ -17,5 +22,5 @@ dk.wildside.util.Configuration = {
 		messageClassError : "error",
 		itemParentLookup : ".plan.item"
 	}
-	
+
 };
