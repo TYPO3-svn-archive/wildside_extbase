@@ -23,7 +23,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_Fluid_Core_View
 	 * @return string
 	 */
 	public function render(
-			$widget = 'Dk_Wildside_Display_Widget',
+			$widget = 'dk.wildside.display.Widget',
 			$controller=NULL,
 			$action='update',
 			$page=NULL,
@@ -37,7 +37,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_Fluid_Core_View
 			$page = $GLOBALS['TSFE']->id;
 		}
 		
-		$this->includes();
+		#$this->includes();
 		$html = $this->renderChildren();
 		$obj = new stdClass();
 		$obj->api = $GLOBALS['TSFE']->cObj->typoLink('', array('parameter' => $page, 'returnLast' => 'url', 'additionalParams' => "&type={$type}"));
