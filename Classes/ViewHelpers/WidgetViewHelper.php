@@ -37,7 +37,6 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_Fluid_Core_View
 			$page = $GLOBALS['TSFE']->id;
 		}
 		
-		#$this->includes();
 		$html = $this->renderChildren();
 		$obj = new stdClass();
 		$obj->api = $GLOBALS['TSFE']->cObj->typoLink('', array('parameter' => $page, 'returnLast' => 'url', 'additionalParams' => "&type={$type}"));
@@ -66,30 +65,6 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_Fluid_Core_View
 		</div>";
 		
 		return $html;
-	}
-	
-	private function includes() {
-		$jsBasePath = t3lib_extMgm::siteRelPath('wildside_extbase') . 'Resources/Public/Javascript/';
-		$files = array(
-			'dk/wildside/util/Iterator.js',
-			'dk/wildside/util/Configuration.js',
-			'dk/wildside/event/WidgetEvent.js',
-			'dk/wildside/event/EventDispatcher.js',
-			'dk/wildside/net/Request.js',
-			'dk/wildside/net/Response.js',
-			'dk/wildside/net/Responder.js',
-			'dk/wildside/net/Dispatcher.js',
-			'dk/wildside/display/DisplayObject.js',
-			'dk/wildside/display/Field.js',
-			'dk/wildside/display/Control.js',
-			'dk/wildside/display/Widget.js',
-			'dk/wildside/display/Component.js',
-		);
-		$includer = t3lib_div::makeInstance('Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper');
-		foreach ($files as $file) {
-			$includer->render(NULL, $jsBasePath.$file);
-		}
-		return TRUE;
 	}
 	
 }
