@@ -1,7 +1,7 @@
 
-
-dk.wildside.display.field.Button = function() {
+dk.wildside.display.field.Button = function(name, jQueryElement, widget) {
 	
+	this.addEventListener(dk.wildside.event.MouseEvent.CLICK);
 	dk.wildside.display.field.Field.apply(this, arguments);
 };
 
