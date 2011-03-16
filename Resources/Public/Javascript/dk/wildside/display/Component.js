@@ -13,47 +13,47 @@
 * 
 ***************************************************************/
 
-dk.wildside.display.Component = function() {
-	
-	dk.wildside.display.DisplayObject.apply(this, arguments);
-	
+dk.wildside.display.Component = function(jQueryElement) {
+	if (typeof jQueryElement == 'undefined') {
+		return this;
+	};
+	dk.wildside.display.DisplayObject.call(this, jQueryElement);
 	this.CONST_LOADING_EAGER = 0;
 	this.CONST_LOADING_LAZY = 1;
-	
 	this.loadingStrategy = false;
-	this.widgets = new dk.wildside.util.Iterator();
+	this.dirtyWidgets = new dk.wildside.util.Iterator();
 	this.uniqueID = Math.round(Math.random() * 100000);
 	this.setLoadingStrategy(this.CONST_LOADING_EAGER);
+	return this;
 };
 
-dk.wildside.display.Component.prototype = new dk.wildside.display.DisplayObject();
+dk.wildside.display.Component.prototype = new dk.wildside.display.DisplayObject;
 
 dk.wildside.display.Component.prototype.setLoadingStrategy = function(strategy) {
 	this.loadingStrategy = strategy;
 };
 
-
-dk.wildside.display.Component.prototype.getDirtyWidgets = function() {
-	return this.widgets.filter(function(widget) { return widget.getDirty(); });
+dk.wildside.display.Component.prototype.onDirtyWidget = function(widgetEvent) {
+	if (this.dirtyWidgets.contains(widgetEvent.target) == false) {
+		this.dirtyWidgets.push(widgetEvent.target);
+	};
+	if (this.loadingStrategy == this.CONST_LOADING_EAGER) {
+		// If "lazy", the Component relies on other means to call sync().
+		this.sync();
+	};
 };
 
-dk.wildside.display.Component.prototype.cleanDirtyWidgets = function() {
-	this.getDirtyWidgets().each(function(widget) { return widget.setClean(); });
-	this.dirtyWidgets = [];
-	return this;
+dk.wildside.display.Component.prototype.onCleanWidget = function(widgetEvent) {
+	this.dirtyWidgets.remove(widgetEvent.target);
 };
 
 dk.wildside.display.Component.prototype.registerWidget = function(widget) {
-	this.widgets.push(widget);
+	widget.addEventListener(dk.wildside.event.widget.WidgetEvent.DIRTY, this.onDirtyWidget, this);
+	widget.addEventListener(dk.wildside.event.widget.WidgetEvent.CLEAN, this.onCleanWidget, this);
+	widget.registerComponent(this);
 	return this;
 };
 
-
-dk.wildside.display.Component.prototype.update = function(forceUpdate) {
-	// Only run the update if the loading strategy is "eager", or if we're forcing
-	// the widgets to update (in case of lazy loading).
-	if ((this.loadingStrategy == this.CONST_LOADING_EAGER) || forceUpdate) {
-		this.getDirtyWidgets().each(function(widget) { widget.sync(); });
-	};
-	
+dk.wildside.display.Component.prototype.sync = function() {
+	this.dirtyWidgets.each(function(widget) { widget.sync(); });
 };

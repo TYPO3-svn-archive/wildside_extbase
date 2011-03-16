@@ -18,11 +18,19 @@ dk.wildside.net.Dispatcher.prototype.dispatchRequest = function(request) {
 	if (request instanceof dk.wildside.net.Request == false) {
 		request = this.request;
 	};
-	var controller = request.getWidget().getConfiguration().controller.toLowerCase();
-	var scope = request.getScope();
 	var data = {};
+	var scope = request.getScope();
+	var configuration = request.getWidget().getConfiguration();
+	var controller = configuration.controller.toLowerCase();
+	var objectData = request.getWidget().getValues();
+	//console.log(data);
+	if (configuration.data.uid > 0) {
+		// Patch; re-address UID to confirm with Extbase controller argument loading
+		objectData['__identity'] = configuration.data.uid;
+		delete(objectData.uid);
+	};
 	data[scope] = {};
-	data[scope][controller] = request.getWidget().getValues();
+	data[scope][controller] = objectData;
 	var ajaxOptions = {
 		async: false,
 		type: 'post',

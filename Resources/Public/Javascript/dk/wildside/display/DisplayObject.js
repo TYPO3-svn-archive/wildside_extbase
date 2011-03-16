@@ -7,47 +7,36 @@
 * 
 ***************************************************************/
 
-dk.wildside.display.DisplayObject = function(jQuerySelector) {
-	this.context = false;
-	this.payload = false;
-	if (jQuerySelector != undefined) {
-		this.setJQueryContext(jQuery(jQuerySelector));
+dk.wildside.display.DisplayObject = function(jQueryElement) {
+	if (typeof jQueryElement == 'undefined') {
+		return this;
+	} else if (typeof jQueryElement == 'string') {
+		jQueryElement = jQuery(jQueryElement);
 	};
-	dk.wildside.event.EventDispatcher.apply(this, arguments);
-};
-
-dk.wildside.display.DisplayObject.prototype = new dk.wildside.event.EventDispatcher();
-
-dk.wildside.display.DisplayObject.prototype.setJQueryContext = function(context) {
-	this.context = context;
-	
-	// Mark the jQuery element as having been registered
-	context.addClass(dk.wildside.util.Configuration.guiSelectors.inUse);
+	dk.wildside.event.EventDispatcher.call(this, jQueryElement);
+	this.selectors = dk.wildside.util.Configuration.guiSelectors;
+	this.context = jQueryElement;
+	this.context.data(this.selectors.jQueryDataName, this); // back-reference
+	this.config = jQuery.parseJSON(jQueryElement.find('.' + this.selectors.json).html());
+	this.context.addClass(this.selectors.inUse); // claim DOM element
 	
 	// Read JSON-payload, if it exists
-	var payloadElement = context.find("> ." + dk.wildside.util.Configuration.guiSelectors.json);
+	var payloadElement = this.context.find("> ." + this.selectors.json);
 	if (payloadElement.length) {
 		var temppayload = payloadElement.text().trim();
 		this.payload = (temppayload.length) ? jQuery.parseJSON(temppayload) : {};
 	};
 	
-	// Store a "this"-reference on the object itself. That way, we can always access the
-	// relevant JS data whenever we need it.
-	context.data(dk.wildside.util.Configuration.guiSelectors.jQueryDataName, this);
-	
+	// TODO: evaluate. Is this still true after EventListener implementation?
+	// TODO: if no longer necessary, remove from guiSelectors config too.
 	// Store a classname which we can use to make hierachical lookups to find the first
 	// parent. Basically, any sub-object triggering events can use this to report back to
 	// the JS object we just stored.
-	context.addClass(dk.wildside.util.Configuration.guiSelectors.jsParent);
-	
-	// Return "this" for awesome chaining power.
+	this.context.addClass(this.selectors.jsParent);
 	return this;
 };
 
-
-dk.wildside.display.DisplayObject.prototype.getJQueryContext = function() {
-	return this.context;
-};
+dk.wildside.display.DisplayObject.prototype = new dk.wildside.event.EventDispatcher();
 
 dk.wildside.display.DisplayObject.prototype.fadeIn = function() {
 	this.getJQueryContext().fadeIn();
@@ -60,7 +49,7 @@ dk.wildside.display.DisplayObject.prototype.fadeOut = function() {
 };
 
 dk.wildside.display.DisplayObject.prototype.replaceWith = function(source) {
-	this.getJQueryContext().html(source);
+	this.context.html(source);
 	return this;
 };
 

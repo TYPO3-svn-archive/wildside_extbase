@@ -1,0 +1,52 @@
+<div class='wildside-extbase-widget file-upload-widget file-upload file-upload-section'>
+	<ws:comment>
+	
+	
+	Add options to fold/unfold the uploader and list, or each one by itself.
+	In JS-Widget, register ".file-upload-section" AND ".file-upload-section > *" 
+	as DisplayObjects and attach event listeners on each SECTION to call the 
+	show() and hide() methods of each DIRECT CHILD OF SECTION
+	</ws:comment>
+	<div class='file-upload-section file-upload-browse'>
+		<ws:comment>
+		STUB: container for Hunch-hunch! What-what? The-fileuploader. Use the new
+		fancypants one.
+		</ws:comment>
+		<button type="button">Upload file</button>
+	</div>
+	<div class='file-upload-section file-upload-list'>
+		<ws:comment>
+		File row rendering. Add icon-based controls for delete, rename - 
+		and if possible, allow sorting.
+		
+		The icon-controls should use dk.wildside.display.Field when bootstrapped 
+		and have event listeners reacting to dk.wildside.event.widget.FileUploadWidgetEvent
+		and, if necessary, dk.wildside.event.widget.WidgetEvent
+			- UPLOADED (dispatcher: file-upload)
+			- REMOVED (dispatcher: file-row)
+			- SORTED (dispatcher: file-list)
+			- RENAMED (dispatcher: file-row)
+			- SHOW (dispatcher: file-upload-sections)
+			- HIDE (dispatcher: file-upload-sections)
+		
+		A FileUploadWidgetEvent object will be included as an argument to the 
+		listener function. This object will contain a reference to the DisplayObject that 
+		dispatched the event of great justice :)
+		
+		Hints: ---------->
+			<ws:Field name="" value=""><f:image src="" alt="icon" class="wildside-extbase-field" /></ws:Field>
+			...and register some MouseEvent listeners.
+			
+			// from all methods which change the number/names etc. of files:
+			this.dispatchEvent(dk.wildside.event.Event.DIRTY);
+			// ... the Component and/or widget listener methods take care of the rest
+		----------------->
+		
+		</ws:comment>
+		<f:for each="{files}" as="file" iteration="iteration">
+			<ws:comment>
+			Loopiness 
+			</ws:comment>
+		</f:for>
+	</div>
+</div>

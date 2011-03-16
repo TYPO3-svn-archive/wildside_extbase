@@ -9,173 +9,200 @@
 * 
 ***************************************************************/
 
-dk.wildside.display.widget.Widget = function() {
-	dk.wildside.display.DisplayObject.apply(this, arguments);
-	this.values = {};
-	this.messages = {};
+dk.wildside.display.widget.Widget = function(jQueryElement) {
+	if (typeof jQueryElement == 'undefined') {
+		return this;
+	};
+	dk.wildside.display.DisplayObject.call(this, jQueryElement);
+	// references
+	this.events = dk.wildside.event.widget.WidgetEvent;
+	this.selectors = dk.wildside.util.Configuration.guiSelectors;
+	// internals
+	this.fields = new dk.wildside.util.Iterator();
 	this.disabled = false;
 	this.dirty = false;
 	this.component = false;
-	this.fields = new dk.wildside.util.Iterator;
-	this.defaultAction = 'update';
-	this.configuration = {};
-	this.action = this.defaultAction;
+	this.defaultAction = this.config.action;
+	// event listeners
+	this.addEventListener(this.events.DIRTY, this.onDirty, this);
+	this.addEventListener(this.events.CLEAN, this.onClean, this);
+	this.addEventListener(this.events.ERROR, this.onError, this);
+	// TODO: move Bootstrap.bootstrapWidget to here and cut down size a bit
+	// TODO: have this method find its own fields and use this.registerField() 
+	return this;
 };
 
-dk.wildside.display.widget.Widget.prototype = new dk.wildside.display.DisplayObject();
+dk.wildside.display.widget.Widget.prototype = new dk.wildside.display.DisplayObject;
 
+
+
+
+
+
+// REGISTRATION / CONSTRUCTION / CONFIGURATION METHODS
+dk.wildside.display.widget.Widget.prototype.registerComponent = function(component) {
+	// Allow only ONE Component per widget; moving widgets between components
+	// is bad - we can't assume all EventListeners have been removed...
+	if (this.component) { return this; };
+	// Remove native dirty-listener (set by constructor) first to let Component
+	// manage sync strategy and prevent widget vigilantism ;)
+	this.removeEventListener(dk.wildside.event.Event.DIRTY, this.onDirty);
+	this.component = component;
+	return this;
+};
+
+dk.wildside.display.widget.Widget.prototype.registerField = function(field) {
+	this.fields.push(field);
+};
+
+dk.wildside.display.widget.Widget.prototype.getConfiguration = function() {
+	return this.config;
+};
+
+
+
+
+// DISPLAY MANIPULATION METHODS
 dk.wildside.display.widget.Widget.prototype.enableControls = function() {
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.PRE_ENABLE);
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.ENABLED);
+	this.dispatchEvent(this.events.PRE_ENABLE);
+	this.disabled = false;
+	// TODO: enable controls in GUI
+	this.dispatchEvent(this.events.ENABLED);
 };
 
 dk.wildside.display.widget.Widget.prototype.disableControls = function() {
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.PRE_DISABLE);
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.DISABLED);
-};
-
-dk.wildside.display.widget.Widget.prototype.sync = function() {
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.PRE_SYNC);
-	//this.action = this.defaultAction;
-	
-	var request = new dk.wildside.net.Request(this);
-	var responder = new dk.wildside.net.Dispatcher(request).dispatchRequest();
-	var data = responder.getData();
-	var messages = responder.getMessages();
-	var errors = responder.getErrors();
-	
-	if (errors.length > 0) {
-		this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.ERROR);
-		return this.displayErrors(errors);
-	} else {
-		this.setValues(data);
-		if (messages.length > 0) {
-			this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.MESSAGE);
-			this.displayMessages(messages);
-			this.clearMessages();
-		};
-		this.setClean();
-	};
-	
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.COMPLETE);
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.SYNC);
-};
-
-dk.wildside.display.widget.Widget.prototype.remove = function() {
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.PRE_DELETE);
-	this.setAction('delete');
-	return this.sync();
-};
-
-dk.wildside.display.widget.Widget.prototype.update = function() {
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.PRE_UPDATE);
-	this.setAction('update');
-	return this.sync();
-};
-
-dk.wildside.display.widget.Widget.prototype.create = function() {
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.PRE_CREATE);
-	this.setAction('create');
-	return this.sync();
+	this.dispatchEvent(this.events.PRE_DISABLE);
+	this.disabled = true;
+	// TODO: disable controls in GUI
+	this.dispatchEvent(this.events.DISABLED);
 };
 
 dk.wildside.display.widget.Widget.prototype.displayErrors = function(messages) {
-	var parent = this.context.parents(dk.wildside.util.Configuration.guiSelectors.itemParentLookup + ":first").find("." + dk.wildside.util.Configuration.guiSelectors.messageDisplayElement + ":first");
+	var parent = this.context.parents(this.selectors.itemParentLookup + ":first").find("." + this.selectors.messageDisplayElement + ":first");
 	messages.each(function(message) {
 		var msgObj = jQuery("<div>");
-		msgObj.html(message);
-		msgObj.addClass(dk.wildside.util.Configuration.guiSelectors.messageClassError);
+		msgObj.html(message).addClass(selectors.messageClassError);
 		parent.append(msgObj);
 	});
 };
 
 dk.wildside.display.widget.Widget.prototype.displayMessages = function(messages) {
-	var parent = this.context.parents(dk.wildside.util.Configuration.guiSelectors.itemParentLookup + ":first").find("." + dk.wildside.util.Configuration.guiSelectors.messageDisplayElement + ":first");
+	var parent = this.context.parents(this.selectors.itemParentLookup + ":first").find("." + this.selectors.messageDisplayElement + ":first");
 	messages.each(function(message) {
 		var msgObj = jQuery("<div>");
-		msgObj.html(message);
-		msgObj.addClass(dk.wildside.util.Configuration.guiSelectors.messageClassInfo);
+		msgObj.html(message).addClass(this.selectors.messageClassInfo);
 		parent.append(msgObj);
 	});
 };
 
-dk.wildside.display.widget.Widget.prototype.getDirty = function() {
-	return this.dirty;
+
+
+
+
+
+
+// DATA MANIPULATION METHODS
+// TODO: consider removing these and replacing them with entirely Fields-based
+// value storage. Bonuses include smaller Widget memory usage, event capabilities
+// for each value (nice!) and of course sanitizer-support.
+dk.wildside.display.widget.Widget.prototype.setValue = function(field, value) {
+	this.fields.find(field).setValue(value);
 };
 
-dk.wildside.display.widget.Widget.prototype.setDirty = function() {
-	this.dirty = true;
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.DIRTY);
-};
-
-dk.wildside.display.widget.Widget.prototype.setClean = function() {
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.CLEAN);
-	this.dirty = false;
-};
-
-dk.wildside.display.widget.Widget.prototype.clearMessages = function() {
-	this.messages = {};
-};
-
-dk.wildside.display.widget.Widget.prototype.message = function(msg, field) {
-	if (field == undefined) {
-		this.messages.push(msg);
-	} else {
-		this.messages[field] = msg;
-	};
+dk.wildside.display.widget.Widget.prototype.getValue = function(field) {
+	return this.fields.find(field).getValue();
 };
 
 dk.wildside.display.widget.Widget.prototype.setValues = function(object) {
 	for (var name in object) {
 		this.setValue(name, object[name]);
 	};
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.UPDATED);
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.COMPLETE);
-};
-
-dk.wildside.display.widget.Widget.prototype.getFields = function() {
-	return this.fields;
-};
-
-dk.wildside.display.widget.Widget.prototype.setFields = function(fields) {
-	this.fields = fields;
+	this.markClean();
+	this.dispatchEvent(this.events.UPDATED);
 };
 
 dk.wildside.display.widget.Widget.prototype.getValues = function() {
-	var values = this.values;
-	var config = this.getConfiguration();
+	var values = {}; //this.config.data;
 	this.fields.each(function(field) {
-		var fieldName = field.getName();
-		values[fieldName] = field.getValue();
+		values[field.getName()] = field.getValue();
 	});
-	if (config.data.uid > 0) {
-		values['__identity'] = config.data.uid;
-	}
-	this.values = values;
-	return this.values;
+	return values;
 };
 
-dk.wildside.display.widget.Widget.prototype.getConfiguration = function() {
-	return jQuery.parseJSON(this.context.find('.' + dk.wildside.util.Configuration.guiSelectors.json).html());
+
+
+
+
+// MODEL OBJECT INTERACTION METHODS
+dk.wildside.display.widget.Widget.prototype.markDirty = function() {
+	this.dirty = true;
+	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.DIRTY);
 };
 
-dk.wildside.display.widget.Widget.prototype.setAction = function(action) {
-	this.action = action;
+dk.wildside.display.widget.Widget.prototype.markClean = function() {
+	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.CLEAN);
+	this.dirty = false;
 };
 
-dk.wildside.display.widget.Widget.prototype.setValue = function(field, value) {
-	this.values[field] = value;
-};
-
-dk.wildside.display.widget.Widget.prototype.getValue = function(field) {
-	return this.values[field];
-};
-
-dk.wildside.display.widget.Widget.prototype.setComponent = function(component) {
-	this.component = component;
+dk.wildside.display.widget.Widget.prototype.remove = function() {
+	this.dispatchEvent(this.events.PRE_DELETE);
+	this.config.action = 'delete';
+	this.sync();
 	return this;
 };
 
-dk.wildside.display.widget.Widget.prototype.getComponent = function() {
-	return this.component;
+dk.wildside.display.widget.Widget.prototype.update = function() {
+	this.dispatchEvent(this.events.PRE_UPDATE);
+	this.config.action = 'update';
+	this.sync();
+	return this;
 };
+
+dk.wildside.display.widget.Widget.prototype.create = function() {
+	this.dispatchEvent(this.events.PRE_CREATE);
+	this.config.action = 'create';
+	this.sync();
+	this.config.action = this.defaultAction;
+	return this;
+};
+
+dk.wildside.display.widget.Widget.prototype.sync = function() {
+	this.dispatchEvent(this.events.PRE_SYNC);
+	var request = new dk.wildside.net.Request(this);
+	var responder = new dk.wildside.net.Dispatcher(request).dispatchRequest();
+	var data = responder.getData();
+	var messages = responder.getMessages();
+	var errors = responder.getErrors();
+	if (errors.length > 0) {
+		return this.dispatchEvent(this.events.ERROR, errors);
+	} else {
+		this.setValues(data);
+		if (messages.length > 0) {
+			this.dispatchEvent(this.events.MESSAGE, messages);
+		};
+	};
+	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.SYNC);
+	return this;
+};
+
+
+
+// EVENT LISTENER METHODS
+dk.wildside.display.widget.Widget.prototype.onError = function(event) {
+	var errors = event.target;
+	this.displayErrors(errors);
+};
+
+dk.wildside.display.widget.Widget.prototype.onDirty = function(event) {
+	this.dirty = true;
+};
+
+dk.wildside.display.widget.Widget.prototype.onClean = function(event) {
+	this.dirty = false;
+};
+
+dk.wildside.display.widget.Widget.prototype.onMessage = function(event) {
+	var messages = event.target;
+	this.displayMessages(messages);
+};
+

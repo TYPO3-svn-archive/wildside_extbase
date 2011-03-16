@@ -9,6 +9,20 @@ dk.wildside.util.Iterator = function(length) {
 
 dk.wildside.util.Iterator.prototype = new Array();
 
+dk.wildside.util.Iterator.prototype.find = function(name) {
+	var func = function(item, iteration) {
+		try {
+			if (typeof item.name != 'undefined' && item.name == name) {
+				return true;
+			};
+			return (item.getName() == name);
+		} catch (e) {
+			return false;
+		};
+	};
+	return this.filter(func);
+};
+
 dk.wildside.util.Iterator.prototype.filter = function(func) {
 	
 	var returnData = new dk.wildside.util.Iterator();

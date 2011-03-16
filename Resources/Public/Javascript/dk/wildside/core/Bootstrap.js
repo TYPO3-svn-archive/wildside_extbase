@@ -22,10 +22,9 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 		dk.wildside.bootstrap.bootstrapComponent(this);
 	});
 	
-	// Now, if any widgets are left untouched, we need to register those to a pseudo-component.
-	var component = new dk.wildside.display.Component();
+	// Now, if any widgets are left untouched, we need to bootstrap them as standalones
 	jQuery("." + dk.wildside.util.Configuration.guiSelectors.widget +":not(." + dk.wildside.util.Configuration.guiSelectors.inUse +")").each( function() {
-		dk.wildside.bootstrap.bootstrapWidget(this, component);
+		dk.wildside.bootstrap.bootstrapWidget(this);
 	} );
 	
 	// Basic configuration - this can be overruled later, though.
@@ -39,32 +38,25 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 	
 	// Subscribe to the edit-finish event on all existing (and future) Aloha-instances.
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableDeactivated", function(event, eventProperties) {
-		
 		var aloha = eventProperties.editable;
-		
 		if (aloha.isModified()) {
-			
-			var id = aloha.getId();
-			var content = aloha.getContents();
-			
-			// Tell this editor it's now unmodified. This will make sure that the saving
-			// does not happen unless the user has actually changed something.
+			// Reset modification, Widget now takes over
 			aloha.setUnmodified();
-			
-			// Get the associated widget.
-			var widget = jQuery(aloha.obj).data("widget");
-			
-			// Tell the widget it's now dirty. DIRTYYY!
-			widget.setDirty();
-			
-			// Tell the widget's component (parent) to do something awful. It'll then be
-			// up to the component whether or not it should update now or later.
-			widget.getParent().update();
-			
+			// Get the associated widget and mark as dirty
+			jQuery(aloha.obj).data("widget").markDirty();
 		};
 	});
 };
 
+
+
+
+
+
+
+
+
+// TODO: move this to Component constructor
 dk.wildside.core.Bootstrap.prototype.bootstrapComponent = function(element) {
 	// Setup component, based on its class, and store for later use
 	var obj = jQuery(element);
@@ -85,6 +77,7 @@ dk.wildside.core.Bootstrap.prototype.bootstrapComponent = function(element) {
 	};
 };
 
+// TODO: move this to Widget constructor
 dk.wildside.core.Bootstrap.prototype.bootstrapWidget = function(element, component) {
 	var widgetobj = jQuery(element);
 	var widget = false;
@@ -98,11 +91,10 @@ dk.wildside.core.Bootstrap.prototype.bootstrapWidget = function(element, compone
 			console.warn("Javascript widget class " + widgetType + " does not exist!");
 		} catch (e) {};
 	};
-	if (widget && component) {		
+	if (widget && component) {
 		component.registerWidget(widget);
-		widget.setComponent(component);
 		this.registeredWidgets.push(widget);
-	};
+	}
 	// Instantiate Aloha objects on the widget. As you can, like, totally see, we distinguish
 	// between content, titles and stuff.
 	widgetobj.find(".text-content.aloha").data("widget", widget).aloha();
