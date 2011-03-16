@@ -25,8 +25,9 @@ dk.wildside.event.EventDispatcher.prototype.removeEventListener = function(event
 	this.listeners[eventType] = this.listeners[eventType].remove(func);
 };
 
-dk.wildside.event.EventDispatcher.prototype.dispatchEvent = function(eventType) {
-	console.log(this.type + '::' + eventType + ' fired');
+dk.wildside.event.EventDispatcher.prototype.dispatchEvent = function(eventType, eventData) {
+	console.info("Event '" + eventType + "' fired");
 	this.initializeIfMissing(eventType);
-	return this.listeners[eventType].each(function(func) { func(this); });
+	var localScope = this;
+	return this.listeners[eventType].each(function(func) { func.call(localScope, this, eventData); });
 };

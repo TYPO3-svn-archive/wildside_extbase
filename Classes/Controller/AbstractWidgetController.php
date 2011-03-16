@@ -34,6 +34,7 @@ abstract class Tx_WildsideExtbase_Controller_AbstractWidgetController extends Tx
 	
 	
 	
+	
 }
 
 ?>

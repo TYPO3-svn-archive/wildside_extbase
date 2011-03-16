@@ -6,11 +6,14 @@ dk.wildside.display.field.Field = function(name, jQueryElement) {
 		this.name = name;
 		this.jQueryElement = jQueryElement;
 		this.value = this.getValue();
-	} catch(e) {
+		jQueryElement.addClass("herpderp");
+		jQueryElement.data(dk.wildside.util.Configuration.guiSelectors.jQueryDataName, this);
 		
+		this.sanitizer = dk.wildside.display.field.Sanitizer.noop;
+		this.addEventListener(dk.wildside.event.FieldEvent.CHANGE, this.onChange);
+		
+	} catch(e) {
 	};
-	this.sanitizer = dk.wildside.display.field.Sanitizer.noop;
-	this.addEventListener(dk.wildside.event.CHANGE, this.onChange);
 };
 
 dk.wildside.display.field.Field.prototype = new dk.wildside.display.DisplayObject();

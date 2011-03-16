@@ -20,6 +20,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_Fluid_Core_View
 	 * @param string $class Extra CSS-classes to use
 	 * @param string $title Title of the widget
 	 * @param int $type TypeNum, if any, for building request URI
+	 * @param string $html InnerHTML, if any. Overrides renderChildren()
 	 * @return string
 	 */
 	public function render(
@@ -31,13 +32,15 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_Fluid_Core_View
 			$data=NULL,
 			$class=NULL,
 			$title=NULL,
-			$type=0
+			$type=0,
+			$html=NULL
 			) {
 		if ($page === NULL) {
 			$page = $GLOBALS['TSFE']->id;
 		}
-		
-		$html = $this->renderChildren();
+		if ($html === NULL) {
+			$html = $this->renderChildren();
+		}
 		$obj = new stdClass();
 		$obj->api = $GLOBALS['TSFE']->cObj->typoLink('', array('parameter' => $page, 'returnLast' => 'url', 'additionalParams' => "&type={$type}"));
 		$obj->widget = $widget;

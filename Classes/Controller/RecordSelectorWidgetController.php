@@ -32,6 +32,34 @@
  */
 class Tx_WildsideExtbase_Controller_RecordSelectorWidgetController extends Tx_WildsideExtbase_Controller_AbstractWidgetController {
 	
+	/**
+	 * Default action
+	 * 
+	 * @return string
+	 */
+	public function indexAction() {
+		
+		
+	}
+	
+	/**
+	 * List all records based on simple conditions
+	 * 
+	 * @param int $storagePid UID of the sysfolder used to store records
+	 * @param int $parent UID of the parent record
+	 */
+	public function listAction($storagePid=NULL, $parent=NULL) {
+		
+	}
+	
+	
+	public function resolveAction() {
+		
+	}
+	
+	public function searchAction($q) {
+		
+	} 
 	
 	
 }

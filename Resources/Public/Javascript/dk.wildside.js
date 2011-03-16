@@ -30,14 +30,17 @@ jQuery(document).ready(function() {
 // net/Responder.js
 // net/Dispatcher.js
 // event/Event.js
+// event/FieldEvent.js
 // event/MouseEvent.js
 // event/EventDispatcher.js
 // event/widget/WidgetEvent.js
 // event/widget/FileUploadEvent.js
 // event/widget/RecordSelectorEvent.js
+// event/EventAttacher.js
 // display/DisplayObject.js
 // display/Control.js
 // display/Component.js
+// display/field/Sanitizer.js
 // display/field/Field.js
 // display/field/Input.js
 // display/field/Checkbox.js

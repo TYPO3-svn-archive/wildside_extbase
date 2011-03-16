@@ -1,3 +1,9 @@
 dk.wildside.event.MouseEvent = {
-	CLICK : 'mouse-click'
+	CLICK : 'click',
+	DOWN : 'mousedown',
+	UP : 'mouseup',
+	OVER : 'mouseover',
+	OUT : 'mouseout',
+	ENTER : 'mouseenter',
+	LEAVE : 'mouseleave'
 };

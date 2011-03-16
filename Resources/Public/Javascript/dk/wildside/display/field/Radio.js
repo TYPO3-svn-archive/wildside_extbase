@@ -4,12 +4,13 @@ dk.wildside.display.field.Radio = function() {
 	
 	dk.wildside.display.field.Field.apply(this, arguments);
 	
-	this.jQueryElement.change( this.setDirty );
+	this.addEventListener(dk.wildside.event.MouseEvent.CLICK, this.onChange);
+	dk.wildside.event.EventAttacher.attachEvent(dk.wildside.event.MouseEvent.CLICK, this.jQueryElement);
 	
 };
 
 dk.wildside.display.field.Radio.prototype = new dk.wildside.display.field.Field();
 
-dk.wildside.display.field.Radio.prototype.getValues = function() {
-	return this.parents(dk.wildside.util.Configuration.guiSelectors.widget + ":first").find(":checkbox[name='"+ this.name +"']:checked").attr("value");
+dk.wildside.display.field.Radio.prototype.getValue = function() {
+	return this.jQueryElement.parents("." + dk.wildside.util.Configuration.guiSelectors.widget + ":first").find("*[name='"+ this.name +"']:checked").attr("value");
 };

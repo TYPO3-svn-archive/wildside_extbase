@@ -17,6 +17,7 @@ class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideEx
 	 * @param string $class Class property of the Field
 	 * @param array $options If multiple options, specify them here as value => label array
 	 * @param string $selectedValue The pre-selected value among $options
+	 * @param string $sanitizer WS JS Domain style reference to validator method
 	 */
 	public function render(
 			$displayType='dk.wildside.display.field.Radio', 
@@ -24,7 +25,8 @@ class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideEx
 			$value=NULL, 
 			$class=NULL, 
 			array $options=array('No', 'Yes'), 
-			$selectedValue=NULL) {
+			$selectedValue=NULL,
+			$sanitizer=NULL) {
 		$html = "<span class='input-radio-wrap'>";
 		foreach ($options as $value=>$label) {
 			if ($value == $selectedValue) {
@@ -36,7 +38,7 @@ class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideEx
 			$html .= $field;
 		}
 		$html .= "</span>";
-		return parent::render($html, $displayType, $name, $value);
+		return parent::render($html, $displayType, $name, $value, NULL, $sanitizer);
 	}
 	
 }
