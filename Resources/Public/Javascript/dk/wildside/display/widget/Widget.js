@@ -15,7 +15,7 @@ dk.wildside.display.widget.Widget = function() {
 	this.messages = {};
 	this.disabled = false;
 	this.dirty = false;
-	this.parent = false;
+	this.component = false;
 	this.fields = new dk.wildside.util.Iterator;
 	this.defaultAction = 'update';
 	this.configuration = {};
@@ -171,11 +171,11 @@ dk.wildside.display.widget.Widget.prototype.getValue = function(field) {
 	return this.values[field];
 };
 
-dk.wildside.display.widget.Widget.prototype.setParent = function(parent) {
-	this.parent = parent;
+dk.wildside.display.widget.Widget.prototype.setComponent = function(component) {
+	this.component = component;
 	return this;
 };
 
-dk.wildside.display.widget.Widget.prototype.getParent = function() {
-	return this.parent;
+dk.wildside.display.widget.Widget.prototype.getComponent = function() {
+	return this.component;
 };

@@ -6,7 +6,7 @@
 
 
 
-class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideExtbase_ViewHelpers_FieldViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_Field_SelectViewHelper extends Tx_WildsideExtbase_ViewHelpers_FieldViewHelper {
 	
 	/**
 	 * Render the Field
@@ -17,6 +17,8 @@ class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideEx
 	 * @param string $class Class property of the Field
 	 * @param array $options If multiple options, specify them here as value => label array
 	 * @param string $selectedValue The pre-selected value among $options
+	 * @param boolean $multi Whether or not this element allows multiple selections
+	 * @param integer $size Size (height) of the selector. If null or 1, it will be a regular dropdown box.
 	 */
 	public function render(
 			$displayType='dk.wildside.display.field.Select', 
@@ -27,14 +29,15 @@ class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideEx
 			$selectedValue=NULL,
 			$multi=FALSE,
 			$size=NULL) {
-		$html = "<select name='{$name}' class='{$class}'>";
+		
+		$html = "<select name='{$name}' class='{$class}'" . ($size && $size > 1 ? " size='{$size}'" : "") . ($multi ? " multiple='true'" : "") . ">";
 		foreach ($options as $value=>$label) {
 			if ($value == $selectedValue) {
 				$selected = " selected='selected'";
 			} else {
 				$selected = '';
 			}
-			$field .= "<option value='{$value}' {$selected}>{$label}</option>";
+			$field = "<option value='{$value}' {$selected}>{$label}</option>";
 			$html .= $field;
 		}
 		$html .= "</select>";

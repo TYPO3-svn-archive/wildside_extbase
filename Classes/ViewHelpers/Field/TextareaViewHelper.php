@@ -17,7 +17,8 @@ class Tx_WildsideExtbase_ViewHelpers_Field_TextareaViewHelper extends Tx_Wildsid
 	 * @param string $class Class property of the Field
 	 */
 	public function render($displayType='dk.wildside.display.field.Textarea', $name=NULL, $value=NULL, $class=NULL) {
-		$field = "<textarea name='{$name}' class='textarea-{$type} {$class}'>{$value}</textarea>";
+		$displayTypeFixed = str_replace(".", "-", $displayType);
+		$field = "<textarea name='{$name}' class='textarea-{$displayTypeFixed} {$class}'>{$value}</textarea>";
 		return parent::render($field, $displayType, $name, $value);
 	}
 	

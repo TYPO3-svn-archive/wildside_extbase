@@ -32,6 +32,8 @@
  */
 class Tx_WildsideExtbase_Controller_RecordSelectorWidgetController extends Tx_WildsideExtbase_Controller_AbstractWidgetController {
 	
+	
+	
 }
 
 ?>

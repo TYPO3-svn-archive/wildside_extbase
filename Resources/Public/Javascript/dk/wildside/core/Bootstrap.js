@@ -100,7 +100,7 @@ dk.wildside.core.Bootstrap.prototype.bootstrapWidget = function(element, compone
 	};
 	if (widget && component) {		
 		component.registerWidget(widget);
-		widget.setParent(component);
+		widget.setComponent(component);
 		this.registeredWidgets.push(widget);
 	};
 	// Instantiate Aloha objects on the widget. As you can, like, totally see, we distinguish

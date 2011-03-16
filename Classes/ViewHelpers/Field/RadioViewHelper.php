@@ -32,7 +32,7 @@ class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideEx
 			} else {
 				$checked = '';
 			}
-			$field = "<input type='radio' name='{$name}' class='input-radio {$class}' value='{$value}' {$checked} />";
+			$field = "<label class='input-field-label'><span class='input-field-label-text'>{$label}</span> <input type='radio' name='{$name}' class='input-radio {$class}' value='{$value}' {$checked} /></label>";
 			$html .= $field;
 		}
 		$html .= "</span>";

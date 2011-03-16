@@ -16,12 +16,14 @@ class Tx_WildsideExtbase_ViewHelpers_FieldViewHelper extends Tx_Fluid_Core_ViewH
 	 * @param string $name Name property of the Field
 	 * @param string $value Value property of the Field
 	 * @param string $class Class property of the Field
+	 * @param string $sanitizer WS JS Domain style reference to validator method
 	 */
-	public function render($field=NULL, $displayType='dk.wildside.display.Field', $name=NULL, $value=NULL, $class=NULL) {
+	public function render($field=NULL, $displayType='dk.wildside.display.Field', $name=NULL, $value=NULL, $class=NULL, $sanitizer=NULL) {
 		$json = new stdClass();
 		$json->type = $displayType;
 		$json->name = $name;
 		$json->value = $value;
+		$json->sanitizer = $sanitizer;
 		
 		$jsonString = json_encode($json);
 		

@@ -6,11 +6,26 @@ dk.wildside.display.field.Field = function(name, jQueryElement) {
 		this.name = name;
 		this.jQueryElement = jQueryElement;
 		this.value = this.getValue();
-	}
-	catch(e) {};
+	} catch(e) {
+		
+	};
+	this.sanitizer = dk.wildside.display.field.Sanitizer.noop;
+	this.addEventListener(dk.wildside.event.CHANGE, this.onChange);
 };
 
 dk.wildside.display.field.Field.prototype = new dk.wildside.display.DisplayObject();
+
+dk.wildside.display.field.Field.prototype.setSanitizer = function(san) {
+	if (typeof san == 'function') {
+		this.sanitizer = san;
+	};
+};
+
+dk.wildside.display.field.Field.prototype.onChange = function() {
+	var value = this.getValue();
+	value = this.sanitizer(value);
+	this.setValue(value);
+};
 
 dk.wildside.display.field.Field.prototype.setValue = function(val) {
 	this.value = val;
