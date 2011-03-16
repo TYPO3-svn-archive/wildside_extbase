@@ -16,6 +16,7 @@ dk.wildside.display.widget.Widget = function() {
 	this.disabled = false;
 	this.dirty = false;
 	this.parent = false;
+	this.fields = new dk.wildside.util.Iterator;
 	this.defaultAction = 'update';
 	this.configuration = {};
 	this.action = this.defaultAction;
