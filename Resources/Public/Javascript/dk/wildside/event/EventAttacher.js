@@ -38,9 +38,9 @@ dk.wildside.event.EventAttacher = {
 		jQueryElement.unbind(ev, jQueryElement);
 	},
 	
-	__eventHandler : function(domEvent) {
+	__eventHandler : function(originalEvent) {
 		var obj = jQuery(this).data(dk.wildside.util.Configuration.guiSelectors.jQueryDataName);
-		obj.dispatchEvent.call(obj, domEvent.type, domEvent);
+		obj.dispatchEvent.call(obj, originalEvent.type, null, originalEvent);
 	}
 	
 };

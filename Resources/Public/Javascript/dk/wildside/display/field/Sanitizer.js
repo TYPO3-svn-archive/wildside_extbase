@@ -3,36 +3,36 @@
 
 
 
-dk.wildside.display.field.Sanitizer = new function() {
+dk.wildside.display.field.Sanitizer = {
 	
-	this.noop = function(value) {
+	noop : function(value) {
 		return value;
-	};
+	},
 	
-	this.integer = function(value) {
+	integer : function(value) {
 		value = value.toString();
 		value = value.replace(/[^0-9]/g, '');
 		if (!value) value = 0;
 		return value;
-	};
+	},
 	
-	this.float = function(value) {
+	float : function(value) {
 		value = value.toString();
 		if (!/^[0-9]{0,}[\.,]{0,1}[0-9]{0,}$/.test(value)) {
 			value = "0";
 		};
 		return value;
-	};
+	},
 	
-	this.string = function(value) {
+	string : function(value) {
 		
 		return value;
-	};
+	},
 	
-	this.preg = function(value, preg) {
+	preg : function(value, preg) {
 		
 		return value;
-	};
+	}
 	
 };
 

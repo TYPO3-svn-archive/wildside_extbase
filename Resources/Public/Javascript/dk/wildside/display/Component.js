@@ -24,6 +24,19 @@ dk.wildside.display.Component = function(jQueryElement) {
 	this.dirtyWidgets = new dk.wildside.util.Iterator();
 	this.uniqueID = Math.round(Math.random() * 100000);
 	this.setLoadingStrategy(this.CONST_LOADING_EAGER);
+	
+	var json = jQuery.parseJSON(this.context.find("> ." + this.selectors.json).text().trim());
+	var componentType = json.component;
+	eval("if (typeof(" + componentType + ") == 'function') " + componentType + ".call(this);");
+	
+	// Find all immediate widgets anywhere in the subtree, but NOT if they're preceded by a new component section.
+	// We only want children of this specific component, wherever they may be. Or roam. That's a Metallica song, btw.
+	var parent = this;
+	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")").not(this.context.find("." + this.selectors.component +" ." + this.selectors.widget)).each( function() {
+		var widget = new dk.wildside.display.widget.Widget(this);
+		parent.registerWidget(widget);
+	});
+	
 	return this;
 };
 
@@ -34,8 +47,9 @@ dk.wildside.display.Component.prototype.setLoadingStrategy = function(strategy) 
 };
 
 dk.wildside.display.Component.prototype.onDirtyWidget = function(widgetEvent) {
-	if (this.dirtyWidgets.contains(widgetEvent.target) == false) {
-		this.dirtyWidgets.push(widgetEvent.target);
+	//console.info('Component caught dirty widget event');
+	if (this.dirtyWidgets.contains(widgetEvent.currentTarget) == false) {
+		this.dirtyWidgets.push(widgetEvent.currentTarget);
 	};
 	if (this.loadingStrategy == this.CONST_LOADING_EAGER) {
 		// If "lazy", the Component relies on other means to call sync().
@@ -44,13 +58,14 @@ dk.wildside.display.Component.prototype.onDirtyWidget = function(widgetEvent) {
 };
 
 dk.wildside.display.Component.prototype.onCleanWidget = function(widgetEvent) {
-	this.dirtyWidgets.remove(widgetEvent.target);
+	this.dirtyWidgets.remove(widgetEvent.currentTarget);
 };
 
 dk.wildside.display.Component.prototype.registerWidget = function(widget) {
 	widget.addEventListener(dk.wildside.event.widget.WidgetEvent.DIRTY, this.onDirtyWidget, this);
 	widget.addEventListener(dk.wildside.event.widget.WidgetEvent.CLEAN, this.onCleanWidget, this);
 	widget.registerComponent(this);
+	widget.setParent(this);
 	return this;
 };
 

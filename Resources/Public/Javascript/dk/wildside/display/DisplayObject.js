@@ -10,7 +10,7 @@
 dk.wildside.display.DisplayObject = function(jQueryElement) {
 	if (typeof jQueryElement == 'undefined') {
 		return this;
-	} else if (typeof jQueryElement == 'string') {
+	} else {
 		jQueryElement = jQuery(jQueryElement);
 	};
 	dk.wildside.event.EventDispatcher.call(this, jQueryElement);

@@ -5,11 +5,25 @@ dk.wildside.event.EventDispatcher = function(jQueryElement) {
 		return this;
 	};
 	this.listeners = {};
+	this.parent = false;
+};
+
+dk.wildside.event.EventDispatcher.prototype.setParent = function(parent) {
+	this.parent = parent;
+};
+
+dk.wildside.event.EventDispatcher.prototype.getParent = function() {
+	return this.parent;
 };
 
 dk.wildside.event.EventDispatcher.prototype.initializeIfMissing = function(eventType) {
-	if (typeof this.listeners[eventType] == 'undefined') {
-		this.listeners[eventType] = new dk.wildside.util.Iterator();
+	try {
+		if (typeof this.listeners[eventType] == 'undefined') {
+			this.listeners[eventType] = new dk.wildside.util.Iterator();
+		};
+	} catch (e) {
+		//console.log(eventType);
+		//console.log(this);
 	};
 };
 
@@ -23,8 +37,8 @@ dk.wildside.event.EventDispatcher.prototype.hasEventListener = function(eventTyp
 
 dk.wildside.event.EventDispatcher.prototype.addEventListener = function(eventType, func, scope) {
 	if (typeof eventType == 'undefined') {
-		console.info('Invalid event type: ' + eventType);
-		console.log(this);
+		//console.info('Invalid event type: ' + eventType);
+		//console.log(this);
 	};
 	if (typeof scope == 'undefined') {
 		scope = this;
@@ -43,17 +57,32 @@ dk.wildside.event.EventDispatcher.prototype.removeEventListener = function(event
 	return this;
 };
 
-dk.wildside.event.EventDispatcher.prototype.dispatchEvent = function(eventType, target) {
-	if (typeof this.listeners[eventType] == 'undefined') {
-		return this;
-	};
+dk.wildside.event.EventDispatcher.prototype.dispatchEvent = function(eventType, target, originalEvent) {
+	var event;
 	if (typeof target == 'undefined') {
 		target = this;
 	};
-	var event = {type: eventType, target: target};
-	this.listeners[eventType].each(function(info) {
-		//console.log(info);
-		info[1].call(info[0], event);
-	});
+	if (typeof eventType == 'object') {
+		event = eventType;
+		eventType = event.type;
+	} else {
+		event = {type: eventType, target: target, cancelled: false};
+	};
+	event.currentTarget = this;
+	if (typeof this.listeners[eventType] != 'undefined') {
+		//console.log('Dispatching event: '+eventType);
+		this.listeners[eventType].each(function(info) {
+			//console.log(info);
+			var scope = info[0];
+			var func = info[1];
+			//console.log(info);
+			//console.info('Calling function...');
+			func.call(scope, event);
+		});
+	};
+	var parent = this.getParent();
+	if (parent && event.cancelled == false) {
+		parent.dispatchEvent.call(parent, event, target, originalEvent);
+	};
 	return this;
 };

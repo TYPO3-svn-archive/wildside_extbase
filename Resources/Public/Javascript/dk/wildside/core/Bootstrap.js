@@ -19,12 +19,14 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 	// Now, bootstrap all existing components on the page. This automatically handles
 	// any sub-widgets found in there too.
 	jQuery("." + dk.wildside.util.Configuration.guiSelectors.component).each( function() {
-		dk.wildside.bootstrap.bootstrapComponent(this);
+		//dk.wildside.bootstrap.bootstrapComponent(this);
+		var component = new dk.wildside.display.Component(this);
 	});
 	
 	// Now, if any widgets are left untouched, we need to bootstrap them as standalones
 	jQuery("." + dk.wildside.util.Configuration.guiSelectors.widget +":not(." + dk.wildside.util.Configuration.guiSelectors.inUse +")").each( function() {
-		dk.wildside.bootstrap.bootstrapWidget(this);
+		//dk.wildside.bootstrap.bootstrapWidget(this);
+		var widget = new dk.wildside.display.widget.Widget(this);
 	} );
 	
 	// Basic configuration - this can be overruled later, though.
@@ -43,60 +45,22 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 			// Reset modification, Widget now takes over
 			aloha.setUnmodified();
 			// Get the associated widget and mark as dirty
-			jQuery(aloha.obj).data("widget").markDirty();
+			var obj = jQuery(aloha.obj);
+			var widget = obj.data("widget");
+			if (!widget) {
+				widget = obj.data('field').getParent();
+			};
+			widget.markDirty.call(widget);
 		};
 	});
 };
 
-
-
-
-
-
-
-
-
-// TODO: move this to Component constructor
+/*
 dk.wildside.core.Bootstrap.prototype.bootstrapComponent = function(element) {
-	// Setup component, based on its class, and store for later use
-	var obj = jQuery(element);
-	var componentObject = false;
-	var json = jQuery.parseJSON(obj.find("> ." + dk.wildside.util.Configuration.guiSelectors.json).text().trim());
-	var componentType = json.component;
-	eval("if (typeof(" + componentType + ") == 'function') componentObject = new " + componentType + "(obj);");
-	// If we made a component instantiation, now's the time to register the widgets inside it.
-	if (componentObject) {
-		// Find all immediate widgets anywhere in the subtree, but NOT if they're preceded by a new component section.
-		// We only want children of this specific component, wherever they may be. Or roam. That's a Metallica song, btw.
-		var parent = this;
-		obj.find("." + dk.wildside.util.Configuration.guiSelectors.widget +":not(." + dk.wildside.util.Configuration.guiSelectors.inUse +")").not(obj.find("." + dk.wildside.util.Configuration.guiSelectors.component +" ." + dk.wildside.util.Configuration.guiSelectors.widget)).each( function() {
-			parent.bootstrapWidget(this, componentObject);
-		});
-		// Push the new component into the registeredComponents-heap.
-		this.registeredComponents.push(componentObject);
-	};
+	var component = new dk.wildside.display.Component(element);
 };
 
-// TODO: move this to Widget constructor
-dk.wildside.core.Bootstrap.prototype.bootstrapWidget = function(element, component) {
-	var widgetobj = jQuery(element);
-	var widget = false;
-	var json = jQuery.parseJSON(widgetobj.find("> ." + dk.wildside.util.Configuration.guiSelectors.json).text().trim());
-	var widgetType = json.widget;
-	eval("if (typeof(" + widgetType + ") != 'undefined') widget = new " + widgetType + "(widgetobj);");
-	if (!widget) {
-		try {
-			widgetobj.addClass(dk.wildside.util.Configuration.guiSelectors.instantiationFail);
-			console.info(element);
-			console.warn("Javascript widget class " + widgetType + " does not exist!");
-		} catch (e) {};
-	};
-	if (widget && component) {
-		component.registerWidget(widget);
-		this.registeredWidgets.push(widget);
-	}
-	// Instantiate Aloha objects on the widget. As you can, like, totally see, we distinguish
-	// between content, titles and stuff.
-	widgetobj.find(".text-content.aloha").data("widget", widget).aloha();
-	widgetobj.find(".text-title.aloha").data("widget", widget).aloha();
+dk.wildside.core.Bootstrap.prototype.bootstrapWidget = function(element) {
+	var widget = new dk.wildside.display.widget.Widget(element);
 };
+*/

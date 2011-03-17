@@ -15,6 +15,7 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	};
 	dk.wildside.display.DisplayObject.call(this, jQueryElement);
 	// references
+	this.__widget = this;
 	this.events = dk.wildside.event.widget.WidgetEvent;
 	this.selectors = dk.wildside.util.Configuration.guiSelectors;
 	// internals
@@ -23,12 +24,34 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	this.dirty = false;
 	this.component = false;
 	this.defaultAction = this.config.action;
+	
+	var widget = this;
+	var json = jQuery.parseJSON(this.context.find("> ." + this.selectors.json).text().trim());
+	var widgetType = json.widget;
+	eval("if (typeof(" + widgetType + ") != 'undefined') " + widgetType + ".call(this);");
+	
 	// event listeners
 	this.addEventListener(this.events.DIRTY, this.onDirty, this);
 	this.addEventListener(this.events.CLEAN, this.onClean, this);
 	this.addEventListener(this.events.ERROR, this.onError, this);
-	// TODO: move Bootstrap.bootstrapWidget to here and cut down size a bit
-	// TODO: have this method find its own fields and use this.registerField() 
+	
+	// Regular field bootstrapping. This is for regular jackoffs.
+	this.context.find(':input,.aloha').each(function() {
+		var obj = jQuery(this)
+		var sel = "." + widget.selectors.json;
+		var fieldJSON = jQuery.parseJSON(obj.prevAll(sel).text().trim());
+		var fieldType = fieldJSON.type;
+		var field;
+		eval("if (typeof " + fieldType + " != 'undefined') field = new " + fieldType + "(this);");
+		if (field) {
+			//console.info(widget);
+			//console.log(fieldType);
+			widget.registerField(field);
+		} else {
+			//console.warn('Unrecognized field type: ' + fieldType);
+		};
+	});
+	
 	return this;
 };
 
@@ -43,15 +66,18 @@ dk.wildside.display.widget.Widget.prototype = new dk.wildside.display.DisplayObj
 dk.wildside.display.widget.Widget.prototype.registerComponent = function(component) {
 	// Allow only ONE Component per widget; moving widgets between components
 	// is bad - we can't assume all EventListeners have been removed...
-	if (this.component) { return this; };
+	if (this.component) {
+		return this;
+	};
 	// Remove native dirty-listener (set by constructor) first to let Component
-	// manage sync strategy and prevent widget vigilantism ;)
-	this.removeEventListener(dk.wildside.event.Event.DIRTY, this.onDirty);
+	// manage sync strategy and prevent widget vigilantes ;)
+	this.removeEventListener(dk.wildside.event.Event.DIRTY, this.onDirty, this);
 	this.component = component;
 	return this;
 };
 
 dk.wildside.display.widget.Widget.prototype.registerField = function(field) {
+	field.setParent(this);
 	this.fields.push(field);
 };
 
@@ -187,6 +213,8 @@ dk.wildside.display.widget.Widget.prototype.sync = function() {
 
 
 
+
+
 // EVENT LISTENER METHODS
 dk.wildside.display.widget.Widget.prototype.onError = function(event) {
 	var errors = event.target;
@@ -195,6 +223,10 @@ dk.wildside.display.widget.Widget.prototype.onError = function(event) {
 
 dk.wildside.display.widget.Widget.prototype.onDirty = function(event) {
 	this.dirty = true;
+	//console.info('Widget is dirty');
+	if (this.component == false) {
+		this.sync();
+	};
 };
 
 dk.wildside.display.widget.Widget.prototype.onClean = function(event) {

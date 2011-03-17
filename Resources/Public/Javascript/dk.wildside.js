@@ -42,12 +42,14 @@ jQuery(document).ready(function() {
 // display/Component.js
 // display/field/Sanitizer.js
 // display/field/Field.js
+// display/field/Aloha.js
 // display/field/Input.js
 // display/field/Checkbox.js
 // display/field/Radio.js
 // display/field/Select.js
 // display/field/Button.js
 // display/field/Textarea.js
+// display/field/Value.js
 // display/widget/Widget.js
 // display/widget/FileUploadWidget.js
 // display/widget/RecordSelectorWidget.js
