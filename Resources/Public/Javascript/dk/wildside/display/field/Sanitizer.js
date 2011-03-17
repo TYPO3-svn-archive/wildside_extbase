@@ -16,6 +16,10 @@ dk.wildside.display.field.Sanitizer = {
 		return value;
 	},
 	
+	trim : function(value) {
+		return value.trim();
+	},
+	
 	float : function(value) {
 		value = value.toString();
 		if (!/^[0-9]{0,}[\.,]{0,1}[0-9]{0,}$/.test(value)) {

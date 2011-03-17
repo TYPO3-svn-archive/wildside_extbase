@@ -59,8 +59,17 @@ dk.wildside.display.DisplayObject.prototype.remove = function() {
 };
 
 dk.wildside.display.DisplayObject.prototype.expose = function() {
-	console.info(this.context);
+	this.trace(this.context, 'info');
 	//alert(this.payload.data.title);
 };
 
+dk.wildside.display.DisplayObject.prototype.trace = function(victim, method) {
+	if (typeof console != 'undefined' && dk.wildside.util.Configuration.traceEnabled == true) {
+		if (typeof method == 'undefined') {
+			method = 'info';
+		};
+		var func = console[method];
+		func.call(console, victim);
+	};
+};
 

@@ -9,6 +9,7 @@ dk.wildside.display.field.Aloha = function(jQueryElement) {
 	//console.info('Boostrapping Aloha field...');
 	this.context.aloha().data('field', this).data('widget');
 	this.config = jQuery.parseJSON(this.context.prevAll('.' + this.selectors.json).html());
+	this.setSanitizer(dk.wildside.display.field.Sanitizer.trim);
 	
 	//dk.wildside.event.EventAttacher.attachEvent(dk.wildside.event.FieldEvent.CHANGE, this.jQueryElement);
 	/*

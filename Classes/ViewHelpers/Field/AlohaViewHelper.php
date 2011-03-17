@@ -20,7 +20,11 @@ class Tx_WildsideExtbase_ViewHelpers_Field_AlohaViewHelper extends Tx_WildsideEx
 	 * @param string $tag Tagname to use for rendered container
 	 */
 	public function render($displayType='dk.wildside.display.field.Aloha', $name=NULL, $value=NULL, $class=NULL, $type='input', $sanitizer=NULL, $tag='p') {
-		if (strlen(trim($value)) == 0) {
+		// NOTE: why is the default text forced? Zero-length editable fields are 
+		// not really editable... You could argue that with proper styling this 
+		// is not an issue - but is using value=" " in your template a problem if 
+		// you consider that the AlohaViewHelper has an auto-trim Sanitizer? ;)
+		if (strlen($value) == 0) {
 			$value = 'Click to enter text';
 		}
 		$field = "<{$tag} class='aloha {$class}'>{$value}</{$tag}>";
