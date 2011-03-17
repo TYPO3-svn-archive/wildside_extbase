@@ -8,16 +8,17 @@ dk.wildside.display.field.Field = function(jQueryElement) {
 	try {
 		this.__field = this;
 		this.events = dk.wildside.event.FieldEvent;
+		this.context.data('field', this);
+		this.config = jQuery.parseJSON(this.context.find('> .' + this.selectors.json + ':first').html());
 		this.dirty = false;
-		this.value = this.getValue();
-		this.context.data(this.selectors.jQueryDataName, this);
+		this.value = this.config.value;
 		this.sanitizer = dk.wildside.display.field.Sanitizer.noop;
 		this.addEventListener(dk.wildside.event.FieldEvent.CHANGE, this.onChange);
 	} catch(e) {
 		//console.error(e);
 		//console.log(this.context);
-		//console.warn("Error from field.Field:");
-		//console.warn(e);
+		this.trace("Error from field.Field:", 'warn');
+		this.trace(e, 'warn');
 	};
 	return this;
 };
@@ -54,17 +55,9 @@ dk.wildside.display.field.Field.prototype.setClean = function() {
 };
 
 dk.wildside.display.field.Field.prototype.getName = function() {
-	return this.context.attr('name');
+	return this.config.name;
 };
 
 dk.wildside.display.field.Field.prototype.getValue = function() {
-	var value;
-	if (this.context.hasClass("GENTICS_editable")) {
-		var id = this.context.attr('id');
-		value = GENTICS.Aloha.getEditableById(id).getContents();
-	} else {
-		value = this.context.val();
-	};
-	//this.value = value;
-	return value;
+	return this.context.val();
 };

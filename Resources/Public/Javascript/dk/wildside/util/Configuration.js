@@ -15,6 +15,7 @@ dk.wildside.util.Configuration = {
 		alohaRule : "wildside-extbase-aloha-rule",
 		json : "wildside-extbase-json",
 		widget : "wildside-extbase-widget",
+		field : "wildside-extbase-field",
 		component : "wildside-extbase-component",
 		inUse : "wildside-extbase--inuse",
 		jsParent : "wildside-extbase--jsParent",

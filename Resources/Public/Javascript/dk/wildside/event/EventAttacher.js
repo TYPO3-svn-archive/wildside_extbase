@@ -39,7 +39,11 @@ dk.wildside.event.EventAttacher = {
 	},
 	
 	__eventHandler : function(originalEvent) {
-		var obj = jQuery(this).data(dk.wildside.util.Configuration.guiSelectors.jQueryDataName);
+		var obj = jQuery(this).data('field');
+		if (typeof obj == 'undefined') {
+			console.warn(jQuery(this));
+			console.log(jQuery(this).data());
+		};
 		obj.dispatchEvent.call(obj, originalEvent.type, null, originalEvent);
 	}
 	

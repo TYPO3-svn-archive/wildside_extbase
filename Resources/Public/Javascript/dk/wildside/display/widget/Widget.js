@@ -29,6 +29,7 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	var json = jQuery.parseJSON(this.context.find("> ." + this.selectors.json).text().trim());
 	var widgetType = json.widget;
 	eval("if (typeof(" + widgetType + ") != 'undefined') " + widgetType + ".call(this);");
+	widget.trace('- ' + widgetType + ' widget detected.');
 	
 	// event listeners
 	this.addEventListener(this.events.DIRTY, this.onDirty, this);
@@ -36,19 +37,19 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	this.addEventListener(this.events.ERROR, this.onError, this);
 	
 	// Regular field bootstrapping. This is for regular jackoffs.
-	this.context.find(':input,.aloha').each(function() {
+	var fsel = "." + widget.selectors.field;
+	this.context.find(fsel).each(function() {
 		var obj = jQuery(this)
-		var sel = "." + widget.selectors.json;
-		var fieldJSON = jQuery.parseJSON(obj.prevAll(sel).text().trim());
+		var json = obj.find("." + widget.selectors.json).text().trim();
+		var fieldJSON = jQuery.parseJSON(json);
 		var fieldType = fieldJSON.type;
 		var field;
+		widget.trace('- - ' + fieldType + ' field detected.');
 		eval("if (typeof " + fieldType + " != 'undefined') field = new " + fieldType + "(this);");
 		if (field) {
-			//console.info(widget);
-			//console.log(fieldType);
 			widget.registerField(field);
 		} else {
-			//console.warn('Unrecognized field type: ' + fieldType);
+			widget.trace('Unable to bootstrap field: ' + fieldType, 'warn');
 		};
 	});
 	
@@ -203,11 +204,12 @@ dk.wildside.display.widget.Widget.prototype.sync = function() {
 		return this.dispatchEvent(this.events.ERROR, errors);
 	} else {
 		this.setValues(data);
+		this.dispatchEvent(this.events.SYNC);
+		this.dispatchEvent(this.events.CLEAN);
 		if (messages.length > 0) {
 			this.dispatchEvent(this.events.MESSAGE, messages);
 		};
 	};
-	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.SYNC);
 	return this;
 };
 

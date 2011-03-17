@@ -23,7 +23,11 @@ class Tx_WildsideExtbase_ViewHelpers_FieldViewHelper extends Tx_Fluid_Core_ViewH
 		$json->type = $displayType;
 		$json->name = $name;
 		$json->value = $value;
-		$json->sanitizer = $sanitizer;
+		if ($sanitizer !== NULL) {
+			$json->sanitizer = $sanitizer;
+		} else {
+			$json->sanitizer = 'noop'; // no-operation is default - returns value unchanged
+		}
 		
 		$jsonString = json_encode($json);
 		

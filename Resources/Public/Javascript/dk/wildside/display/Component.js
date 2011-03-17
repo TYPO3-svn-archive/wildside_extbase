@@ -28,6 +28,7 @@ dk.wildside.display.Component = function(jQueryElement) {
 	var json = jQuery.parseJSON(this.context.find("> ." + this.selectors.json).text().trim());
 	var componentType = json.component;
 	eval("if (typeof(" + componentType + ") == 'function') " + componentType + ".call(this);");
+	this.trace(componentType + ' component detected.');
 	
 	// Find all immediate widgets anywhere in the subtree, but NOT if they're preceded by a new component section.
 	// We only want children of this specific component, wherever they may be. Or roam. That's a Metallica song, btw.
