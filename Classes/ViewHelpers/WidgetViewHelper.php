@@ -19,7 +19,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_Fluid_Core_View
 	 * @param array $data Data of the model object, if any
 	 * @param string $class Extra CSS-classes to use
 	 * @param string $title Title of the widget
-	 * @param int $type TypeNum, if any, for building request URI
+	 * @param int $type TypeNum, if any, for building request URI. Defaults to the build-in Bootstrap for WildsideExtbase - which responds in raw JSON format
 	 * @param string $html InnerHTML, if any. Overrides renderChildren()
 	 * @return string
 	 */
@@ -32,7 +32,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_Fluid_Core_View
 			$data=NULL,
 			$class=NULL,
 			$title=NULL,
-			$type=0,
+			$type=4815162342,
 			$html=NULL
 			) {
 		if ($page === NULL) {
