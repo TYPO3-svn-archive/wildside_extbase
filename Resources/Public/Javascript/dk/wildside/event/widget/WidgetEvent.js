@@ -8,6 +8,7 @@ dk.wildside.event.widget.WidgetEvent = {
 	DIRTY : 'dirty',
 	CLEAN : 'clean',
 	SYNC : 'sync',
+	REFRESH : 'refresh',
 	ERROR : 'error',
 	MESSAGE : 'message',
 	PRE_UPDATE : 'preUpdate',

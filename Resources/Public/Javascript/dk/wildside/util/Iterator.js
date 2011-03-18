@@ -20,7 +20,7 @@ dk.wildside.util.Iterator.prototype.find = function(name) {
 			return false;
 		};
 	};
-	return this.filter(func);
+	return this.filter(func).shift();
 };
 
 dk.wildside.util.Iterator.prototype.filter = function(func) {
@@ -70,8 +70,14 @@ dk.wildside.util.Iterator.prototype.toArray = function() {
 
 dk.wildside.util.Iterator.prototype.remove = function(arg) {
 	// Use internal filter to return everything that DOESN'T match the argument passed along
-	return this.filter(function(data){ return (data != arg); });
-	
+	var result = this.filter( function(data) { return (data != arg); });
+	return result;
+};
+
+dk.wildside.util.Iterator.prototype.removeEventListenerByContext = function(arg) {
+	// Use internal filter to return everything that DOESN'T match the argument passed along
+	var result = this.filter( function(data) { return (data[0].context != arg[0].context); });
+	return result;
 };
 
 dk.wildside.util.Iterator.prototype.contains = function(arg) {

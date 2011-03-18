@@ -37,8 +37,7 @@ dk.wildside.event.EventDispatcher.prototype.hasEventListener = function(eventTyp
 
 dk.wildside.event.EventDispatcher.prototype.addEventListener = function(eventType, func, scope) {
 	if (typeof eventType == 'undefined') {
-		//console.info('Invalid event type: ' + eventType);
-		//console.log(this);
+		this.trace('Invalid event type: ' + eventType);
 	};
 	if (typeof scope == 'undefined') {
 		scope = this;
@@ -53,7 +52,7 @@ dk.wildside.event.EventDispatcher.prototype.removeEventListener = function(event
 		scope = this;
 	};
 	this.initializeIfMissing(eventType);
-	this.listeners[eventType] = this.listeners[eventType].remove([scope, func]);
+	this.listeners[eventType] = this.listeners[eventType].removeEventListenerByContext([scope, func]);
 	return this;
 };
 
@@ -66,22 +65,20 @@ dk.wildside.event.EventDispatcher.prototype.dispatchEvent = function(eventType, 
 		event = eventType;
 		eventType = event.type;
 	} else {
-		event = {type: eventType, target: target, cancelled: false};
+		event = {type: eventType, target: target, cancelled: false, id: Math.round(Math.random()*100000)};
 	};
 	event.currentTarget = this;
 	if (typeof this.listeners[eventType] != 'undefined') {
-		//console.log('Dispatching event: '+eventType);
+		this.trace('Dispatching event: '+eventType+' with ID ' + event.id, 'warn');
 		this.listeners[eventType].each(function(info) {
-			//console.log(info);
 			var scope = info[0];
 			var func = info[1];
-			//console.log(info);
-			//console.info('Calling function...');
 			func.call(scope, event);
 		});
 	};
 	var parent = this.getParent();
 	if (parent && event.cancelled == false) {
+		//this.trace('<< Propagation event to parent >>');
 		parent.dispatchEvent.call(parent, event, target, originalEvent);
 	};
 	return this;

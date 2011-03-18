@@ -21,6 +21,7 @@ dk.wildside.display.Component = function(jQueryElement) {
 	this.CONST_LOADING_EAGER = 0;
 	this.CONST_LOADING_LAZY = 1;
 	this.loadingStrategy = false;
+	this.widgets = new dk.wildside.util.Iterator();
 	this.dirtyWidgets = new dk.wildside.util.Iterator();
 	this.uniqueID = Math.round(Math.random() * 100000);
 	this.setLoadingStrategy(this.CONST_LOADING_EAGER);
@@ -47,26 +48,35 @@ dk.wildside.display.Component.prototype.setLoadingStrategy = function(strategy) 
 	this.loadingStrategy = strategy;
 };
 
+dk.wildside.display.Component.prototype.refreshFamiliarWidgets = function(sourceWidget) {
+	this.widgets.each(function(widget) {
+		if (widget.getConfiguration().data.uid == uid && sourceWidget != widget) {
+			widget.dispatchEvent(dk.wildside.event.widget.WidgetEvent.REFRESH);
+		};
+	});
+};
+
 dk.wildside.display.Component.prototype.onDirtyWidget = function(widgetEvent) {
-	//console.info('Component caught dirty widget event');
 	if (this.dirtyWidgets.contains(widgetEvent.currentTarget) == false) {
 		this.dirtyWidgets.push(widgetEvent.currentTarget);
 	};
 	if (this.loadingStrategy == this.CONST_LOADING_EAGER) {
-		// If "lazy", the Component relies on other means to call sync().
 		this.sync();
 	};
 };
 
 dk.wildside.display.Component.prototype.onCleanWidget = function(widgetEvent) {
-	this.dirtyWidgets.remove(widgetEvent.currentTarget);
+	console.info('Component caught clean widget event');
+	this.dirtyWidgets = this.dirtyWidgets.remove(widgetEvent.currentTarget);
 };
 
 dk.wildside.display.Component.prototype.registerWidget = function(widget) {
 	widget.addEventListener(dk.wildside.event.widget.WidgetEvent.DIRTY, this.onDirtyWidget, this);
 	widget.addEventListener(dk.wildside.event.widget.WidgetEvent.CLEAN, this.onCleanWidget, this);
+	widget.addEventListener(dk.wildside.event.widget.WidgetEvent.REFRESH, this.onRefreshWidget, this);
 	widget.registerComponent(this);
 	widget.setParent(this);
+	this.widgets.push(widget);
 	return this;
 };
 

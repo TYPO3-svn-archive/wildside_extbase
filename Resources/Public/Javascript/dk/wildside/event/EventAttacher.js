@@ -9,7 +9,9 @@ dk.wildside.event.EventAttacher = {
 		
 	},
 	
-	attachEvent : function(ev, jQueryElement) {
+	attachEvent : function(ev, jQueryElement, fieldData) {
+		
+		jQueryElement.data("field", fieldData);
 		
 		switch (ev) {
 			case "change":     jQueryElement.change(    dk.wildside.event.EventAttacher.__eventHandler); break;

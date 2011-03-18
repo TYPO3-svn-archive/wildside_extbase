@@ -4,7 +4,7 @@ dk.wildside.display.field.Radio = function() {
 	
 	dk.wildside.display.field.Field.apply(this, arguments);
 	
-	dk.wildside.event.EventAttacher.attachEvent(dk.wildside.event.MouseEvent.CLICK, this.context);
+	dk.wildside.event.EventAttacher.attachEvent(dk.wildside.event.MouseEvent.CLICK, this.context, this);
 	
 	this.addEventListener(dk.wildside.event.MouseEvent.CLICK, this.onChange);
 	

@@ -13,10 +13,7 @@ dk.wildside.display.field.Field = function(jQueryElement) {
 		this.dirty = false;
 		this.value = this.config.value;
 		this.sanitizer = dk.wildside.display.field.Sanitizer.noop;
-		this.addEventListener(dk.wildside.event.FieldEvent.CHANGE, this.onChange);
 	} catch(e) {
-		//console.error(e);
-		//console.log(this.context);
 		this.trace("Error from field.Field:", 'warn');
 		this.trace(e, 'warn');
 	};
@@ -24,6 +21,14 @@ dk.wildside.display.field.Field = function(jQueryElement) {
 };
 
 dk.wildside.display.field.Field.prototype = new dk.wildside.display.DisplayObject();
+
+dk.wildside.display.field.Field.prototype.getFieldContext = function() {
+	if (this.fieldContext) {
+		return this.fieldContext;
+	} else {
+		return this.context;
+	};
+};
 
 dk.wildside.display.field.Field.prototype.setSanitizer = function(san) {
 	if (typeof san == 'function') {

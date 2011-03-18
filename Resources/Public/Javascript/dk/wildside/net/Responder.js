@@ -27,7 +27,7 @@ dk.wildside.net.Responder.prototype.getData = function() {
 	if (typeof data == 'object') {
 		return data;
 	} else {
-		return {};
+		return {0: false};
 	}
 };
 

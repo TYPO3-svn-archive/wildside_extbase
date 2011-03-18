@@ -23,9 +23,8 @@ dk.wildside.net.Dispatcher.prototype.dispatchRequest = function(request) {
 	var configuration = request.getWidget().getConfiguration();
 	var controller = configuration.controller.toLowerCase();
 	var objectData = request.getWidget().getValues();
-	//console.log(data);
 	if (configuration.data.uid > 0) {
-		// Patch; re-address UID to confirm with Extbase controller argument loading
+		// Patch data; re-address UID to confirm with Extbase controller argument loading
 		objectData['__identity'] = configuration.data.uid;
 		delete(objectData.uid);
 	};

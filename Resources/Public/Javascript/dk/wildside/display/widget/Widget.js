@@ -28,13 +28,13 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	var widget = this;
 	var json = jQuery.parseJSON(this.context.find("> ." + this.selectors.json).text().trim());
 	var widgetType = json.widget;
-	eval("if (typeof(" + widgetType + ") != 'undefined') " + widgetType + ".call(this);");
 	widget.trace('- ' + widgetType + ' widget detected.');
 	
 	// event listeners
 	this.addEventListener(this.events.DIRTY, this.onDirty, this);
 	this.addEventListener(this.events.CLEAN, this.onClean, this);
 	this.addEventListener(this.events.ERROR, this.onError, this);
+	this.addEventListener(this.events.REFRESH, this.onRefresh, this);
 	
 	// Regular field bootstrapping. This is for regular jackoffs.
 	var fsel = "." + widget.selectors.field;
@@ -52,6 +52,8 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 			widget.trace('Unable to bootstrap field: ' + fieldType, 'warn');
 		};
 	});
+	
+	eval("if (typeof(" + widgetType + ") != 'undefined') " + widgetType + ".call(this);");
 	
 	return this;
 };
@@ -133,11 +135,17 @@ dk.wildside.display.widget.Widget.prototype.displayMessages = function(messages)
 // value storage. Bonuses include smaller Widget memory usage, event capabilities
 // for each value (nice!) and of course sanitizer-support.
 dk.wildside.display.widget.Widget.prototype.setValue = function(field, value) {
-	this.fields.find(field).setValue(value);
+	var fieldObject = this.fields.find(field);
+	if (fieldObject) {
+		fieldObject.setValue(value);
+	};
 };
 
 dk.wildside.display.widget.Widget.prototype.getValue = function(field) {
-	return this.fields.find(field).getValue();
+	var fieldObject = this.fields.find(field);
+	if (fieldObject) {
+		return fieldObject.getValue();
+	}
 };
 
 dk.wildside.display.widget.Widget.prototype.setValues = function(object) {
@@ -149,9 +157,12 @@ dk.wildside.display.widget.Widget.prototype.setValues = function(object) {
 };
 
 dk.wildside.display.widget.Widget.prototype.getValues = function() {
-	var values = {}; //this.config.data;
+	var values = {};
+	var widget = this;
 	this.fields.each(function(field) {
-		values[field.getName()] = field.getValue();
+		if (typeof widget.config.data[field.getName()] != 'undefined') {
+			values[field.getName()] = field.getValue();
+		}
 	});
 	return values;
 };
@@ -213,11 +224,38 @@ dk.wildside.display.widget.Widget.prototype.sync = function() {
 	return this;
 };
 
+dk.wildside.display.widget.Widget.prototype.refresh = function() {
+	
+};
+
+dk.wildside.display.widget.Widget.prototype.dispatchRequest = function(request) {
+	var responder = new dk.wildside.net.Dispatcher(request).dispatchRequest();
+	var data = responder.getData();
+	var messages = responder.getMessages();
+	var errors = responder.getErrors();
+	if (errors.length > 0) {
+		return this.dispatchEvent(this.events.ERROR, errors);
+	} else {
+		if (messages.length > 0) {
+			this.dispatchEvent(this.events.MESSAGE, messages);
+		};
+		return {'data': data, 'messages': messages, 'errors': errors};
+	};
+};
+
+
+
+
+
 
 
 
 
 // EVENT LISTENER METHODS
+dk.wildside.display.Component.prototype.onRefresh = function(event) {
+	
+};
+
 dk.wildside.display.widget.Widget.prototype.onError = function(event) {
 	var errors = event.target;
 	this.displayErrors(errors);

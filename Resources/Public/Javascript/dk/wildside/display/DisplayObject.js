@@ -68,8 +68,10 @@ dk.wildside.display.DisplayObject.prototype.trace = function(victim, method) {
 		if (typeof method == 'undefined') {
 			method = 'info';
 		};
-		var func = console[method];
-		func.call(console, victim);
+		if (method == 'warn') {
+			var func = console[method];
+			func.call(console, victim);
+		};
 	};
 };
 
