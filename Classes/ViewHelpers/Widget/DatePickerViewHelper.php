@@ -7,7 +7,7 @@
  * @subpackage Fluid
  * @version
  */
-class Tx_WildsideExtbase_ViewHelpers_DatePickerViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_Widget_DatePickerViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
 	 * Creates a jQuery datepicker element
