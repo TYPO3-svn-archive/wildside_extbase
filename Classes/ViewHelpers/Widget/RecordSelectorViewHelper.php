@@ -11,12 +11,12 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 	
 	/**
 	 * Render an entry for a Listener compatible with JS LocusController
-	 * @param string $widget JS namespace of widget to use - override this if you subclassed dk.wildside.display.widget.FileUploadWidget in JS
+	 * @param string $widget JS namespace of widget to use - override this if you subclassed dk.wildside.display.widget.RecordSelectorWidget in JS
 	 * @param array $data Prefilled records
 	 * @param string $class Extra CSS-classes to use
 	 * @param string $title Title of the widget
 	 * @param int $page If specified, calls controller actions on this page uid
-	 * @param string $template siteroot-relative path of template file to use
+	 * @param string $templateFile siteroot-relative path of template file to use
 	 * @param string $table The name of the table containing records 
 	 * @param string $titleField Name of the field or dot-concatenated field names
 	 * @param int $storagePid PID of the sysfolder or page where records are stored   
@@ -44,12 +44,8 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 		$plugin = 'API';
 		$html = $this->renderChildren();
 		if (strlen(trim($html)) == 0) {
-			if ($templateFile === NULL) {
-				$templateFile = t3lib_extMgm::extPath('wildside_extbase', 'Resources/Private/Templates/Widget/RecordSelectorWidget.html');
-			}
-			$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-			$template = $objectManager->get('Tx_Fluid_View_StandaloneView');
-			$template->setTemplatePathAndFilename($templateFile);
+			$defaultTemplateFile = 'Widget/RecordSelectorWidget.html';
+			$template = $this->getTempate($templateFile, $defaultTemplateFile);
 			$template->assign('available', $this->getPossibles());
 			$template->assign('selected', $this->getSelected($data));
 			// $template->assign($var, $value);

@@ -1,0 +1,33 @@
+{namespace ws=Tx_WildsideExtbase_ViewHelpers}
+<div class='wildside-extbase-widget record-selector-widget record-selector record-selector-section'>
+	<ws:field.input name="{name}" value="{date}" class="wildside-datepicker-field" />
+	<ws:comment>
+	// Old code which needs to go in the Javascript ViewHelper to some extent
+	var wsDatePickerTargets = [];
+	var wsDatePickerFormat = 'mm/dd/yy';
+	jQuery(document).ready(function() { wsDatePickerBootstrapper(wsDatePickerTargets); });
+	function wsDatePickerBootstrapper(fields) {
+		if (typeof(fields) != 'object') {
+			fields = [fields];
+		};
+		
+		for (i = 0; i < fields.length; i++) {
+			var t = jQuery('#' + fields[i]);
+			var newField = jQuery(\"<input type='hidden' class='hiddenDateField'/>\");
+			
+			var val = t.val();
+			var rawVal = new Date(jQuery.datepicker.parseDate(wsDatePickerFormat, val));
+			var elapsedMS = rawVal.getTime();
+			if (elapsedMS < 0) elapsedMS = 0;
+			newField.val(elapsedMS);
+			
+			t.before(newField);
+			t.datepicker({
+				altField : newField,
+				altFormat : '@',
+				dateFormat : wsDatePickerFormat
+			});
+		};
+	};
+	</ws:comment>
+</div>
