@@ -8,4 +8,4 @@
 * 
 ***************************************************************/
 
-dk.locus.display.widget.RecordSelectorWidget = function(jQueryElement) { };
+dk.wildside.display.widget.RecordSelectorWidget = function(jQueryElement) { };

@@ -12,4 +12,4 @@
 * 
 ***************************************************************/
 
-dk.locus.display.widget.FileUploadWidget = function(jQueryElement) { };
+dk.wildside.display.widget.FileUploadWidget = function(jQueryElement) { };
