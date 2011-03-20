@@ -19,7 +19,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_FileUploadViewHelper extends Tx_Wild
 		$type = 4815163242;
 		$controller = 'FileUpload';
 		$action = 'upload';
-		$plugin = 'API';
+		$plugin = 'tx_wildsideextbase_api';
 		$html = $this->renderChildren();
 		if (strlen(trim($html)) == 0) {
 			$defaultTemplateFile = 'Widget/FileUploadWidget.html';

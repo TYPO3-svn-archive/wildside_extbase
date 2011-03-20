@@ -41,7 +41,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 		$this->storagePid = $storagePid;
 		$controller = 'RecordSelector';
 		$action = 'upload';
-		$plugin = 'API';
+		$plugin = 'tx_wildsideextbase_api';
 		$html = $this->renderChildren();
 		if (strlen(trim($html)) == 0) {
 			$defaultTemplateFile = 'Widget/RecordSelectorWidget.html';
