@@ -27,15 +27,15 @@ dk.wildside.event.EventDispatcher.prototype.initializeIfMissing = function(event
 	};
 };
 
-dk.wildside.event.EventDispatcher.prototype.hasEventListener = function(eventType, func, scope) {
+dk.wildside.event.EventDispatcher.prototype.hasEventListener = function(eventType, func) {
 	if (typeof scope == 'undefined') {
 		scope = this;
 	};
 	this.initializeIfMissing(eventType);
-	return this.listeners[eventType].contains([scope, func]);
+	return this.listeners[eventType].contains(func);
 };
 
-dk.wildside.event.EventDispatcher.prototype.addEventListener = function(eventType, func, scope) {
+dk.wildside.event.EventDispatcher.prototype.addEventListener = function(eventType, func) {
 	if (typeof eventType == 'undefined') {
 		this.trace('Invalid event type: ' + eventType);
 	};
@@ -43,43 +43,40 @@ dk.wildside.event.EventDispatcher.prototype.addEventListener = function(eventTyp
 		scope = this;
 	};
 	this.initializeIfMissing(eventType);
-	this.listeners[eventType].push([scope, func]);
-	return this;
+	this.listeners[eventType].push(func);
+	//return this;
 };
 
-dk.wildside.event.EventDispatcher.prototype.removeEventListener = function(eventType, func, scope) {
+dk.wildside.event.EventDispatcher.prototype.removeEventListener = function(eventType, func) {
 	if (typeof scope == 'undefined') {
 		scope = this;
 	};
 	this.initializeIfMissing(eventType);
-	this.listeners[eventType] = this.listeners[eventType].removeEventListenerByContext([scope, func]);
-	return this;
+	this.listeners[eventType] = this.listeners[eventType].remove(func);
+	//return this;
 };
 
-dk.wildside.event.EventDispatcher.prototype.dispatchEvent = function(eventType, target, originalEvent) {
-	var event;
-	if (typeof target == 'undefined') {
-		target = this;
-	};
-	if (typeof eventType == 'object') {
-		event = eventType;
-		eventType = event.type;
-	} else {
-		event = {type: eventType, target: target, cancelled: false, id: Math.round(Math.random()*100000)};
+dk.wildside.event.EventDispatcher.prototype.dispatchEvent = function(event) {
+	if (typeof event == 'string') {
+		var eventType = event;
+		event = {
+			type: eventType, 
+			target: this, 
+			cancelled: false, 
+			id: Math.round(Math.random()*100000)
+		};
 	};
 	event.currentTarget = this;
-	if (typeof this.listeners[eventType] != 'undefined') {
-		this.trace('Dispatching event: '+eventType+' with ID ' + event.id, 'warn');
-		this.listeners[eventType].each(function(info) {
-			var scope = info[0];
-			var func = info[1];
-			func.call(scope, event);
+	this.trace('Dispatching event: '+event.type+' with ID ' + event.id + '. My identity: ' + this.identity, 'warn');
+	if (typeof this.listeners[event.type] != 'undefined') {
+		this.listeners[event.type].each(function(func) {
+			func.call(event.currentTarget, event);
 		});
 	};
 	var parent = this.getParent();
 	if (parent && event.cancelled == false) {
-		//this.trace('<< Propagation event to parent >>');
-		parent.dispatchEvent.call(parent, event, target, originalEvent);
+		parent.dispatchEvent.call(parent, event);
+	} else {
+		delete(event);
 	};
-	return this;
 };

@@ -20,6 +20,7 @@ dk.wildside.display.Component = function(jQueryElement) {
 	dk.wildside.display.DisplayObject.call(this, jQueryElement);
 	this.CONST_LOADING_EAGER = 0;
 	this.CONST_LOADING_LAZY = 1;
+	this.identity = 'component';
 	this.loadingStrategy = false;
 	this.widgets = new dk.wildside.util.Iterator();
 	this.dirtyWidgets = new dk.wildside.util.Iterator();
@@ -39,6 +40,10 @@ dk.wildside.display.Component = function(jQueryElement) {
 		parent.registerWidget(widget);
 	});
 	
+	this.addEventListener(dk.wildside.event.widget.WidgetEvent.DIRTY, this.onDirtyWidget);
+	this.addEventListener(dk.wildside.event.widget.WidgetEvent.CLEAN, this.onCleanWidget);
+	this.addEventListener(dk.wildside.event.widget.WidgetEvent.REFRESH, this.onRefreshWidget);
+	
 	return this;
 };
 
@@ -57,23 +62,25 @@ dk.wildside.display.Component.prototype.refreshFamiliarWidgets = function(source
 };
 
 dk.wildside.display.Component.prototype.onDirtyWidget = function(widgetEvent) {
-	if (this.dirtyWidgets.contains(widgetEvent.currentTarget) == false) {
-		this.dirtyWidgets.push(widgetEvent.currentTarget);
+	if (this.dirtyWidgets.contains(widgetEvent.target) == false) {
+		this.dirtyWidgets.push(widgetEvent.target);
 	};
 	if (this.loadingStrategy == this.CONST_LOADING_EAGER) {
-		this.sync();
+		var issuer = this;
+		setTimeout(function() {
+			issuer.sync.call(issuer);
+		}, 1000);
 	};
 };
 
 dk.wildside.display.Component.prototype.onCleanWidget = function(widgetEvent) {
-	console.info('Component caught clean widget event');
-	this.dirtyWidgets = this.dirtyWidgets.remove(widgetEvent.currentTarget);
+	//console.info('Component caught clean widget event');
+	//console.info(this.dirtyWidgets.length);
+	this.dirtyWidgets = this.dirtyWidgets.removeByContext(widgetEvent.target);
+	//console.info(this.dirtyWidgets.length);
 };
 
 dk.wildside.display.Component.prototype.registerWidget = function(widget) {
-	widget.addEventListener(dk.wildside.event.widget.WidgetEvent.DIRTY, this.onDirtyWidget, this);
-	widget.addEventListener(dk.wildside.event.widget.WidgetEvent.CLEAN, this.onCleanWidget, this);
-	widget.addEventListener(dk.wildside.event.widget.WidgetEvent.REFRESH, this.onRefreshWidget, this);
 	widget.registerComponent(this);
 	widget.setParent(this);
 	this.widgets.push(widget);

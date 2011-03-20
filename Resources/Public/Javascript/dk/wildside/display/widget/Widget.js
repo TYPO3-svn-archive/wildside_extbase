@@ -15,14 +15,13 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	};
 	dk.wildside.display.DisplayObject.call(this, jQueryElement);
 	// references
-	this.__widget = this;
+	this.identity = 'widget';
 	this.events = dk.wildside.event.widget.WidgetEvent;
 	this.selectors = dk.wildside.util.Configuration.guiSelectors;
 	// internals
 	this.fields = new dk.wildside.util.Iterator();
 	this.disabled = false;
 	this.dirty = false;
-	this.component = false;
 	this.defaultAction = this.config.action;
 	
 	var widget = this;
@@ -31,10 +30,12 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	widget.trace('- ' + widgetType + ' widget detected.');
 	
 	// event listeners
-	this.addEventListener(this.events.DIRTY, this.onDirty, this);
-	this.addEventListener(this.events.CLEAN, this.onClean, this);
-	this.addEventListener(this.events.ERROR, this.onError, this);
-	this.addEventListener(this.events.REFRESH, this.onRefresh, this);
+	this.addEventListener(this.events.DIRTY, this.onDirty);
+	this.addEventListener(this.events.CLEAN, this.onClean);
+	this.addEventListener(this.events.ERROR, this.onError);
+	this.addEventListener(this.events.REFRESH, this.onRefresh);
+	this.addEventListener(dk.wildside.event.FieldEvent.DIRTY, this.onDirtyField);
+	this.addEventListener(dk.wildside.event.FieldEvent.CLEAN, this.onCleanField);
 	
 	// Regular field bootstrapping. This is for regular jackoffs.
 	var fsel = "." + widget.selectors.field;
@@ -47,7 +48,7 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 		widget.trace('- - ' + fieldType + ' field detected.');
 		eval("if (typeof " + fieldType + " != 'undefined') field = new " + fieldType + "(this);");
 		if (field) {
-			widget.registerField(field);
+			widget.registerField.call(widget, field);
 		} else {
 			widget.trace('Unable to bootstrap field: ' + fieldType, 'warn');
 		};
@@ -67,15 +68,9 @@ dk.wildside.display.widget.Widget.prototype = new dk.wildside.display.DisplayObj
 
 // REGISTRATION / CONSTRUCTION / CONFIGURATION METHODS
 dk.wildside.display.widget.Widget.prototype.registerComponent = function(component) {
-	// Allow only ONE Component per widget; moving widgets between components
-	// is bad - we can't assume all EventListeners have been removed...
-	if (this.component) {
-		return this;
-	};
 	// Remove native dirty-listener (set by constructor) first to let Component
 	// manage sync strategy and prevent widget vigilantes ;)
-	this.removeEventListener(dk.wildside.event.Event.DIRTY, this.onDirty, this);
-	this.component = component;
+	this.removeEventListener(dk.wildside.event.Event.DIRTY, this.onDirty);
 	return this;
 };
 
@@ -212,13 +207,13 @@ dk.wildside.display.widget.Widget.prototype.sync = function() {
 	var messages = responder.getMessages();
 	var errors = responder.getErrors();
 	if (errors.length > 0) {
-		return this.dispatchEvent(this.events.ERROR, errors);
+		return this.dispatchEvent(this.events.ERROR);
 	} else {
 		this.setValues(data);
-		this.dispatchEvent(this.events.SYNC);
+		//this.dispatchEvent(this.events.SYNC);
 		this.dispatchEvent(this.events.CLEAN);
 		if (messages.length > 0) {
-			this.dispatchEvent(this.events.MESSAGE, messages);
+			this.dispatchEvent(this.events.MESSAGE);
 		};
 	};
 	return this;
@@ -234,10 +229,10 @@ dk.wildside.display.widget.Widget.prototype.dispatchRequest = function(request) 
 	var messages = responder.getMessages();
 	var errors = responder.getErrors();
 	if (errors.length > 0) {
-		return this.dispatchEvent(this.events.ERROR, errors);
+		return this.dispatchEvent(this.events.ERROR);
 	} else {
 		if (messages.length > 0) {
-			this.dispatchEvent(this.events.MESSAGE, messages);
+			this.dispatchEvent(this.events.MESSAGE);
 		};
 		return {'data': data, 'messages': messages, 'errors': errors};
 	};
@@ -261,9 +256,16 @@ dk.wildside.display.widget.Widget.prototype.onError = function(event) {
 	this.displayErrors(errors);
 };
 
+dk.wildside.display.widget.Widget.prototype.onDirtyField = function(event) {
+	this.dispatchEvent(dk.wildside.event.widget.WidgetEvent.DIRTY);
+};
+
+dk.wildside.display.widget.Widget.prototype.onCleanField = function(event) {
+	//this.dispatchEvent(this.events.DIRTY);
+};
+
 dk.wildside.display.widget.Widget.prototype.onDirty = function(event) {
 	this.dirty = true;
-	//console.info('Widget is dirty');
 	if (this.component == false) {
 		this.sync();
 	};

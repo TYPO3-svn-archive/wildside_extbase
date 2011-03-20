@@ -9,9 +9,7 @@ dk.wildside.event.EventAttacher = {
 		
 	},
 	
-	attachEvent : function(ev, jQueryElement, fieldData) {
-		
-		jQueryElement.data("field", fieldData);
+	attachEvent : function(ev, jQueryElement) {
 		
 		switch (ev) {
 			case "change":     jQueryElement.change(    dk.wildside.event.EventAttacher.__eventHandler); break;
@@ -46,7 +44,7 @@ dk.wildside.event.EventAttacher = {
 			console.warn(jQuery(this));
 			console.log(jQuery(this).data());
 		};
-		obj.dispatchEvent.call(obj, originalEvent.type, null, originalEvent);
+		obj.dispatchEvent.call(obj, originalEvent.type);
 	}
 	
 };

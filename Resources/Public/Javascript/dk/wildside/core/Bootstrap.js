@@ -19,13 +19,11 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 	// Now, bootstrap all existing components on the page. This automatically handles
 	// any sub-widgets found in there too.
 	jQuery("." + dk.wildside.util.Configuration.guiSelectors.component).each( function() {
-		//dk.wildside.bootstrap.bootstrapComponent(this);
 		var component = new dk.wildside.display.Component(this);
 	});
 	
 	// Now, if any widgets are left untouched, we need to bootstrap them as standalones
 	jQuery("." + dk.wildside.util.Configuration.guiSelectors.widget +":not(." + dk.wildside.util.Configuration.guiSelectors.inUse +")").each( function() {
-		//dk.wildside.bootstrap.bootstrapWidget(this);
 		var widget = new dk.wildside.display.widget.Widget(this);
 	} );
 	
@@ -39,28 +37,12 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 	});
 	
 	// Subscribe to the edit-finish event on all existing (and future) Aloha-instances.
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableActivated", function(event, eventProperties) {
+		jQuery(eventProperties.editable.obj).data("field").active = true;
+	});
+	
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableDeactivated", function(event, eventProperties) {
-		var aloha = eventProperties.editable;
-		if (aloha.isModified()) {
-			// Reset modification, Widget now takes over
-			aloha.setUnmodified();
-			// Get the associated widget and mark as dirty
-			var obj = jQuery(aloha.obj);
-			var widget = obj.data("widget");
-			if (!widget) {
-				widget = obj.data('field').getParent();
-			};
-			widget.markDirty.call(widget);
-		};
+		jQuery(eventProperties.editable.obj).data("field").active = false;
+		eventProperties.editable.setUnmodified();
 	});
 };
-
-/*
-dk.wildside.core.Bootstrap.prototype.bootstrapComponent = function(element) {
-	var component = new dk.wildside.display.Component(element);
-};
-
-dk.wildside.core.Bootstrap.prototype.bootstrapWidget = function(element) {
-	var widget = new dk.wildside.display.widget.Widget(element);
-};
-*/

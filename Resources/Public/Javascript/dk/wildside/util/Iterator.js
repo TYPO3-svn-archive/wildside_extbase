@@ -47,7 +47,7 @@ dk.wildside.util.Iterator.prototype.each = function(func) {
 	
 	// Run the passed function ("func"), with "this" as scope, on each element in the
 	// object. Please note that the order of the objects is reversed compared to
-	// the jQuery norm, so func is called by: func(data, iteration);
+	// the jQuery norm, so func is called by: func.call(this, data, iteration);
 	jQuery.each(this, function(iteration, data) {
 		func.call(this, data, iteration);
 	});
@@ -74,9 +74,9 @@ dk.wildside.util.Iterator.prototype.remove = function(arg) {
 	return result;
 };
 
-dk.wildside.util.Iterator.prototype.removeEventListenerByContext = function(arg) {
+dk.wildside.util.Iterator.prototype.removeByContext = function(arg) {
 	// Use internal filter to return everything that DOESN'T match the argument passed along
-	var result = this.filter( function(data) { return (data[0].context != arg[0].context); });
+	var result = this.filter( function(data) { return (data.context != arg.context); });
 	return result;
 };
 
