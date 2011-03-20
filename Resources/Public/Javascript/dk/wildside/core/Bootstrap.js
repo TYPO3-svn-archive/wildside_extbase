@@ -1,11 +1,11 @@
 dk.wildside.core.Bootstrap = function() {
-	this.registeredComponents = new dk.wildside.util.Iterator();
-	this.registeredWidgets = new dk.wildside.util.Iterator();
+	
 };
 
 dk.wildside.core.Bootstrap.prototype.run = function() {
 	
 	dk.wildside.bootstrap = this;
+	dk.wildside.config = {};
 	
 	// Find the settings-div, which is somewhere near the top of the page, and read all global settings
 	// from it. These will be stored in the global object Locus.configuration.
@@ -13,7 +13,8 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 		var setting = jQuery(this);
 		var key = setting.attr("title");
 		var value = setting.html().trim();
-		dk.wildside.util.Configuration[key] = value;
+		dk.wildside.util.Configuration[key] = value; // TODO: when all references are gone, remove this
+		dk.wildside.config[key] = value; // TODO: this ad-hoc storage to take the place of the singleton above
 	});
 	
 	// Now, bootstrap all existing components on the page. This automatically handles
@@ -36,13 +37,4 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 		editConfig[key] = val;
 	});
 	
-	// Subscribe to the edit-finish event on all existing (and future) Aloha-instances.
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableActivated", function(event, eventProperties) {
-		jQuery(eventProperties.editable.obj).data("field").beginEdit();
-	});
-	
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableDeactivated", function(event, eventProperties) {
-		jQuery(eventProperties.editable.obj).data("field").endEdit();
-		eventProperties.editable.setUnmodified();
-	});
 };

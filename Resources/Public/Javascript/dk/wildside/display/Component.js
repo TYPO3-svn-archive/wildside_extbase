@@ -29,10 +29,10 @@ dk.wildside.display.Component = function(jQueryElement) {
 		eval("if (typeof(" + this.config.component + ") == 'function') " + 
 			this.config.component + ".call(this);");
 		this.trace(this.config.component + ' component detected.', 'info');
-	}
+	};
 	
 	// Widget detection, only detect Widgets which are not members of Component below this Component
-	var parent = this;
+	var parent = this; // necessary reference for the following jQuery enclosure
 	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")").not(this.context.find("." + this.selectors.component +" ." + this.selectors.widget)).each( function() {
 		var widget = new dk.wildside.display.widget.Widget(this);
 		parent.registerWidget(widget);

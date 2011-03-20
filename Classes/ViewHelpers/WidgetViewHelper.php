@@ -24,7 +24,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_Fluid_Core_View
 	 * @return string
 	 */
 	public function render(
-			$widget = 'dk.wildside.display.Widget',
+			$widget = 'dk.wildside.display.widget.Widget',
 			$controller=NULL,
 			$action='update',
 			$page=NULL,

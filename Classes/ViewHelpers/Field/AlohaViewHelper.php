@@ -80,6 +80,15 @@ GENTICS.Aloha.settings = {
 	 	"com.gentics.aloha.plugins.Table": {}
 	}
 };
+// Subscribe to the edit-finish event on all existing (and future) Aloha-instances.
+GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableActivated", function(event, eventProperties) {
+	jQuery(eventProperties.editable.obj).data("field").beginEdit();
+});
+
+GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableDeactivated", function(event, eventProperties) {
+	jQuery(eventProperties.editable.obj).data("field").endEdit();
+	eventProperties.editable.setUnmodified();
+});
 SCRIPT;
 		$includer = t3lib_div::makeInstance('Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper');
 		foreach ($files as $file) {

@@ -21,7 +21,7 @@ class Tx_WildsideExtbase_ViewHelpers_ComponentViewHelper extends Tx_Fluid_Core_V
 	 * @return string
 	 */
 	public function render(
-			$component = 'dk.wildside.display.Component',
+			$component='dk.wildside.display.Component',
 			$controller=NULL,
 			$action='update',
 			$page=NULL,

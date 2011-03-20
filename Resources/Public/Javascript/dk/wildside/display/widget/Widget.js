@@ -23,11 +23,7 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	this.disabled = false;
 	this.dirty = false;
 	this.defaultAction = this.config.action;
-	
-	var widget = this;
-	var json = jQuery.parseJSON(this.context.find("> ." + this.selectors.json).text().trim());
-	var widgetType = json.widget;
-	widget.trace('- ' + widgetType + ' widget detected.');
+	this.trace('- ' + this.config.widget + ' widget detected.');
 	
 	// event listeners
 	this.addEventListener(this.events.DIRTY, this.onDirty);
@@ -38,7 +34,8 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	this.addEventListener(dk.wildside.event.FieldEvent.CLEAN, this.onCleanField);
 	
 	// Regular field bootstrapping. This is for regular jackoffs.
-	var fsel = "." + widget.selectors.field;
+	var fsel = "." + this.selectors.field;
+	var widget = this; // Necessary reference for the following jQuery enclosure
 	this.context.find(fsel).each(function() {
 		var obj = jQuery(this)
 		var json = obj.find("." + widget.selectors.json).text().trim();
@@ -54,7 +51,9 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 		};
 	});
 	
-	eval("if (typeof(" + widgetType + ") != 'undefined') " + widgetType + ".call(this);");
+	if (typeof this.config.widget == 'string' && this.config.widget != 'dk.wildside.display.widget.Widget') {
+		eval("if (typeof(" + this.config.widget + ") != 'undefined') " + this.config.widget + ".call(this);");
+	};
 	
 	return this;
 };
