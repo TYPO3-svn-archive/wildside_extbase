@@ -1,9 +1,24 @@
+{namespace ws=Tx_WildsideExtbase_ViewHelpers}
 <div class='wildside-extbase-widget record-selector-widget record-selector record-selector-section'>
 	<ws:comment>
-	
 	Add options to fold/unfold the selector, searcher and list, or each one by itself.
-	
-	
 	</ws:comment>
 	
+	<div class="record-selector-search">
+		SEARCH
+		<ws:field.input name="q" />
+	</div>
+	<div class="record-selector-select">
+		SELECT
+		<f:for each="{available}" as="title" key="uid" iteration="iteration">
+			<li value="{uid}">[select] {title}</li>
+		</f:for>
+	</div>
+	<div class="record-selector-list">
+		LIST
+		<ul>
+			<li>[action] Item 1 [remove]</li>
+			<li>[action] Item 2 [remove]</li>
+		</ul>
+	</div>
 </div>

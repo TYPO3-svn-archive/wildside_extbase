@@ -1,7 +1,7 @@
 <?php 
 
 
-class Tx_WildsideExtbase_ViewHelpers_FileUploadViewHelper extends Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_Widget_FileUploadViewHelper extends Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper {
 	
 	const NAMESPACE = 'dk.wildside.display.widget.FileUploadWidget';
 	
