@@ -38,11 +38,11 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 	
 	// Subscribe to the edit-finish event on all existing (and future) Aloha-instances.
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableActivated", function(event, eventProperties) {
-		jQuery(eventProperties.editable.obj).data("field").active = true;
+		jQuery(eventProperties.editable.obj).data("field").beginEdit();
 	});
 	
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableDeactivated", function(event, eventProperties) {
-		jQuery(eventProperties.editable.obj).data("field").active = false;
+		jQuery(eventProperties.editable.obj).data("field").endEdit();
 		eventProperties.editable.setUnmodified();
 	});
 };

@@ -44,7 +44,7 @@ dk.wildside.event.EventDispatcher.prototype.addEventListener = function(eventTyp
 	};
 	this.initializeIfMissing(eventType);
 	this.listeners[eventType].push(func);
-	//return this;
+	return this;
 };
 
 dk.wildside.event.EventDispatcher.prototype.removeEventListener = function(eventType, func) {
@@ -53,7 +53,7 @@ dk.wildside.event.EventDispatcher.prototype.removeEventListener = function(event
 	};
 	this.initializeIfMissing(eventType);
 	this.listeners[eventType] = this.listeners[eventType].remove(func);
-	//return this;
+	return this;
 };
 
 dk.wildside.event.EventDispatcher.prototype.dispatchEvent = function(event) {
@@ -67,7 +67,7 @@ dk.wildside.event.EventDispatcher.prototype.dispatchEvent = function(event) {
 		};
 	};
 	event.currentTarget = this;
-	this.trace('Dispatching event: '+event.type+' with ID ' + event.id + '. My identity: ' + this.identity, 'warn');
+	//this.trace('Dispatching event: '+event.type+' with ID ' + event.id + '. My identity: ' + this.identity, 'warn');
 	if (typeof this.listeners[event.type] != 'undefined') {
 		this.listeners[event.type].each(function(func) {
 			func.call(event.currentTarget, event);
@@ -77,6 +77,7 @@ dk.wildside.event.EventDispatcher.prototype.dispatchEvent = function(event) {
 	if (parent && event.cancelled == false) {
 		parent.dispatchEvent.call(parent, event);
 	} else {
-		delete(event);
+		delete(event); // reached top level, remove all traces of event
 	};
+	return this;
 };

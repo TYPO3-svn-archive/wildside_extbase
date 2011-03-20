@@ -8,9 +8,8 @@ dk.wildside.display.field.Aloha = function(jQueryElement) {
 	this.fieldContext = this.context.find('.aloha').aloha();
 	this.fieldContext.data('field', this);
 	this.setSanitizer(dk.wildside.display.field.Sanitizer.trim);
-	this.onTimer(); // initialize dirty-check timer
 	this.lastValue = this.getValue();
-	this.active = false;
+	this.dirty = false;
 };
 
 dk.wildside.display.field.Aloha.prototype = new dk.wildside.display.field.Field();
@@ -26,15 +25,24 @@ dk.wildside.display.field.Aloha.prototype.getValue = function() {
 	return value;
 };
 
+dk.wildside.display.field.Aloha.prototype.endEdit = function() {
+	this.dirty = true; // mark dirty; next timer call will dispatch dirty and clear timer
+};
+
+dk.wildside.display.field.Aloha.prototype.beginEdit = function() {
+	this.onTimer(); // initialize the dirty-check timer
+};
+
 dk.wildside.display.field.Aloha.prototype.onTimer = function() {
-	var issuer = this;
-	var oldValue = this.lastValue;
-	var value = this.getValue();
-	if (oldValue != value && this.active == false) {
+	if (this.dirty == true) {
 		this.dispatchEvent(dk.wildside.event.FieldEvent.DIRTY);
 		this.lastValue = value;
+		this.dirty = false;
+		clearInterval(this.timer);
+	} else {
+		var issuer = this;
+		this.timer = setTimeout(function() {
+			issuer.onTimer.call(issuer);
+		}, 1000);
 	};
-	this.timer = setTimeout(function() {
-		issuer.onTimer.call(issuer);
-	}, 5000);
 };

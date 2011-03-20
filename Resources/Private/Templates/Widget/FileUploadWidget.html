@@ -1,7 +1,6 @@
 <div class='wildside-extbase-widget file-upload-widget file-upload file-upload-section'>
 	<ws:comment>
 	
-	
 	Add options to fold/unfold the uploader and list, or each one by itself.
 	In JS-Widget, register ".file-upload-section" AND ".file-upload-section > *" 
 	as DisplayObjects and attach event listeners on each SECTION to call the 
@@ -22,10 +21,10 @@
 		The icon-controls should use dk.wildside.display.Field when bootstrapped 
 		and have event listeners reacting to dk.wildside.event.widget.FileUploadWidgetEvent
 		and, if necessary, dk.wildside.event.widget.WidgetEvent
-			- UPLOADED (dispatcher: file-upload)
-			- REMOVED (dispatcher: file-row)
-			- SORTED (dispatcher: file-list)
-			- RENAMED (dispatcher: file-row)
+			- UPLOAD (dispatcher: file-upload)
+			- DELETE (dispatcher: file-row)
+			- SORT (dispatcher: file-list)
+			- RENAME (dispatcher: file-row)
 			- SHOW (dispatcher: file-upload-sections)
 			- HIDE (dispatcher: file-upload-sections)
 		

@@ -69,7 +69,7 @@ dk.wildside.display.Component.prototype.onDirtyWidget = function(widgetEvent) {
 		var issuer = this;
 		setTimeout(function() {
 			issuer.sync.call(issuer);
-		}, 1000);
+		}, 10);
 	};
 };
 
