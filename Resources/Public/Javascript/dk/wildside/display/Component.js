@@ -18,22 +18,20 @@ dk.wildside.display.Component = function(jQueryElement) {
 		return this;
 	};
 	dk.wildside.display.DisplayObject.call(this, jQueryElement);
-	this.CONST_LOADING_EAGER = 0;
-	this.CONST_LOADING_LAZY = 1;
+	// loading strategies - set in ComponentViewHelper or override in subclass
+	this.CONST_LOADING_EAGER = 'eager';
+	this.CONST_LOADING_LAZY = 'lazy';
 	this.identity = 'component';
-	this.loadingStrategy = false;
 	this.widgets = new dk.wildside.util.Iterator();
 	this.dirtyWidgets = new dk.wildside.util.Iterator();
-	this.uniqueID = Math.round(Math.random() * 100000);
-	this.setLoadingStrategy(this.CONST_LOADING_EAGER);
+	this.loadingStrategy = this.config.strategy;
+	if (this.config.component != 'dk.wildside.display.Component') {
+		eval("if (typeof(" + this.config.component + ") == 'function') " + 
+			this.config.component + ".call(this);");
+		this.trace(this.config.component + ' component detected.', 'info');
+	}
 	
-	var json = jQuery.parseJSON(this.context.find("> ." + this.selectors.json).text().trim());
-	var componentType = json.component;
-	eval("if (typeof(" + componentType + ") == 'function') " + componentType + ".call(this);");
-	this.trace(componentType + ' component detected.');
-	
-	// Find all immediate widgets anywhere in the subtree, but NOT if they're preceded by a new component section.
-	// We only want children of this specific component, wherever they may be. Or roam. That's a Metallica song, btw.
+	// Widget detection, only detect Widgets which are not members of Component below this Component
 	var parent = this;
 	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")").not(this.context.find("." + this.selectors.component +" ." + this.selectors.widget)).each( function() {
 		var widget = new dk.wildside.display.widget.Widget(this);
@@ -74,10 +72,7 @@ dk.wildside.display.Component.prototype.onDirtyWidget = function(widgetEvent) {
 };
 
 dk.wildside.display.Component.prototype.onCleanWidget = function(widgetEvent) {
-	//console.info('Component caught clean widget event');
-	//console.info(this.dirtyWidgets.length);
 	this.dirtyWidgets = this.dirtyWidgets.removeByContext(widgetEvent.target);
-	//console.info(this.dirtyWidgets.length);
 };
 
 dk.wildside.display.Component.prototype.registerWidget = function(widget) {

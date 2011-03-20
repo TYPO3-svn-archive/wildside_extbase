@@ -17,6 +17,7 @@ class Tx_WildsideExtbase_ViewHelpers_ComponentViewHelper extends Tx_Fluid_Core_V
 	 * @param int $page UID of page containing the controller, optional
 	 * @param string $extensionName Name of the extension containing the controller
 	 * @param string $class Extra CSS-classes to use
+	 * @param string $strategy The saving strategy to use. "lazy" or "eager" - if "lazy" you need other means to issue sync, i.e. a Submit button
 	 * @return string
 	 */
 	public function render(
@@ -25,7 +26,8 @@ class Tx_WildsideExtbase_ViewHelpers_ComponentViewHelper extends Tx_Fluid_Core_V
 			$action='update',
 			$page=NULL,
 			$plugin=NULL,
-			$class=NULL
+			$class=NULL,
+			$strategy='eager'
 		) {
 		$html = $this->renderChildren();
 		$obj = new stdClass();
@@ -35,6 +37,7 @@ class Tx_WildsideExtbase_ViewHelpers_ComponentViewHelper extends Tx_Fluid_Core_V
 		$obj->pageUid = $pageUid;
 		$obj->extensionName = $extensionName;
 		$obj->title = $title;
+		$obj->strategy = $strategy;
 		$json = json_encode($obj);
 		$html = "<div class='wildside-extbase-component {$class}'>
 			<div class='wildside-extbase-json'>{$json}</div>
