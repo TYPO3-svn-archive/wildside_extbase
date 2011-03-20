@@ -23,7 +23,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_FileUploadViewHelper extends Tx_Wild
 		$html = $this->renderChildren();
 		if (strlen(trim($html)) == 0) {
 			$defaultTemplateFile = 'Widget/FileUploadWidget.html';
-			$template = $this->getTempate($templateFile, $defaultTemplateFile);
+			$template = $this->getTemplate($templateFile, $defaultTemplateFile);
 			$html = $template->render();
 		}
 		return parent::render($widget, $controller, $action, $page, $plugin, $data, $class, $title, $type, $html);

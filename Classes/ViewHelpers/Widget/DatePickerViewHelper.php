@@ -41,7 +41,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_DatePickerViewHelper extends Tx_Wild
 		$html = $this->renderChildren();
 		if (strlen(trim($html)) == 0) {
 			$defaultTemplateFile = 'Widget/DatePickerWidget.html';
-			$template = $this->getTempate($templateFile, $defaultTemplateFile);
+			$template = $this->getTemplate($templateFile, $defaultTemplateFile);
 			$template->assign('date', $date);
 			$template->assign('dates', $dates);
 			$html = $template->render();

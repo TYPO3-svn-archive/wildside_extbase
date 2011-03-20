@@ -45,7 +45,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 		$html = $this->renderChildren();
 		if (strlen(trim($html)) == 0) {
 			$defaultTemplateFile = 'Widget/RecordSelectorWidget.html';
-			$template = $this->getTempate($templateFile, $defaultTemplateFile);
+			$template = $this->getTemplate($templateFile, $defaultTemplateFile);
 			$template->assign('available', $this->getPossibles());
 			$template->assign('selected', $this->getSelected($data));
 			// $template->assign($var, $value);

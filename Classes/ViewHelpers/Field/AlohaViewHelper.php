@@ -35,6 +35,7 @@ class Tx_WildsideExtbase_ViewHelpers_Field_AlohaViewHelper extends Tx_WildsideEx
 		// not really editable... You could argue that with proper styling this 
 		// is not an issue - but is using value=" " in your template a problem if 
 		// you consider that the AlohaViewHelper has an auto-trim Sanitizer? ;)
+		$this->includes();
 		if (strlen($value) == 0) {
 			$value = 'Click to enter text';
 		}
@@ -42,7 +43,6 @@ class Tx_WildsideExtbase_ViewHelpers_Field_AlohaViewHelper extends Tx_WildsideEx
 		if ($ruleSelector && $rule) {
 			$field .= $this->getRule($ruleSelector, $rule);
 		}
-		$this->includes();
 		return parent::render($field, $displayType, $name, $value, NULL, $sanitizer);
 	}
 	
@@ -67,10 +67,25 @@ class Tx_WildsideExtbase_ViewHelpers_Field_AlohaViewHelper extends Tx_WildsideEx
 			'com/gentics/aloha/plugins/com.gentics.aloha.plugins.Paste/plugin.js',
 			'com/gentics/aloha/plugins/com.gentics.aloha.plugins.Paste/wordpastehandler.js'
 		);
+		$init = <<< SCRIPT
+GENTICS.Aloha.settings = {
+	logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
+	errorhandling : false,
+	ribbon: false,	
+	"i18n": { "current": "en" },
+	"plugins": {
+	 	"com.gentics.aloha.plugins.Format": {},
+	 	"com.gentics.aloha.plugins.List": {},
+	 	"com.gentics.aloha.plugins.Link": {},
+	 	"com.gentics.aloha.plugins.Table": {}
+	}
+};
+SCRIPT;
 		$includer = t3lib_div::makeInstance('Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper');
 		foreach ($files as $file) {
 			$includer->render(NULL, $jsBasePath.$file);
 		}
+		$includer->render($init);
 		return TRUE;
 	}
 	
