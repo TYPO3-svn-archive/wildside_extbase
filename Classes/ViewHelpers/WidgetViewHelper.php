@@ -7,7 +7,7 @@
  * @subpackage Fluid
  * @version
  */
-class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
 	 * Render an entry for a Listener compatible with JS LocusController
@@ -16,7 +16,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_Fluid_Core_View
 	 * @param string $action Default action of the controller to call, can be overridden by widget JS
 	 * @param int $page UID of page containing the controller, optional
 	 * @param string $plugin Name of the extension containing the controller
-	 * @param array $data Data of the model object, if any
+	 * @param object $data Data of the model object, if any
 	 * @param string $class Extra CSS-classes to use
 	 * @param string $title Title of the widget
 	 * @param int $type TypeNum, if any, for building request URI. Defaults to the build-in Bootstrap for WildsideExtbase - which responds in raw JSON format
@@ -58,7 +58,9 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_Fluid_Core_View
 			$extension = strtolower($extension);
 			$obj->plugin = "tx_{$extension}_{$plugin}";
 		}
-		if ($data) {
+		if ($data instanceof Tx_Extbase_DomainObject_AbstractDomainObject) {
+			$obj->data = $this->getValues($data);
+		} else {
 			$obj->data = $data;
 		}
 		$json = json_encode($obj);

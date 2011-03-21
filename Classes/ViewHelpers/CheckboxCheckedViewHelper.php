@@ -7,7 +7,7 @@
  * @subpackage Fluid
  * @version
  */
-class Tx_WildsideExtbase_ViewHelpers_CheckboxCheckedViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_CheckboxCheckedViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
 	 * Returns "checked='checked'" if $value exists in $array

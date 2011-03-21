@@ -7,7 +7,7 @@
  * @subpackage Fluid
  * @version
  */
-class Tx_WildsideExtbase_ViewHelpers_TcaViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_TcaViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
 	 * Translates TCA multichoice field values (int) into the key used for the value

@@ -6,7 +6,7 @@
 
 
 
-class Tx_WildsideExtbase_ViewHelpers_ApiViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_ApiViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
 	 * Includes all JS API name spaces for the domain $domain

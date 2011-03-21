@@ -8,7 +8,7 @@
  * @subpackage Fluid
  * @version
  */
-class Tx_WildsideExtbase_ViewHelpers_ImplodeViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_ImplodeViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
 	 * Implodes array into CSV string. Useful for example when giving 

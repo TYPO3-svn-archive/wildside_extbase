@@ -7,7 +7,7 @@
  * @subpackage Fluid
  * @version
  */
-class Tx_WildsideExtbase_ViewHelpers_SelectSelectedViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_SelectSelectedViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
 	 * Returns "selected='selected'" if $value exists in $array

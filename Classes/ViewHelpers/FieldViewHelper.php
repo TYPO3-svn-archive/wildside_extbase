@@ -6,7 +6,7 @@
 
 
 
-class Tx_WildsideExtbase_ViewHelpers_FieldViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_FieldViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
 	 * Render the Field

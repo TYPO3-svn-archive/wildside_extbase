@@ -14,7 +14,7 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 		var key = setting.attr("title");
 		var value = setting.html().trim();
 		dk.wildside.util.Configuration[key] = value; // TODO: when all references are gone, remove this
-		dk.wildside.config[key] = value; // TODO: this ad-hoc storage to take the place of the singleton above
+		dk.wildside.config[key] = value; // TODO: this ad-hoc storage is to take the place of the singleton above
 	});
 	
 	// Now, bootstrap all existing components on the page. This automatically handles
