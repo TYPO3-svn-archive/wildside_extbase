@@ -21,6 +21,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 	 * @param string $titleField Name of the field or dot-concatenated field names
 	 * @param int $storagePid PID of the sysfolder or page where records are stored   
 	 * @param int $type TypeNum, if any, for building request URI
+	 * @param string $relationType Either '1:1', '1:n' or 'm:n' - affects how the field's values are returned. A single value is returned for 1:1, array of values for the others.
 	 * @return string
 	 */
 	public function render(
@@ -33,8 +34,8 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 			$table='pages',
 			$titleField=NULL,
 			$storagePid=0,
-			$type=4815163242) {
-				
+			$type=4815163242,
+			$relationType='1:n') {
 		$this->table = $table;
 		$this->query = $query;
 		$this->titleField = $titleField;

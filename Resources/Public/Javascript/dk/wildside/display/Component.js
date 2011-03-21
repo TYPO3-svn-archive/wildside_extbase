@@ -84,3 +84,7 @@ dk.wildside.display.Component.prototype.registerWidget = function(widget) {
 dk.wildside.display.Component.prototype.sync = function() {
 	this.dirtyWidgets.each(function(widget) { widget.sync(); });
 };
+
+dk.wildside.display.Component.prototype.rollback = function() {
+	this.widgets.each(function(widget) { widget.rollback(); });
+};

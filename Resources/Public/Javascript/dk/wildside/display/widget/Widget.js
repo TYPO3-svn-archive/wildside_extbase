@@ -164,6 +164,10 @@ dk.wildside.display.widget.Widget.prototype.markClean = function() {
 	this.dirty = false;
 };
 
+dk.wildside.display.widget.Widget.prototype.rollback = function() {
+	this.fields.each(function(field) { field.rollback(); });
+};
+
 dk.wildside.display.widget.Widget.prototype.remove = function() {
 	this.dispatchEvent(this.events.PRE_DELETE);
 	this.config.action = 'delete';
