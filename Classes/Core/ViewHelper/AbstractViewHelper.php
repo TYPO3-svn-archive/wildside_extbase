@@ -20,16 +20,29 @@ class Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper extends Tx_Fluid_Cor
 		$methods = $reflection->getMethods();
 		$values = array();
 		foreach ($methods as $method) {
-			
+			$method = $method->name;
+			if (substr($method, 0, 3) != 'get') {
+				continue;
+			} else {
+				$propertyName = substr($method, 3);
+				$propertyName{0} = strtolower($propertyName{0});
+			}
+			$value = $object->$method();
+			if ($value instanceof Tx_Extbase_Persistence_ObjectStorage) {
+				$value = array();
+				foreach ($value as $item) {
+					$itemValue = $this->getValues($item);
+					array_push($value, $itemValue);
+				}
+			} else if ($value instanceof Tx_Extbase_DomainObject_AbstractDomainObject) {
+				$value = $this->getValues($value);
+			}
+			$values[$propertyName] = $value;
 		}
 		return $values;
 	}
 	
 }
-
-
-
-
 
 
 ?>
