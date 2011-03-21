@@ -17,7 +17,6 @@ dk.wildside.display.Component = function(jQueryElement) {
 	if (typeof jQueryElement == 'undefined') {
 		return this;
 	};
-	console.log(this);
 	dk.wildside.display.DisplayObject.call(this, jQueryElement);
 	// loading strategies - set in ComponentViewHelper or override in subclass
 	this.CONST_LOADING_EAGER = 'eager';
@@ -33,7 +32,6 @@ dk.wildside.display.Component = function(jQueryElement) {
 	var parent = this; // necessary reference for the following jQuery enclosure
 	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")").not(this.context.find("." + this.selectors.component +" ." + this.selectors.widget)).each( function() {
 		var widget = dk.wildside.spawner.get(this);
-		console.log(widget);
 		parent.registerWidget(widget);
 	});
 	
