@@ -15,7 +15,6 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	};
 	dk.wildside.display.DisplayObject.call(this, jQueryElement);
 	// references
-	this.identity = 'widget';
 	this.events = dk.wildside.event.widget.WidgetEvent;
 	this.selectors = dk.wildside.util.Configuration.guiSelectors;
 	// internals
@@ -23,8 +22,10 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	this.disabled = false;
 	this.dirty = false;
 	this.defaultAction = this.config.action;
-	this.trace('- ' + this.config.widget + ' widget detected.');
-	
+	// identity
+	if (typeof this.identity == 'undefined') {
+		this.identity = 'widget';
+	};
 	// event listeners
 	this.addEventListener(this.events.DIRTY, this.onDirty);
 	this.addEventListener(this.events.CLEAN, this.onClean);
@@ -38,22 +39,9 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	var widget = this; // Necessary reference for the following jQuery enclosure
 	this.context.find(fsel).each(function() {
 		var obj = jQuery(this)
-		var json = obj.find("." + widget.selectors.json).text().trim();
-		var fieldJSON = jQuery.parseJSON(json);
-		var fieldType = fieldJSON.type;
-		var field;
-		widget.trace('- - ' + fieldType + ' field detected.');
-		eval("if (typeof " + fieldType + " != 'undefined') field = new " + fieldType + "(this);");
-		if (field) {
-			widget.registerField.call(widget, field);
-		} else {
-			widget.trace('Unable to bootstrap field: ' + fieldType, 'warn');
-		};
+		var field = dk.wildside.spawner.get(obj);
+		widget.registerField(field);
 	});
-	
-	if (typeof this.config.widget == 'string' && this.config.widget != 'dk.wildside.display.widget.Widget') {
-		eval("if (typeof(" + this.config.widget + ") != 'undefined') " + this.config.widget + ".call(this);");
-	};
 	
 	return this;
 };

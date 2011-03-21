@@ -20,7 +20,7 @@ class Tx_WildsideExtbase_ViewHelpers_FieldViewHelper extends Tx_WildsideExtbase_
 	 */
 	public function render($field=NULL, $displayType='dk.wildside.display.Field', $name=NULL, $value=NULL, $class=NULL, $sanitizer=NULL) {
 		$json = new stdClass();
-		$json->type = $displayType;
+		$json->displayType = $displayType;
 		$json->name = $name;
 		$json->value = $value;
 		if ($sanitizer !== NULL) {

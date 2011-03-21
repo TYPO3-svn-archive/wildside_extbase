@@ -6,6 +6,7 @@ if (typeof dk == 'undefined') {
 if (typeof dk.wildside == 'undefined') {
 	dk.wildside = {};
 	dk.wildside.bootstrap = {};
+	dk.wildside.spawner = {};
 	dk.wildside.core = {};
 	dk.wildside.display = {};
 	dk.wildside.display.widget = {};
@@ -53,4 +54,5 @@ jQuery(document).ready(function() {
 // display/widget/Widget.js
 // display/widget/FileUploadWidget.js
 // display/widget/RecordSelectorWidget.js
+// core/Spawner.js
 // core/Bootstrap.js

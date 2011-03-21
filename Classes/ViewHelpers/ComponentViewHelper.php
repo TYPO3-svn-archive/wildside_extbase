@@ -31,7 +31,7 @@ class Tx_WildsideExtbase_ViewHelpers_ComponentViewHelper extends Tx_WildsideExtb
 		) {
 		$html = $this->renderChildren();
 		$obj = new stdClass();
-		$obj->component = $component;
+		$obj->displayType = $component;
 		$obj->controller = $controller;
 		$obj->action = $action;
 		$obj->pageUid = $pageUid;

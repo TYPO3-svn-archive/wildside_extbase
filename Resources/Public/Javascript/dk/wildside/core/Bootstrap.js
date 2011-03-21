@@ -5,6 +5,7 @@ dk.wildside.core.Bootstrap = function() {
 dk.wildside.core.Bootstrap.prototype.run = function() {
 	
 	dk.wildside.bootstrap = this;
+	dk.wildside.spawner = new dk.wildside.core.Spawner();
 	dk.wildside.config = {};
 	
 	// Find the settings-div, which is somewhere near the top of the page, and read all global settings
@@ -20,12 +21,12 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 	// Now, bootstrap all existing components on the page. This automatically handles
 	// any sub-widgets found in there too.
 	jQuery("." + dk.wildside.util.Configuration.guiSelectors.component).each( function() {
-		var component = new dk.wildside.display.Component(this);
+		var component = dk.wildside.spawner.get(this);
 	});
 	
 	// Now, if any widgets are left untouched, we need to bootstrap them as standalones
 	jQuery("." + dk.wildside.util.Configuration.guiSelectors.widget +":not(." + dk.wildside.util.Configuration.guiSelectors.inUse +")").each( function() {
-		var widget = new dk.wildside.display.widget.Widget(this);
+		var widget = dk.wildside.spawner.get(this);
 	} );
 	
 	// Basic configuration - this can be overruled later, though.

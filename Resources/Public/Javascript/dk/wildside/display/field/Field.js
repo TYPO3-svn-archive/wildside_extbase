@@ -7,11 +7,13 @@ dk.wildside.display.field.Field = function(jQueryElement) {
 	dk.wildside.display.DisplayObject.call(this, jQueryElement);
 	try {
 		//this.dirty = false;
-		this.identity = 'field';
+		if (typeof this.identity == 'undefined') {
+			this.identity = 'field';
+		};
 		this.sanitizer = dk.wildside.display.field.Sanitizer.noop;
 		this.events = dk.wildside.event.FieldEvent;
 		this.fieldContext = this.context.find(':input').data('field', this);
-		this.config = jQuery.parseJSON(this.context.find('> .' + this.selectors.json + ':first').html());
+		//this.config = jQuery.parseJSON(this.context.find('> .' + this.selectors.json + ':first').html());
 		//this.value = this.config.value;
 	} catch(e) {
 		this.trace("Error from field.Field:", 'warn');

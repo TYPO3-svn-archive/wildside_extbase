@@ -17,24 +17,23 @@ dk.wildside.display.Component = function(jQueryElement) {
 	if (typeof jQueryElement == 'undefined') {
 		return this;
 	};
+	console.log(this);
 	dk.wildside.display.DisplayObject.call(this, jQueryElement);
 	// loading strategies - set in ComponentViewHelper or override in subclass
 	this.CONST_LOADING_EAGER = 'eager';
 	this.CONST_LOADING_LAZY = 'lazy';
-	this.identity = 'component';
+	if (typeof this.identity == 'undefined') {
+		this.identity = 'component';
+	};
 	this.widgets = new dk.wildside.util.Iterator();
 	this.dirtyWidgets = new dk.wildside.util.Iterator();
 	this.loadingStrategy = this.config.strategy;
-	if (this.config.component != 'dk.wildside.display.Component') {
-		eval("if (typeof(" + this.config.component + ") == 'function') " + 
-			this.config.component + ".call(this);");
-		this.trace(this.config.component + ' component detected.', 'info');
-	};
 	
 	// Widget detection, only detect Widgets which are not members of Component below this Component
 	var parent = this; // necessary reference for the following jQuery enclosure
 	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")").not(this.context.find("." + this.selectors.component +" ." + this.selectors.widget)).each( function() {
-		var widget = new dk.wildside.display.widget.Widget(this);
+		var widget = dk.wildside.spawner.get(this);
+		console.log(widget);
 		parent.registerWidget(widget);
 	});
 	
