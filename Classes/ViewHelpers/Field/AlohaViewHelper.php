@@ -69,15 +69,41 @@ class Tx_WildsideExtbase_ViewHelpers_Field_AlohaViewHelper extends Tx_WildsideEx
 		);
 		$init = <<< SCRIPT
 GENTICS.Aloha.settings = {
-	logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
+	//logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
+	logLevels : false,
 	errorhandling : false,
 	ribbon: false,	
 	"i18n": { "current": "en" },
 	"plugins": {
-	 	"com.gentics.aloha.plugins.Format": {},
-	 	"com.gentics.aloha.plugins.List": {},
-	 	"com.gentics.aloha.plugins.Link": {},
-	 	"com.gentics.aloha.plugins.Table": {}
+		"com.gentics.aloha.plugins.Format": {
+			config : [ 'b', 'i','u','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre'],
+			editables : {
+				'.noFormatting' : []
+			}
+		},
+	 	"com.gentics.aloha.plugins.List": {
+	 		config : [ 'ol', 'ul' ],
+			editables : {
+				'.noFormatting' : []
+			}
+		},
+		"com.gentics.aloha.plugins.Link": {
+			config : [ 'a' ],
+			editables : {
+				'.noFormatting' : []
+			}
+			/*,
+			onHrefChange: function( obj, href, item ) {
+				// Make sure that links are not allowed inside Aloha-objects instantiated
+				// on headers. Sadly, the above configuration is not enough to keep the 
+				// link button hidden at all times.
+				// ... and this code doesn't work. Sigh.
+				var p = jQuery(obj).parents('.GENTICS_editable:first').filter(':header');
+				if (p.length) obj.remove();
+			}
+			*/
+		},
+		"com.gentics.aloha.plugins.Table": {}
 	}
 };
 // Subscribe to the edit-finish event on all existing (and future) Aloha-instances.

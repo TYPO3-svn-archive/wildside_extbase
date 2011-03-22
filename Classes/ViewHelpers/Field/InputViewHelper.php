@@ -18,7 +18,7 @@ class Tx_WildsideExtbase_ViewHelpers_Field_InputViewHelper extends Tx_WildsideEx
 	 * @param string $type Type (input, hidden, radio, checkbox) of the <input> field
 	 * @param string $sanitizer WS JS Domain style reference to validator method
 	 */
-	public function render($displayType='dk.wildside.display.field.Input', $name=NULL, $value=NULL, $class=NULL, $type='input', $sanitizer=NULL) {
+	public function render($displayType='dk.wildside.display.field.Input', $name=NULL, $value=NULL, $class=NULL, $type='text', $sanitizer=NULL) {
 		$field = "<input type='{$type}' name='{$name}' class='input-{$type} {$class}' value='{$value}' />";
 		return parent::render($field, $displayType, $name, $value, NULL, $sanitizer);
 	}

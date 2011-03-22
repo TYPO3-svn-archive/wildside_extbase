@@ -22,6 +22,13 @@ dk.wildside.display.field.Aloha.prototype.getName = function() {
 dk.wildside.display.field.Aloha.prototype.getValue = function() {
 	var id = this.fieldContext.attr('id');
 	value = GENTICS.Aloha.getEditableById(id).getContents();
+	if (this.fieldContext.hasClass(this.selectors.alohaConfigBasic)) {
+		// If this field matches the basic configuration, use the prototype'd strip_tags() to
+		// remove all HTML from the value. Hopefully there should be nothing in there, but
+		// in rare cases, Aloha can mess up and send some along anyway. This would break the 
+		// JSON return, and we can't have that.
+		value = value.strip_tags();
+	};
 	return value;
 };
 

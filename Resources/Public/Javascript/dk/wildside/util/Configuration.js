@@ -24,7 +24,9 @@ dk.wildside.util.Configuration = {
 		messageDisplayElement : "wildside-extbase-messages",
 		messageClassInfo : "info",
 		messageClassError : "error",
-		itemParentLookup : ".plan.item"
+		itemParentLookup : ".plan.item",
+		alohaConfigBasic : "noFormatting",
+		alohaConfigFull : "fullEditor"
 	}
 
 };
