@@ -112,8 +112,10 @@ GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableActivated", functi
 });
 
 GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableDeactivated", function(event, eventProperties) {
-	jQuery(eventProperties.editable.obj).data("field").endEdit();
-	eventProperties.editable.setUnmodified();
+	if (eventProperties.editable.isModified()) {
+		jQuery(eventProperties.editable.obj).data("field").endEdit();
+		eventProperties.editable.setUnmodified();
+	};
 });
 SCRIPT;
 		$includer = t3lib_div::makeInstance('Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper');
