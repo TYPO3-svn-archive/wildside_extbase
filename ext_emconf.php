@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Wildside Extbase Framework',
-	'description' => 'Extbase Helper Framework. Provides ViewHelpers and an AS3-for-JS style API for advanced Widget-style AJAX components. Includes an injectable CloningService to easily clone (copy) Domain Objects with full control over relations.',
+	'description' => 'For Extbase extension developers. Provides ViewHelpers and an AS3-for-JS style API for Widget-style AJAX components. Includes an injectable CloningService to easily clone (copy) Domain Objects with full control over relations.',
 	'category' => 'plugin',
 	'author' => 'Claus Due',
 	'author_email' => 'claus@wildside.dk',
