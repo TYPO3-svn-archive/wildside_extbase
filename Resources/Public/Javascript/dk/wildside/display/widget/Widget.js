@@ -19,6 +19,7 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	this.selectors = dk.wildside.util.Configuration.guiSelectors;
 	// internals
 	this.fields = new dk.wildside.util.Iterator();
+	this.messages = new dk.wildside.util.Iterator();
 	this.disabled = false;
 	this.dirty = false;
 	this.defaultAction = this.config.action;
@@ -31,6 +32,7 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	this.addEventListener(this.events.CLEAN, this.onClean);
 	this.addEventListener(this.events.ERROR, this.onError);
 	this.addEventListener(this.events.REFRESH, this.onRefresh);
+	this.addEventListener(this.events.MESSAGE, this.onMessage);
 	this.addEventListener(dk.wildside.event.FieldEvent.DIRTY, this.onDirtyField);
 	this.addEventListener(dk.wildside.event.FieldEvent.CLEAN, this.onCleanField);
 	
@@ -98,12 +100,19 @@ dk.wildside.display.widget.Widget.prototype.displayErrors = function(messages) {
 };
 
 dk.wildside.display.widget.Widget.prototype.displayMessages = function(messages) {
-	var parent = this.context.parents(this.selectors.itemParentLookup + ":first").find("." + this.selectors.messageDisplayElement + ":first");
-	messages.each(function(message) {
-		var msgObj = jQuery("<div>");
-		msgObj.html(message).addClass(this.selectors.messageClassInfo);
-		parent.append(msgObj);
-	});
+	var container = this.fields.find('messages');
+	//console.info(this);
+	//console.warn(container);
+	if (typeof container != 'undefined') {
+		return container.setValue.call(container, messages);
+	} else {
+		var message = new String();
+		for (var i=0; i<messages.length; i++) {
+			var msg = messages[i];
+			message += msg.title + ' ' + msg.message + ' (' + msg.severity + ')';
+		}
+		return alert(message);
+	};
 };
 
 
@@ -201,9 +210,10 @@ dk.wildside.display.widget.Widget.prototype.sync = function() {
 		return this.dispatchEvent(this.events.ERROR);
 	} else {
 		this.setValues(data);
-		//this.dispatchEvent(this.events.SYNC);
 		this.dispatchEvent(this.events.CLEAN);
+		//console.log(messages);
 		if (messages.length > 0) {
+			this.messages.merge(messages);
 			this.dispatchEvent(this.events.MESSAGE);
 		};
 	};
@@ -267,7 +277,7 @@ dk.wildside.display.widget.Widget.prototype.onClean = function(event) {
 };
 
 dk.wildside.display.widget.Widget.prototype.onMessage = function(event) {
-	var messages = event.target;
+	var messages = this.messages;
 	this.displayMessages(messages);
 };
 

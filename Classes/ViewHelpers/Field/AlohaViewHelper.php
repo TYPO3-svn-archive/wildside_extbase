@@ -132,7 +132,6 @@ GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableActivated", functi
 });
 
 GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableDeactivated", function(event, eventProperties) {
-alert('test');
 	if (eventProperties.editable.isModified()) {
 		jQuery(eventProperties.editable.obj).data("field").endEdit();
 		eventProperties.editable.setUnmodified();

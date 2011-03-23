@@ -60,7 +60,15 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 			}
 			$this->resetSingletons();
 			$data = $this->wrapResponse($data);
-			$data->messages = $messager->getAllMessagesAndFlush();
+			$messages = $messager->getAllMessagesAndFlush();
+			$data->messages = array();
+			foreach ($messages as $message) {
+				$msg = new stdClass();
+				$msg->severity = $message->getSeverity();
+				$msg->title = $message->getTitle();
+				$msg->message = $message->getMessage();
+				array_push($data->messages, $msg);
+			} 
 		} catch (Exception $e) {
 			die($e);
 		}

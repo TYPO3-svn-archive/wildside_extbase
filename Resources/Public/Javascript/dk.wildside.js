@@ -45,6 +45,7 @@ jQuery(document).ready(function() {
 // display/field/Field.js
 // display/field/Aloha.js
 // display/field/Input.js
+// display/field/Message.js
 // display/field/Checkbox.js
 // display/field/Radio.js
 // display/field/Select.js

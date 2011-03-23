@@ -33,8 +33,8 @@ dk.wildside.net.Responder.prototype.getData = function() {
 
 dk.wildside.net.Responder.prototype.getMessages = function() {
 	var messages = new dk.wildside.util.Iterator();
-	var data = this.getData();
-	if (typeof data != 'undefined' && data.message) {
+	var data = this.response.getData();
+	if (typeof data != 'undefined' && data.messages) {
 		messages.merge(data.messages);
 	};
 	return messages;

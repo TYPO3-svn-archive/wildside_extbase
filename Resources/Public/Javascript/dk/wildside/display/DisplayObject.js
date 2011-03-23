@@ -17,18 +17,38 @@ dk.wildside.display.DisplayObject = function(jQueryElement) {
 	this.selectors = dk.wildside.util.Configuration.guiSelectors;
 	this.context.data('instance', this); // back-reference
 	this.context.addClass(this.selectors.inUse); // claim DOM element
+	// defaults for visual effects:
+	this.visuals = {
+		duration : 750
+	};
 	return this;
 };
 
 dk.wildside.display.DisplayObject.prototype = new dk.wildside.event.EventDispatcher();
 
-dk.wildside.display.DisplayObject.prototype.fadeIn = function() {
-	this.getJQueryContext().fadeIn();
+dk.wildside.display.DisplayObject.prototype.fadeIn = function(duration) {
+	if (typeof duration == 'undefined') {
+		duration = this.visuals.duration;
+	};
+	this.context.fadeIn(duration);
 	return this;
 };
 
-dk.wildside.display.DisplayObject.prototype.fadeOut = function() {
-	this.getJQueryContext().fadeOut();
+dk.wildside.display.DisplayObject.prototype.fadeOut = function(duration) {
+	if (typeof duration == 'undefined') {
+		duration = this.visuals.duration;
+	};
+	this.context.fadeOut(duration);
+	return this;
+};
+
+dk.wildside.display.DisplayObject.prototype.show = function() {
+	this.context.show();
+	return this;
+};
+
+dk.wildside.display.DisplayObject.prototype.hide = function() {
+	this.context.hide();
 	return this;
 };
 
@@ -44,7 +64,6 @@ dk.wildside.display.DisplayObject.prototype.remove = function() {
 
 dk.wildside.display.DisplayObject.prototype.expose = function() {
 	this.trace(this.context, 'info');
-	//alert(this.payload.data.title);
 };
 
 dk.wildside.display.DisplayObject.prototype.trace = function(victim, method) {
