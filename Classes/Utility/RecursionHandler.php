@@ -28,15 +28,40 @@ class Tx_WildsideExtbase_Utility_RecursionHandler implements t3lib_Singleton {
 	private $_exceptionMessage = 'Recursion problem occurred';
 	private $_level = 0;
 	private $_maxLevel = 16;
+	private $_maxEncounters = 1;
 	private $_encountered = array();
-	
+	private $_autoReset = FALSE;
 	
 	public function setExceptionMessage($msg) {
 		$this->_exceptionMessage = $msg;
 	}
 	
+	public function setAutoReset($reset) {
+		$this->_autoReset = $reset;
+	}
+	
+	public function setMaxEncounters($max) {
+		$this->_maxEncounters = $max;
+	}
+	
+	public function getMaxEncounters() {
+		return $this->_maxEncounters;
+	}
+	
 	public function setMaxLevel($level) {
 		$this->_maxLevel = $level;
+	}
+	
+	public function getMaxLevel() {
+		return $this->_maxLevel;
+	}
+	
+	public function getLevel() {
+		return $this->_level;
+	}
+	
+	public function getLastEncounter() {
+		return array_pop($this->_encountered);
 	}
 	
 	public function in() {
@@ -53,12 +78,18 @@ class Tx_WildsideExtbase_Utility_RecursionHandler implements t3lib_Singleton {
 	}
 	
 	public function check($exitMsg='<no message>') {
-		if ($this->_level >= $this->_maxLevel) {
-			throw new Exception($this->_exceptionMessage . ' at level ' . $this->_level . ' with message: ' . $exitMsg);
+		$level = $this->getLevel();
+		$maxEnc = $this->getMaxEncounters();
+		$message = $this->getExceptionMessage();
+		if ($this->failsOnLevel()) {
+			$msg = "{$message} at level {$level} with message: {$exitMsg}";
+			throw new Exception($msg);
 		}
-		if (count($this->_encountered) > 0 && count(array_unique($this->_encountered)) != count($this->_encountered)) {
-			throw new Exception($this->_exceptionMessage . ' at level ' . $this->_level . ' with message: ' . $exitMsg);
+		if ($this->failsOnMaxEncounters()) {
+			$msg = "{$message} at encounter {$maxEnc} of {$maxEnc} allowed with message: {$exitMsg}";
+			$this->throwException($msg);
 		}
+		return TRUE;
 	}
 	
 	public function reset() {
@@ -66,7 +97,35 @@ class Tx_WildsideExtbase_Utility_RecursionHandler implements t3lib_Singleton {
 		$this->_encountered = array();
 	}
 	
+	private function throwException($message) {
+		if ($this->_autoReset === TRUE) {
+			$this->reset();
+		}
+		throw new Exception($message);
+	}
 	
+	private function failsOnLevel() {
+		$level = $this->getLevel();
+		$max = $this->getMaxLevel();
+		return (bool) ($level >= $max);
+	}
+	
+	private function failsOnMaxEncounters() {
+		$lastEncounter = $this->getLastEncounter();
+		$occurrences = $this->countEncounters($lastEncounter);
+		$max = $this->getMaxEncounters();
+		return (bool) ($occurrences > $max);
+	}
+	
+	private function countEncounters($encounter) {
+		$num = 0;
+		foreach ($this->_encountered as $encountered) {
+			if ($encountered === $encounter) {
+				$num++;
+			}
+		}
+		return (int) $num;
+	}
 	
 }
 

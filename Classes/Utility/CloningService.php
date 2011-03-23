@@ -29,7 +29,7 @@ class Tx_WildsideExtbase_Utility_CloningService implements t3lib_Singleton {
 	 * RecursionHandler instance
 	 * @var Tx_WildsideExtbase_Utility_RecursionHandler
 	 */
-	protected $recursionHandler;
+	public $recursionHandler;
 	
 	/**
 	 * ReflectionService instance
