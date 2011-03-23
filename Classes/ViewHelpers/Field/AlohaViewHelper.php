@@ -73,17 +73,20 @@ class Tx_WildsideExtbase_ViewHelpers_Field_AlohaViewHelper extends Tx_WildsideEx
 	}
 	
 	private function includes() {
-		$jsBasePath = t3lib_extMgm::siteRelPath('wildside_extbase') . 'Resources/Public/Javascript/';
+		$jsBasePath = t3lib_extMgm::siteRelPath('wildside_extbase') . 'Resources/Public/Javascript/com/gentics/aloha/';
 		$files = array(
-			'com/gentics/aloha/aloha.js',
-			'com/gentics/aloha/plugins/com.gentics.aloha.plugins.Format/plugin.js',
-			'com/gentics/aloha/plugins/com.gentics.aloha.plugins.Table/plugin.js',
-			'com/gentics/aloha/plugins/com.gentics.aloha.plugins.List/plugin.js',
-			'com/gentics/aloha/plugins/com.gentics.aloha.plugins.Link/plugin.js',
-			'com/gentics/aloha/plugins/com.gentics.aloha.plugins.Link/LinkList.js',
-			'com/gentics/aloha/plugins/com.gentics.aloha.plugins.Paste/plugin.js',
-			'com/gentics/aloha/plugins/com.gentics.aloha.plugins.Paste/wordpastehandler.js'
+			'aloha.js',
+			'plugins/com.gentics.aloha.plugins.Format/plugin.js',
+			'plugins/com.gentics.aloha.plugins.Table/plugin.js',
+			'plugins/com.gentics.aloha.plugins.List/plugin.js',
+			'plugins/com.gentics.aloha.plugins.Link/plugin.js',
+			'plugins/com.gentics.aloha.plugins.Link/LinkList.js',
+			'plugins/com.gentics.aloha.plugins.Paste/plugin.js',
+			'plugins/com.gentics.aloha.plugins.Paste/wordpastehandler.js'
 		);
+		foreach ($files as $k=>$v) {
+			$files[$k] = "{$jsBasePath}{$v}";
+		}
 		$init = <<< SCRIPT
 GENTICS.Aloha.settings = {
 	//logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
@@ -129,6 +132,7 @@ GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableActivated", functi
 });
 
 GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableDeactivated", function(event, eventProperties) {
+alert('test');
 	if (eventProperties.editable.isModified()) {
 		jQuery(eventProperties.editable.obj).data("field").endEdit();
 		eventProperties.editable.setUnmodified();
@@ -136,9 +140,8 @@ GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableDeactivated", func
 });
 SCRIPT;
 		$includer = t3lib_div::makeInstance('Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper');
-		foreach ($files as $file) {
-			$includer->render(NULL, $jsBasePath.$file);
-		}
+		$includer->type = Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_JAVASCRIPT;
+		$includer->includeFiles($files);
 		$includer->render($init);
 		return TRUE;
 	}

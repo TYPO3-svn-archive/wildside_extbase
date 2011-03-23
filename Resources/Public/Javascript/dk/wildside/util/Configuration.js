@@ -2,7 +2,6 @@
 
 dk.wildside.util.Configuration = {
 	
-	// Bootstrapper. Override to use your own bootstrapper
 	bootstrapper : 'dk.wildside.core.Bootstrap',
 	
 	// Debug tracing. Enable this to get console (firebug) output traces from the framework

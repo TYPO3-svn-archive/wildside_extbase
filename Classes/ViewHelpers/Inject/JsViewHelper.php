@@ -32,8 +32,10 @@
  */
 class Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper extends Tx_WildsideExtbase_ViewHelpers_InjectViewHelper {
 	
+	public $type = Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_JAVASCRIPT;
+	
 	/**
-	 * Inject JS file in header or code.
+	 * Inject JS file in the header code.
 	 * 
 	 * Usage example, header file include from Resources/Public/js/:
 	 * <ws:inject.js file="{f:uri.resource(path: 'js/file.js')}" />
@@ -50,26 +52,31 @@ class Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper extends Tx_WildsideExtb
 	 * Note that fluid variables and loops are all usable inside <ws.inject.js>. As
 	 * with the above example a custom $key for additionalHeaderData may be provided.
 	 * 
-	 * Usage example, Javascript inside <body> - you NAUGHTY developer, shame on you!
-	 * <ws:inject.js header="false">
-	 * var myJsVariable = '{record.uid}';
-	 * </ws:inject.js>
-	 * 
 	 * @param string $js
-	 * @param string $file
-	 * @param bool $header
+	 * @param mixed $file String filename or array of filenames
+	 * @param bool $cache If true, file(s) is cached
+	 * @param bool $concat If true, files are concatenated (makes sense if $file is array)
+	 * @param bool $compress If true, files are compressed using JSPacker
 	 * @param string $key
 	 */
-	public function render($js=NULL, $file=NULL, $header=TRUE, $key=NULL) {
+	public function render($js=NULL, $file=NULL, $cache=FALSE, $concat=FALSE, $compress=FALSE) {
 		if ($js === NULL && $file === NULL) {
 			$js = $this->renderChildren();
 		}
 		if ($file && $header) {
-			$code = "<script type='text/javascript' src='{$file}'></script>";
+			if (is_array($file)) {
+				$this->includeFiles($file, $cache, $compress);
+			} else {
+				$this->includeFile($filename, $cache, $compress);
+			}
 		} else if ($js) {
-			$code = "<script type='text/javascript'>\n{$js}\n</script>";
+			#die($js);
+			$code = $this->wrap($js, $file);
+			#var_dump($code);
+			#die($code);
+			$this->process($code, $key);
 		}
-		return $this->process($code, $header, $key);
+		return '';
 	}
 }
 	

@@ -23,26 +23,41 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-
-
-
-
-
-class Tx_WildsideExtbase_ViewHelpers_ApiViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_ApiViewHelper extends Tx_WildsideExtbase_ViewHelpers_InjectViewHelper {
+	
+	private $cache = FALSE;
+	private $compress = FALSE;
+	private $concat = TRUE;
+	private $obfuscate = FALSE;
+	private $cacheTTL = 0;
+	private $domain = FALSE;
+	
+	protected $type = Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_JAVASCRIPT;
 	
 	/**
 	 * Includes all JS API name spaces for the domain $domain
 	 * 
 	 * @param string $domain The domain path of the API to load. Defaults to dk.wildside
+	 * @param boolean $cache If TRUE, the file is cached (works best if you also use one of the compress, concat or obfuscate options
+	 * @param boolean $compress If TRUE, the file is compressed
+	 * @param boolean $concat If TRUE, the files to include are concatenated
+	 * @param boolean $obfuscate If TRUE, code-obfuscation is applied
+	 * @param int $cacheTTL How long the cached result file should be cached. Default is 24H (86400)
 	 * @return string
 	 */
-	public function render($domain='dk.wildside') {
-		$this->includes($domain);
+	public function render($domain='dk.wildside', $cache=FALSE, $compress=FALSE, $concat=TRUE, $obfuscate=FALSE, $cacheTTL=86400) {
+		$this->domain = $domain;
+		$this->cache = $cache;
+		$this->compress = $compress;
+		$this->concat = $concat;
+		$this->obfuscate = $obfuscate;
+		$this->cacheTTL = $cacheTTL;
+		$this->includes();
 		return $this->renderChildren();
 	}
 	
-	private function includes($namespace) {
-		
+	private function includes() {
+		$namespace = $this->domain;
 		// domain minus the TLD is the extension name using dots instead of underscores
 		$splitNamespace = $parts = explode('.', $namespace);
 		$tld = array_shift($parts);
@@ -53,21 +68,27 @@ class Tx_WildsideExtbase_ViewHelpers_ApiViewHelper extends Tx_WildsideExtbase_Co
 		}
 		$jsBasePath = t3lib_extMgm::siteRelPath($extensionName) . 'Resources/Public/Javascript/';
 		$namespaceFile = "{$jsBasePath}{$namespace}.js";
+		$namespacePath = implode('/', $splitNamespace);
 		$contents = file_get_contents(PATH_site . $namespaceFile);
 		$lines = explode("\n", $contents);
-		$includer = t3lib_div::makeInstance('Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper');
-		$includer->render(NULL, $jsBasePath.$namespace.'.js');
+		$files = array("{$namespaceFile}");
 		foreach ($lines as $file) {
 			// look for coment-out plus one space - identifies a required file local to the JS namespace
 			if (substr($file, 0, 3) == '// ') {
 				$file = trim(str_replace('//', '', $file));
-				$includer->render(NULL, $jsBasePath.$path.$file);
+				$file = "{$jsBasePath}{$namespacePath}/{$file}";
+				array_push($files, $file);
 			}
 		}
-		#die();
+		if ($this->concat === TRUE) {
+			$this->includeFiles($files, $this->cache, $this->concat, $this->compress);
+		} else {
+			foreach ($files as $file) {
+				$this->includeFile($file, $this->cache, $this->compress);
+			}
+		}
 		return TRUE;
 	}
-	
 }
 
 

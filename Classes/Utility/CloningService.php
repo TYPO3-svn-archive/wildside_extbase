@@ -26,33 +26,76 @@
 class Tx_WildsideExtbase_Utility_CloningService implements t3lib_Singleton {
 	
 	/**
+	 * RecursionHandler instance
+	 * @var Tx_WildsideExtbase_Utility_RecursionHandler
+	 */
+	protected $recursionHandler;
+	
+	/**
+	 * ReflectionService instance
+	 * @var Tx_Extbase_Reflection_Service $service
+	 */
+	protected $reflectionService;
+	
+	/**
+	 * ObjectManager instance
+	 * @var Tx_Extbase_Object_ObjectManager
+	 */
+	protected $objectManger;
+	
+	/**
+	 * Inject a RecursionHandler instance
+	 * @param Tx_WildsideExtbase_Utility_RecursionHandler $handler
+	 */
+	public function injectRecursionHandler(Tx_WildsideExtbase_Utility_RecursionHandler $handler) {
+		$this->recursionHandler = $handler;
+	}
+	
+	/**
+	 * Inject a Reflection Service instance
+	 * @param Tx_Extbase_Reflection_Server $service
+	 */
+	public function injectReflectionService(Tx_Extbase_Reflection_Service $service) {
+		$this->reflectionService = $service;
+	}
+	
+	/**
+	 * Inject a Reflection Service instance
+	 * @param Tx_Extbase_Object_ObjectManager $manager
+	 */
+	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $manager) {
+		$this->objectManager = $manager;
+	}
+	
+	/**
 	 * Copy a singe object based on field annotations about how to copy the object
 	 * 
 	 * @return Tx_Extbase_DomainObject_AbstractDomainOject $copy
 	 */
 	public function copy($object) {
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$reflectionService = $objectManager->get('Tx_Extbase_Reflection_Service');
 		$className = get_class($object);
-		$copy = $objectManager->get($className);
-		$properties = $reflectionService->getClassPropertyNames($className);
+		$this->recursionHandler->in();
+		$this->recursionHandler->check($className);
+		$copy = $this->objectManager->get($className);
+		$properties = $this->reflectionService->getClassPropertyNames($className);
 		foreach ($properties as $propertyName) {
-			$tags = $reflectionService->getPropertyTagsValues($className, $propertyName);
+			$tags = $this->reflectionService->getPropertyTagsValues($className, $propertyName);
 			$getter = 'get' . ucfirst($propertyName);
 			$setter = 'set' . ucfirst($propertyName);
 			$copyMethod = $tags['copy'][0];
 			if ($copyMethod !== NULL && $copyMethod !== 'ignore') {
 				$originalValue = $object->$getter();
 				if ($copyMethod == 'reference') {
-					$copiedValue = self::copyAsReference($originalValue);
+					$copiedValue = $this->copyAsReference($originalValue);
 				} else if ($copyMethod == 'clone') {
-					$copiedValue = self::copyAsClone($originalValue);
+					$copiedValue = $this->copyAsClone($originalValue);
 				}
 				if ($copiedValue != NULL) {
 					$copy->$setter($copiedValue);
 				}
 			}
 		}
+		$this->recursionHandler->out();
 		return $copy;
 	}
 	
@@ -62,7 +105,7 @@ class Tx_WildsideExtbase_Utility_CloningService implements t3lib_Singleton {
 			// objectstorage; copy storage and attach items to this new storage
 			// if 1:n mapping is used, items are detached from their old storage - this is 
 			// a limitation of this type of reference
-			$newStorage = $objectManager->get('Tx_Extbase_Persistence_ObjectStorage');
+			$newStorage = $this->objectManager->get('Tx_Extbase_Persistence_ObjectStorage');
 			foreach ($value as $item) {
 				$newStorage->attach($item);
 			}
@@ -82,9 +125,9 @@ class Tx_WildsideExtbase_Utility_CloningService implements t3lib_Singleton {
 	protected function copyAsClone($value, $objectManager) {
 		if ($value instanceof Tx_Extbase_Persistence_ObjectStorage) {
 			// objectstorage; copy storage and copy items, return new storage
-			$newStorage = $objectManager->get('Tx_Extbase_Persistence_ObjectStorage');
+			$newStorage = $this->objectManager->get('Tx_Extbase_Persistence_ObjectStorage');
 			foreach ($value as $item) {
-				$newItem = self::copy($item);
+				$newItem = $this->copy($item);
 				$newStorage->attach($newItem);
 			}
 			return $newStorage;

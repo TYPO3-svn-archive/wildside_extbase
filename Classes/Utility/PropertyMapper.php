@@ -26,6 +26,48 @@
 class Tx_WildsideExtbase_Utility_PropertyMapper implements t3lib_Singleton {
 	
 	/**
+	 * RecursionHandler instance
+	 * @var Tx_WildsideExtbase_Utility_RecursionHandler
+	 */
+	protected $recursionHandler;
+	
+	/**
+	 * ReflectionService instance
+	 * @var Tx_Extbase_Reflection_Service $service
+	 */
+	protected $reflectionService;
+	
+	/**
+	 * ObjectManager instance
+	 * @var Tx_Extbase_Object_ObjectManager
+	 */
+	protected $objectManger;
+	
+	/**
+	 * Inject a RecursionHandler instance
+	 * @param Tx_WildsideExtbase_Utility_RecursionHandler $handler
+	 */
+	public function injectRecursionHandler(Tx_WildsideExtbase_Utility_RecursionHandler $handler) {
+		$this->recursionHandler = $handler;
+	}
+	
+	/**
+	 * Inject a Reflection Service instance
+	 * @param Tx_Extbase_Reflection_Server $service
+	 */
+	public function injectReflectionService(Tx_Extbase_Reflection_Service $service) {
+		$this->reflectionService = $service;
+	}
+	
+	/**
+	 * Inject a Reflection Service instance
+	 * @param Tx_Extbase_Object_ObjectManager $manager
+	 */
+	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $manager) {
+		$this->objectManager = $manager;
+	}
+	
+	/**
 	 * Returns an array of property names by searching the $object for annotations
 	 * based on $annotation and $value. If $annotation is provided but $value is not,
 	 * all properties which simply have the annotation present. Relational values
@@ -39,32 +81,33 @@ class Tx_WildsideExtbase_Utility_PropertyMapper implements t3lib_Singleton {
 	 * @return array
 	 */
 	public function getValuesByAnnotation(Tx_Extbase_DomainObject_DomainObjectInterface $object, $annotation='json', $value=TRUE, $addUid=TRUE) {
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$reflectionService = $objectManager->get('Tx_Extbase_Reflection_Service');
 		$className = get_class($object);
-		$properties = $reflectionService->getClassPropertyNames($className);
-		
+		$this->recursionHandler->in();
+		$this->recursionHandler->check($className);
+		$properties = $this->reflectionService->getClassPropertyNames($className);
 		$return = array();
 		if ($addUid) {
 			$return['uid'] = $object->getUid();
 		}
 		foreach ($properties as $propertyName) {
-			$tags = $reflectionService->getPropertyTagsValues($className, $propertyName);
+			$tags = $this->reflectionService->getPropertyTagsValues($className, $propertyName);
 			$getter = 'get' . ucfirst($propertyName);
 			$annotationValues = $tags[$annotation];
 			if ($annotationValues !== NULL && (in_array($value, $annotationValues) || $value === TRUE)) {
 				$returnValue = $object->$getter();
 				if ($returnValue instanceof Tx_Extbase_DomainObject_DomainObjectInterface) {
-					#$returnValue = self::getValuesByAnnotation($object, $annotation, $value, $addUid);
+					$returnValue = $this->getValuesByAnnotation($returnValue, $annotation, $value, $addUid);
 				} else if ($returnValue instanceof Tx_Extbase_DomainObject_DomainObjectInterface) {
 					$array = $returnValue->toArray();
 					foreach ($array as $k=>$v) {
-						$array[$k] = self::getValuesByAnnotation($v, $annotation, $value, $addUid);
+						$array[$k] = $this->getValuesByAnnotation($v, $annotation, $value, $addUid);
 					}
 				}
 				$return[$propertyName] = $returnValue;
 			}
 		}
+		
+		$this->recursionHandler->out();
 		return $return;
 	}
 	
