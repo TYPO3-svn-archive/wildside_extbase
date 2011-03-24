@@ -15,7 +15,7 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 		var key = setting.attr("title");
 		var value = setting.html().trim();
 		dk.wildside.util.Configuration[key] = value; // TODO: when all references are gone, remove this
-		dk.wildside.config[key] = value; // TODO: this ad-hoc storage is to take the place of the singleton above
+		dk.wildside.config[key] = value; // TODO: this ad hoc storage is to take the place of the singleton above
 	});
 	
 	// Now, bootstrap all existing components on the page. This automatically handles
@@ -24,10 +24,10 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 		var component = dk.wildside.spawner.get(this);
 	});
 	
-	// Now, if any widgets are left untouched, we need to bootstrap them as standalones
+	// Now, if any widgets are left untouched, we need to bootstrap them as stand-alone
 	jQuery("." + dk.wildside.util.Configuration.guiSelectors.widget +":not(." + dk.wildside.util.Configuration.guiSelectors.inUse +")").each( function() {
 		var widget = dk.wildside.spawner.get(this);
-	} );
+	});
 	
 	// Basic configuration - this can be overruled later, though.
 	var editConfig = { };

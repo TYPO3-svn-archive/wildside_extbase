@@ -14,19 +14,25 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 		return this;
 	};
 	dk.wildside.display.DisplayObject.call(this, jQueryElement);
+	
 	// references
 	this.events = dk.wildside.event.widget.WidgetEvent;
 	this.selectors = dk.wildside.util.Configuration.guiSelectors;
+	
 	// internals
 	this.fields = new dk.wildside.util.Iterator();
+	this.widgets = new dk.wildside.util.Iterator();
 	this.messages = new dk.wildside.util.Iterator();
 	this.disabled = false;
 	this.dirty = false;
+	this.name = this.config.name;
 	this.defaultAction = this.config.action;
+	
 	// identity
 	if (typeof this.identity == 'undefined') {
 		this.identity = 'widget';
 	};
+	
 	// event listeners
 	this.addEventListener(this.events.DIRTY, this.onDirty);
 	this.addEventListener(this.events.CLEAN, this.onClean);
@@ -36,10 +42,14 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	this.addEventListener(dk.wildside.event.FieldEvent.DIRTY, this.onDirtyField);
 	this.addEventListener(dk.wildside.event.FieldEvent.CLEAN, this.onCleanField);
 	
-	// Regular field bootstrapping. This is for regular jackoffs.
-	var fsel = "." + this.selectors.field;
+	// Regular field and sub-Widget bootstrapping.
 	var widget = this; // Necessary reference for the following jQuery enclosure
-	this.context.find(fsel).each(function() {
+	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")").each( function() {
+		var obj = jQuery(this)
+		var widgetAsField = dk.wildside.spawner.get(obj);
+		widget.registerField(widgetAsField); // catch events from sub-Widgets
+	} );
+	this.context.find("." + this.selectors.field).each(function() {
 		var obj = jQuery(this)
 		var field = dk.wildside.spawner.get(obj);
 		widget.registerField(field);
@@ -49,9 +59,6 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 };
 
 dk.wildside.display.widget.Widget.prototype = new dk.wildside.display.DisplayObject;
-
-
-
 
 
 
@@ -101,8 +108,6 @@ dk.wildside.display.widget.Widget.prototype.displayErrors = function(messages) {
 
 dk.wildside.display.widget.Widget.prototype.displayMessages = function(messages) {
 	var container = this.fields.find('messages');
-	//console.info(this);
-	//console.warn(container);
 	if (typeof container != 'undefined') {
 		return container.setValue.call(container, messages);
 	} else {
@@ -119,24 +124,24 @@ dk.wildside.display.widget.Widget.prototype.displayMessages = function(messages)
 
 
 
-
-
 // DATA MANIPULATION METHODS
-// TODO: consider removing these and replacing them with entirely Fields-based
 // value storage. Bonuses include smaller Widget memory usage, event capabilities
 // for each value (nice!) and of course sanitizer-support.
-dk.wildside.display.widget.Widget.prototype.setValue = function(field, value) {
-	var fieldObject = this.fields.find(field);
-	if (fieldObject) {
-		fieldObject.setValue(value);
-	};
+dk.wildside.display.widget.Widget.prototype.setValue = function(value) {
+	// default action is to do nothing - custom Widgets masquerading as Fields override this method
 };
 
-dk.wildside.display.widget.Widget.prototype.getValue = function(field) {
-	var fieldObject = this.fields.find(field);
-	if (fieldObject) {
-		return fieldObject.getValue();
-	}
+dk.wildside.display.widget.Widget.prototype.getValue = function() {
+	// default action is to return undefined - custom Widgets masquerading as Fields override this method
+	return undefined;
+};
+
+dk.wildside.display.widget.Widget.prototype.setName = function(value) {
+	this.name = value;
+};
+
+dk.wildside.display.widget.Widget.prototype.getName = function() {
+	this.name;
 };
 
 dk.wildside.display.widget.Widget.prototype.setValues = function(object) {
@@ -153,7 +158,7 @@ dk.wildside.display.widget.Widget.prototype.getValues = function() {
 	this.fields.each(function(field) {
 		if (typeof widget.config.data[field.getName()] != 'undefined') {
 			values[field.getName()] = field.getValue();
-		}
+		};
 	});
 	return values;
 };

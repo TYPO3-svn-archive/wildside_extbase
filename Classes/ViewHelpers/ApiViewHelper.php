@@ -31,13 +31,15 @@ class Tx_WildsideExtbase_ViewHelpers_ApiViewHelper extends Tx_WildsideExtbase_Vi
 	private $obfuscate = FALSE;
 	private $cacheTTL = 0;
 	private $domain = FALSE;
+	private $extension = NULL;
 	
 	protected $type = Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_JAVASCRIPT;
 	
 	/**
 	 * Includes all JS API name spaces for the domain $domain
 	 * 
-	 * @param string $domain The domain path of the API to load. Defaults to dk.wildside
+	 * @param string $extension If specified, APIs are read from the default location in this extension
+	 * @param string $domain The domain path of the API to load. Defaults to dk.wildside; if specified along with $extension, only $domain's namespace will be loaded
 	 * @param boolean $cache If TRUE, the file is cached (works best if you also use one of the compress, concat or obfuscate options
 	 * @param boolean $compress If TRUE, the file is compressed
 	 * @param boolean $concat If TRUE, the files to include are concatenated
@@ -45,29 +47,48 @@ class Tx_WildsideExtbase_ViewHelpers_ApiViewHelper extends Tx_WildsideExtbase_Vi
 	 * @param int $cacheTTL How long the cached result file should be cached. Default is 24H (86400)
 	 * @return string
 	 */
-	public function render($domain='dk.wildside', $cache=FALSE, $compress=FALSE, $concat=TRUE, $obfuscate=FALSE, $cacheTTL=86400) {
+	public function render($extension=NULL, $domain=NULL, $cache=FALSE, $compress=FALSE, $concat=TRUE, $obfuscate=FALSE, $cacheTTL=86400) {
+		if ($extension === NULL) {
+			$extension = 'wildside_extbase';
+		}
+		$this->extension = $extension;
 		$this->domain = $domain;
 		$this->cache = $cache;
 		$this->compress = $compress;
 		$this->concat = $concat;
 		$this->obfuscate = $obfuscate;
 		$this->cacheTTL = $cacheTTL;
-		$this->includes();
+		$files = $this->detectNamespaceFiles();
 		return $this->renderChildren();
 	}
 	
-	private function includes() {
-		$namespace = $this->domain;
-		// domain minus the TLD is the extension name using dots instead of underscores
-		$splitNamespace = $parts = explode('.', $namespace);
-		$tld = array_shift($parts);
-		$extensionName = implode('_', $parts);  
-		$path = implode('/', $splitNamespace) . "/";
-		if ($extensionName == 'wildside') {
-			$extensionName = 'wildside_extbase';
+	/**
+	 * Detect all namespace
+	 * @eturn array Files which were included/detected
+	 */
+	private function detectNamespaceFiles() { 
+		$jsBasePath = t3lib_extMgm::siteRelPath($this->extension) . 'Resources/Public/Javascript/';
+		$files = scandir($jsBasePath);
+		foreach ($files as $k=>$file) {
+			$pathinfo = pathinfo($jsBasePath.$file);
+			if (is_dir($jsBasePath) == FALSE || $pathinfo['extension'] != $this->type) {
+				unset($files[$k]);
+			} else {
+				$this->includes($pathinfo);
+			}
 		}
-		$jsBasePath = t3lib_extMgm::siteRelPath($extensionName) . 'Resources/Public/Javascript/';
-		$namespaceFile = "{$jsBasePath}{$namespace}.js";
+		return $files;
+	}
+	
+	/**
+	 * Process include files for API
+	 * @return boolean
+	 */
+	private function includes($pathinfo) {
+		$jsBasePath = $pathinfo['dirname'] . '/';
+		$namespace = $pathinfo['filename'];
+		$namespaceFile = $jsBasePath . $namespace . '.' . $pathinfo['extension'];
+		$splitNamespace = $parts = explode('.', $namespace);
 		$namespacePath = implode('/', $splitNamespace);
 		$contents = file_get_contents(PATH_site . $namespaceFile);
 		$lines = explode("\n", $contents);

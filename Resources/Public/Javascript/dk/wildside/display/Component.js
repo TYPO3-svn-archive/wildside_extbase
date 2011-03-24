@@ -30,7 +30,10 @@ dk.wildside.display.Component = function(jQueryElement) {
 	
 	// Widget detection, only detect Widgets which are not members of Component below this Component
 	var parent = this; // necessary reference for the following jQuery enclosure
-	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")").not(this.context.find("." + this.selectors.component +" ." + this.selectors.widget)).each( function() {
+	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")")
+	.not(this.context.find("." + this.selectors.widget +" ." + this.selectors.widget))
+	.not(this.context.find("." + this.selectors.widget +" ." + this.selectors.widget))
+	.each( function() {
 		var widget = dk.wildside.spawner.get(this);
 		parent.registerWidget(widget);
 	});
