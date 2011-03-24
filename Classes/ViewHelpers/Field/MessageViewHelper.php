@@ -41,7 +41,7 @@ class Tx_WildsideExtbase_ViewHelpers_Field_MessageViewHelper extends Tx_Wildside
 			$value = $this->renderChildren();
 		}
 		$displayTypeFixed = str_replace(".", "-", $displayType);
-		$field = "<{$tag} class='{$class}'>MESSAGES: {$value}</{$tag}>";
+		$field = "<{$tag} class='{$class}'>{$value}</{$tag}>";
 		$config = new stdClass();
 		$config->hidden = $hidden ? 1 : 0;
 		$config->timeout = $timeout;

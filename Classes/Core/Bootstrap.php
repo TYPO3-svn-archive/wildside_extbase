@@ -60,7 +60,6 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 			}
 			$data = $this->wrapResponse($data);
 			$messages = $messager->getAllMessagesAndFlush();
-			$this->resetSingletons();
 			$data->messages = array();
 			foreach ($messages as $message) {
 				$msg = new stdClass();
@@ -73,6 +72,7 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 			$this->resetSingletons();
 			die($e);
 		}
+		$this->resetSingletons();
 		$output = json_encode($data);
 		return $output;
 	}

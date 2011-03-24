@@ -75,7 +75,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 		if ($plugin) {
 			$obj->plugin = $plugin;
 		} else {
-			$plugin = 'pi1';
+			$plugin = 'core';
 			$extension = $this->controllerContext->getRequest()->getControllerExtensionName();
 			$plugin = strtolower($plugin);
 			$extension = strtolower($extension);
