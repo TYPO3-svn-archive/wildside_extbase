@@ -133,7 +133,7 @@ class Tx_WildsideExtbase_Utility_CloningService implements t3lib_Singleton {
 			return $newStorage;
 		} else if ($value instanceof Tx_Locus_Domain_Model_AbstractDomainModelObject) {
 			// DomainObject; copy and return
-			return $value->copy();
+			return $this->copy($value);
 		} else if (is_object($value)) {
 			// fallback case for class copying - value objects and such
 			return clone $value;

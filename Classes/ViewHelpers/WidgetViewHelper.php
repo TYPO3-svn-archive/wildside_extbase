@@ -65,7 +65,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 			$html = $this->renderChildren();
 		}
 		$obj = new stdClass();
-		$obj->api = $GLOBALS['TSFE']->cObj->typoLink('', array('parameter' => $page, 'returnLast' => 'url', 'additionalParams' => "&type={$type}"));
+		$obj->api = "?type={$type}";
 		$obj->displayType = $widget;
 		$obj->controller = $controller;
 		$obj->page = $page;

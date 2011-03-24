@@ -32,7 +32,7 @@ class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideEx
 	 * @param string $name Name property of the Field
 	 * @param string $value Value property of the Field
 	 * @param string $class Class property of the Field
-	 * @param array $options If multiple options, specify them here as value => label array
+	 * @param mixed $options If multiple options, specify them here as value => label array
 	 * @param string $selectedValue The pre-selected value among $options
 	 * @param string $sanitizer WS JS Domain style reference to validator method
 	 */
@@ -41,9 +41,15 @@ class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideEx
 			$name=NULL, 
 			$value=NULL, 
 			$class=NULL, 
-			array $options=array('No', 'Yes'), 
+			$options=array('No', 'Yes'), 
 			$selectedValue=NULL,
 			$sanitizer=NULL) {
+		if (is_string($options)) {
+			$options = explode(',', $options);
+			foreach ($options as $k=>$v) {
+				$options->$k = trim($v);
+			}
+		}
 		$html = "<span class='input-radio-wrap'>";
 		foreach ($options as $value=>$label) {
 			if ($value == $selectedValue) {

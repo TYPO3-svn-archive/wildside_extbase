@@ -58,9 +58,9 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 				// probability: JSON as string, decode it
 				$data = json_decode($content);
 			}
-			$this->resetSingletons();
 			$data = $this->wrapResponse($data);
 			$messages = $messager->getAllMessagesAndFlush();
+			$this->resetSingletons();
 			$data->messages = array();
 			foreach ($messages as $message) {
 				$msg = new stdClass();
@@ -70,6 +70,7 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 				array_push($data->messages, $msg);
 			} 
 		} catch (Exception $e) {
+			$this->resetSingletons();
 			die($e);
 		}
 		$output = json_encode($data);
