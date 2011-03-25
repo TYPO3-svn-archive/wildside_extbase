@@ -38,29 +38,35 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_DatePickerViewHelper extends Tx_Wild
 	 * Creates a jQuery datepicker element
 	 * 
 	 * @param string $widget JS namespace of widget to use - override this if you subclassed dk.wildside.display.widget.DatePickerWidget in JS
+	 * @param string $name Name of the emulated field
+	 * @param string $controller Controller name
+	 * @param string $plugin Plugin name to use
+	 * @param string $action Action of controller
 	 * @param string $date The selected date to use, either UNIX timestamp or strtotime-compat date string
 	 * @param array $dates Array of dates to highlight
 	 * @param string $name The name of the (hidden) input field
 	 * @param string $class The class of the input field
 	 * @param string $title The title of the Widget
 	 * @param string $templateFile siteroot-relative path of template file to use
+	 * @param int $type
 	 * @return string
 	 */
 	public function render(
 			$widget=self::NAMESPACE, 
+			$name='date',
+			$controller=NULL,
+			$plugin=NULL,
+			$action=NULL,
 			$date=NULL,
 			$dates=array(),
 			$name=NULL,
 			$class=NULL,
 			$title=NULL,
-			$templateFile=NULL
+			$templateFile=NULL,
+			$type=0
 			) {
-		$controller = NULL;
-		$plugin = NULL;
-		$action = NULL;
 		$page = NULL;
 		$data = NULL;
-		$type = 0;
 		$html = $this->renderChildren();
 		if (strlen(trim($html)) == 0) {
 			$defaultTemplateFile = 'Widget/DatePickerWidget.html';
@@ -69,7 +75,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_DatePickerViewHelper extends Tx_Wild
 			$template->assign('dates', $dates);
 			$html = $template->render();
 		}
-		return parent::render($widget, $controller, $action, $page, $plugin, $data, $class, $title, $type, $html);
+		return parent::render($widget, $name, $controller, $action, $page, $plugin, $data, $class, $title, $type, $html);
 	}
 }
 	

@@ -26,6 +26,7 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	this.disabled = false;
 	this.dirty = false;
 	this.name = this.config.name;
+	this.value = this.config.value;
 	this.defaultAction = this.config.action;
 	
 	// identity
@@ -45,12 +46,12 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	// Regular field and sub-Widget bootstrapping.
 	var widget = this; // Necessary reference for the following jQuery enclosure
 	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")").each( function() {
-		var obj = jQuery(this)
+		var obj = jQuery(this);
 		var widgetAsField = dk.wildside.spawner.get(obj);
 		widget.registerField(widgetAsField); // catch events from sub-Widgets
 	} );
 	this.context.find("." + this.selectors.field).each(function() {
-		var obj = jQuery(this)
+		var obj = jQuery(this);
 		var field = dk.wildside.spawner.get(obj);
 		widget.registerField(field);
 	});
@@ -125,23 +126,22 @@ dk.wildside.display.widget.Widget.prototype.displayMessages = function(messages)
 
 
 // DATA MANIPULATION METHODS
-// value storage. Bonuses include smaller Widget memory usage, event capabilities
-// for each value (nice!) and of course sanitizer-support.
 dk.wildside.display.widget.Widget.prototype.setValue = function(value) {
 	// default action is to do nothing - custom Widgets masquerading as Fields override this method
+	this.value = value;
 };
 
 dk.wildside.display.widget.Widget.prototype.getValue = function() {
 	// default action is to return undefined - custom Widgets masquerading as Fields override this method
-	return undefined;
+	return this.value;
 };
 
-dk.wildside.display.widget.Widget.prototype.setName = function(value) {
-	this.name = value;
+dk.wildside.display.widget.Widget.prototype.setName = function(newName) {
+	this.name = newName;
 };
 
 dk.wildside.display.widget.Widget.prototype.getName = function() {
-	this.name;
+	return this.name;
 };
 
 dk.wildside.display.widget.Widget.prototype.setValues = function(object) {

@@ -27,6 +27,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 	
 	const NAMESPACE = 'dk.wildside.display.widget.RecordSelectorWidget';
 	
+	private $name;
 	private $table;
 	private $query;
 	private $titleField;
@@ -35,6 +36,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 	/**
 	 * Render an entry for a Listener compatible with JS LocusController
 	 * @param string $widget JS namespace of widget to use - override this if you subclassed dk.wildside.display.widget.RecordSelectorWidget in JS
+	 * @param string $name Name of the (emulated) property
 	 * @param array $data Prefilled records
 	 * @param string $class Extra CSS-classes to use
 	 * @param string $title Title of the widget
@@ -48,17 +50,19 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 	 * @return string
 	 */
 	public function render(
-			$widget=self::NAMESPACE, 
+			$widget=self::NAMESPACE,
+			$name='records', 
 			$data=NULL, 
 			$class=NULL, 
 			$title=NULL,
 			$page=NULL,
 			$templateFile=NULL,
 			$table='pages',
-			$titleField=NULL,
+			$titleField='title',
 			$storagePid=0,
 			$type=4815163242,
 			$relationType='1:n') {
+		$this->name = $name;
 		$this->table = $table;
 		$this->query = $query;
 		$this->titleField = $titleField;
@@ -74,8 +78,11 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 			$template->assign('selected', $this->getSelected($data));
 			// $template->assign($var, $value);
 			$html = $template->render();
+			#header("Content-type: text/plain");
+			#echo $html;
+			#exit();
 		}
-		return parent::render($widget, $controller, $action, $page, $plugin, $data, $class, $title, $type, $html);
+		return parent::render($widget, $name, $controller, $action, $page, $plugin, $data, $class, $title, $type, $html);
 	}
 	
 	private function getPossibles() {

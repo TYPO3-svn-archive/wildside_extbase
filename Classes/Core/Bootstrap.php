@@ -38,25 +38,28 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 		$requestHandler = $requestHandlerResolver->resolveRequestHandler();
 		$response = $requestHandler->handleRequest();
 		if ($response === NULL) {
-			$this->reflectionService->shutdown();
 			return;
-		}
-		if (count($response->getAdditionalHeaderData()) > 0) {
-			$GLOBALS['TSFE']->additionalHeaderData[] = implode(chr(10), $response->getAdditionalHeaderData());
 		}
 		try {
 			$content = $response->getContent();
-			$sub = explode(':', $content);
-			$dataType = array_shift($sub);
-			$uid = array_pop($sub);
-			$argument = $this->objectManager->get('Tx_Extbase_MVC_Controller_Argument', 'content', $dataType);
-			$object = $argument->setValue($uid)->getValue(); // transformation to object
-			if ($object instanceof Tx_Extbase_DomainObject_DomainObjectInterface) {
-				// inevitability: DomainObject, get json variables by annotation
-				$data = $mapper->getValuesByAnnotation($object, 'json', TRUE);
+			// attemt JSON decode - if result is an object or array, use it as data
+			$testJSON = json_decode($content);
+			if (is_object($testJSON) || is_array($testJSON)) {
+				$data = $testJSON;
 			} else {
-				// probability: JSON as string, decode it
-				$data = json_decode($content);
+				$sub = explode(':', $content);
+				$dataType = array_shift($sub);
+				$uid = array_pop($sub);
+				$argument = $this->objectManager->get('Tx_Extbase_MVC_Controller_Argument', 'content', $dataType);
+				$object = $argument->setValue($uid)->getValue(); // transformation to object
+				if ($object instanceof Tx_Extbase_DomainObject_DomainObjectInterface) {
+					// inevitability: DomainObject, get json variables by annotation
+					$data = $mapper->getValuesByAnnotation($object, 'json', TRUE);
+				} else {
+					$data = array(
+						'Decode error' => 'WildsideExtbase Bootstrap does not know how to decode string: ' . $content
+					);
+				}
 			}
 			$data = $this->wrapResponse($data);
 			$messages = $messager->getAllMessagesAndFlush();
@@ -69,9 +72,10 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 				array_push($data->messages, $msg);
 			} 
 		} catch (Exception $e) {
-			$this->resetSingletons();
-			die($e);
+			#$this->resetSingletons();
+			die($e->getMessage());
 		}
+		
 		$this->resetSingletons();
 		$output = json_encode($data);
 		return $output;

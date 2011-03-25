@@ -30,6 +30,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_FileUploadViewHelper extends Tx_Wild
 	/**
 	 * Render an entry for a Listener compatible with JS LocusController
 	 * @param string $widget JS namespace of widget to use - override this if you subclassed dk.wildside.display.widget.FileUploadWidget in JS
+	 * @param string $name Name of the emulated field
 	 * @param array $data Prefilled files
 	 * @param string $class Extra CSS-classes to use
 	 * @param string $title Title of the widget
@@ -37,7 +38,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_FileUploadViewHelper extends Tx_Wild
 	 * @param string $template siteroot-relative path of template file to use - leave out for default
 	 * @return string
 	 */
-	public function render($widget=self::NAMESPACE, $data=NULL, $class=NULL, $title=NULL, $templateFile=NULL) {
+	public function render($widget=self::NAMESPACE, $name='files', $data=NULL, $class=NULL, $title=NULL, $templateFile=NULL) {
 		$type = 4815163242;
 		$controller = 'FileUpload';
 		$action = 'upload';
@@ -48,7 +49,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_FileUploadViewHelper extends Tx_Wild
 			$template = $this->getTemplate($templateFile, $defaultTemplateFile);
 			$html = $template->render();
 		}
-		return parent::render($widget, $controller, $action, $page, $plugin, $data, $class, $title, $type, $html);
+		return parent::render($widget, $name, $controller, $action, $page, $plugin, $data, $class, $title, $type, $html);
 	}
 	
 }

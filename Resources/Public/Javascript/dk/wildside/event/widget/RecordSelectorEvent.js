@@ -4,5 +4,6 @@ dk.wildside.event.widget.RecordSelectorEvent = {
 	SELECT : 'record-select',
 	ADD : 'record-add',
 	REMOVE : 'record-remove',
-	SORT : 'record-sort'
+	SORT : 'record-sort',
+	NOOP : 'record-noop'
 };

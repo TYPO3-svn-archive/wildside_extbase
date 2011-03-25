@@ -18,7 +18,8 @@ dk.wildside.core.Spawner.prototype.get = function(jQueryElement) {
 		eval("if (typeof(" + displayType + ") != 'undefined') spawnedObject = new " + displayType + "(jQueryElement);");
 	};
 	if (!spawnedObject) {
-		console.warn('Invalid displayType: ' + displayType);
+		//console.warn('Invalid displayType: ' + displayType);
+		//console.warn(jQueryElement);
 	};
 	return spawnedObject;
 };

@@ -27,6 +27,7 @@ dk.wildside.display.Component = function(jQueryElement) {
 	this.widgets = new dk.wildside.util.Iterator();
 	this.dirtyWidgets = new dk.wildside.util.Iterator();
 	this.loadingStrategy = this.config.strategy;
+	this.alternating = false;
 	
 	// Widget detection, only detect Widgets which are not members of Component below this Component
 	var parent = this; // necessary reference for the following jQuery enclosure
@@ -88,4 +89,12 @@ dk.wildside.display.Component.prototype.sync = function() {
 
 dk.wildside.display.Component.prototype.rollback = function() {
 	this.widgets.each(function(widget) { widget.rollback(); });
+};
+
+dk.wildside.display.Component.prototype.setAlternating = function(alternating) {
+	this.alternating = alternating;
+};
+
+dk.wildside.display.Component.prototype.getAlternating = function() {
+	return this.alternating;
 };

@@ -35,6 +35,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 	/**
 	 * Render an entry for a Listener compatible with JS LocusController
 	 * @param string $widget The identifier of the widget, used in serverside com. and by JS. If model object defines its own widget, this one will be ignored
+	 * @param string $name If specified, will be returned from the getName() method of the Widget instance in JS
 	 * @param string $controller Name of the controller this widget uses
 	 * @param string $action Default action of the controller to call, can be overridden by widget JS
 	 * @param int $page UID of page containing the controller, optional
@@ -48,6 +49,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 	 */
 	public function render(
 			$widget = 'dk.wildside.display.widget.Widget',
+			$name='widget',
 			$controller=NULL,
 			$action='update',
 			$page=NULL,
@@ -61,9 +63,6 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 		if ($page === NULL) {
 			$page = $GLOBALS['TSFE']->id;
 		}
-		if ($html === NULL) {
-			$html = $this->renderChildren();
-		}
 		$obj = new stdClass();
 		$obj->api = "?type={$type}";
 		$obj->displayType = $widget;
@@ -71,6 +70,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 		$obj->page = $page;
 		$obj->title = $title;
 		$obj->action = $action;
+		$obj->name = $name;
 		
 		if ($plugin) {
 			$obj->plugin = $plugin;
@@ -90,6 +90,10 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 			$obj->data = $data;
 		}
 		$json = json_encode($obj);
+		if ($html === NULL) {
+			$html = $this->renderChildren();
+		}
+		
 		$html = "<div class='wildside-extbase-widget {$class}'>
 			<div class='wildside-extbase-json'>{$json}</div>
 			{$html}

@@ -51,13 +51,14 @@ class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideEx
 			}
 		}
 		$html = "<span class='input-radio-wrap'>";
+		$uniqID = uniqid();
 		foreach ($options as $value=>$label) {
 			if ($value == $selectedValue) {
 				$checked = " checked='checked'";
 			} else {
 				$checked = '';
 			}
-			$field = "<label class='input-field-label'><span class='input-field-label-text'>{$label}</span> <input type='radio' name='{$name}' class='input-radio {$class}' value='{$value}' {$checked} /></label>";
+			$field = "<label class='input-field-label'><span class='input-field-label-text'>{$label}</span> <input type='radio' name='{$name}_{$uniqID}' class='input-radio {$class}' value='{$value}' {$checked} /></label>";
 			$html .= $field;
 		}
 		$html .= "</span>";
