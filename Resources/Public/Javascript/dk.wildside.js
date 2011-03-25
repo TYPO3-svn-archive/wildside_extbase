@@ -53,6 +53,7 @@ jQuery(document).ready(function() {
 // display/field/Textarea.js
 // display/field/Value.js
 // display/widget/Widget.js
+// display/widget/DatePickerWidget.js
 // display/widget/FileUploadWidget.js
 // display/widget/RecordSelectorWidget.js
 // core/Spawner.js

@@ -85,7 +85,6 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 			$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 			$mapper = $objectManager->get('Tx_WildsideExtbase_Utility_PropertyMapper');
 			$obj->data = $mapper->getValuesByAnnotation($data, 'json', TRUE);
-			#$obj->data = $this->getValues($data);
 		} else {
 			$obj->data = $data;
 		}

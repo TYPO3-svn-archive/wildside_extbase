@@ -44,7 +44,6 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_DatePickerViewHelper extends Tx_Wild
 	 * @param string $action Action of controller
 	 * @param string $date The selected date to use, either UNIX timestamp or strtotime-compat date string
 	 * @param array $dates Array of dates to highlight
-	 * @param string $name The name of the (hidden) input field
 	 * @param string $class The class of the input field
 	 * @param string $title The title of the Widget
 	 * @param string $templateFile siteroot-relative path of template file to use
@@ -59,18 +58,20 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_DatePickerViewHelper extends Tx_Wild
 			$action=NULL,
 			$date=NULL,
 			$dates=array(),
-			$name=NULL,
 			$class=NULL,
 			$title=NULL,
 			$templateFile=NULL,
 			$type=0
 			) {
 		$page = NULL;
-		$data = NULL;
+		$data = new stdClass();
+		$data->value = $date;
+		$data->name = $name;
 		$html = $this->renderChildren();
 		if (strlen(trim($html)) == 0) {
 			$defaultTemplateFile = 'Widget/DatePickerWidget.html';
 			$template = $this->getTemplate($templateFile, $defaultTemplateFile);
+			$template->assign('name', $name);
 			$template->assign('date', $date);
 			$template->assign('dates', $dates);
 			$html = $template->render();

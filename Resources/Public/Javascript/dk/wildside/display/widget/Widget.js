@@ -156,8 +156,10 @@ dk.wildside.display.widget.Widget.prototype.getValues = function() {
 	var values = {};
 	var widget = this;
 	this.fields.each(function(field) {
-		if (typeof widget.config.data[field.getName()] != 'undefined') {
-			values[field.getName()] = field.getValue();
+		var fieldName = field.getName();
+		console.log(fieldName);
+		if (typeof widget.config.data[fieldName] == 'string') {
+			values[fieldName] = field.getValue();
 		};
 	});
 	return values;
