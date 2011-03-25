@@ -157,7 +157,7 @@ dk.wildside.display.widget.Widget.prototype.getValues = function() {
 	var widget = this;
 	this.fields.each(function(field) {
 		var fieldName = field.getName();
-		console.log(fieldName);
+		//console.log(fieldName);
 		if (typeof widget.config.data[fieldName] == 'string') {
 			values[fieldName] = field.getValue();
 		};
