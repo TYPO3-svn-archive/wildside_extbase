@@ -17,7 +17,7 @@ dk.wildside.net.Request.prototype.getScope = function() {
 	if (this.scope) {
 		return this.scope;
 	};
-	return this.widget.getConfiguration().plugin;
+	return this.widget.config.plugin;
 };
 
 dk.wildside.net.Request.prototype.setScope = function(scope) {
@@ -29,7 +29,7 @@ dk.wildside.net.Request.prototype.getController = function() {
 	if (this.controller) {
 		return this.controller;
 	} else {
-		return this.widget.getConfiguration().controller;
+		return this.widget.config.controller;
 	};
 };
 
@@ -42,7 +42,7 @@ dk.wildside.net.Request.prototype.getAction = function() {
 	if (this.action) {
 		return this.action;
 	} else {
-		return this.widget.getConfiguration().action;
+		return this.widget.config.action;
 	};
 };
 
@@ -73,8 +73,8 @@ dk.wildside.net.Request.prototype.getUrl = function() {
 	if (this.url) {
 		return this.url;
 	};
-	var configuration = this.widget.getConfiguration();
-	var base = this.widget.getConfiguration().api;
+	var configuration = this.widget.config;
+	var base = configuration.api;
 	var scope = this.getScope();
 	var action = this.getAction();
 	var controller = this.getController();

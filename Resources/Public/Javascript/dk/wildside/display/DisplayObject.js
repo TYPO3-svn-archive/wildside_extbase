@@ -17,6 +17,7 @@ dk.wildside.display.DisplayObject = function(jQueryElement) {
 	this.selectors = dk.wildside.util.Configuration.guiSelectors;
 	this.context.data('instance', this); // back-reference
 	this.context.addClass(this.selectors.inUse); // claim DOM element
+	this.children = new dk.wildside.util.Iterator();
 	// defaults for visual effects:
 	this.visuals = {
 		duration : 750
@@ -60,6 +61,20 @@ dk.wildside.display.DisplayObject.prototype.replaceWith = function(source) {
 dk.wildside.display.DisplayObject.prototype.remove = function() {
 	this.replaceWith('');
 	return this;
+};
+
+dk.wildside.display.DisplayObject.prototype.copy = function() {
+	var newContext = this.context.clone();
+	var newItem = new this(newContext);
+	return newItem;
+};
+
+dk.wildside.display.DisplayObject.prototype.addChild = function(displayObject, addHtml) {
+	this.children.push(displayObject);
+	displayObject.setParent(this);
+	if (addHtml) {
+		this.context.append(displayObject.context.html());
+	};
 };
 
 dk.wildside.display.DisplayObject.prototype.expose = function() {

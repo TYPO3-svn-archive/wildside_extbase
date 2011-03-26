@@ -14,27 +14,16 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 		return this;
 	};
 	dk.wildside.display.DisplayObject.call(this, jQueryElement);
-	
-	// references
+	var widget = this; // Necessary backreference for closures
 	this.events = dk.wildside.event.widget.WidgetEvent;
 	this.selectors = dk.wildside.util.Configuration.guiSelectors;
-	
-	// internals
-	this.fields = new dk.wildside.util.Iterator();
-	this.widgets = new dk.wildside.util.Iterator();
 	this.messages = new dk.wildside.util.Iterator();
 	this.disabled = false;
 	this.dirty = false;
 	this.name = this.config.name;
 	this.value = this.config.value;
 	this.defaultAction = this.config.action;
-	
-	// identity
-	if (typeof this.identity == 'undefined') {
-		this.identity = 'widget';
-	};
-	
-	// event listeners
+	this.identity = 'widget';
 	this.addEventListener(this.events.DIRTY, this.onDirty);
 	this.addEventListener(this.events.CLEAN, this.onClean);
 	this.addEventListener(this.events.ERROR, this.onError);
@@ -42,44 +31,20 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	this.addEventListener(this.events.MESSAGE, this.onMessage);
 	this.addEventListener(dk.wildside.event.FieldEvent.DIRTY, this.onDirtyField);
 	this.addEventListener(dk.wildside.event.FieldEvent.CLEAN, this.onCleanField);
-	
-	// Regular field and sub-Widget bootstrapping.
-	var widget = this; // Necessary reference for the following jQuery enclosure
 	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")").each( function() {
 		var obj = jQuery(this);
 		var widgetAsField = dk.wildside.spawner.get(obj);
-		widget.registerField(widgetAsField); // catch events from sub-Widgets
+		widget.addChild.call(widget, widgetAsField); // will catch events from sub-Widgets
 	} );
 	this.context.find("." + this.selectors.field).each(function() {
 		var obj = jQuery(this);
 		var field = dk.wildside.spawner.get(obj);
-		widget.registerField(field);
+		widget.addChild.call(widget, field);
 	});
-	
 	return this;
 };
 
-dk.wildside.display.widget.Widget.prototype = new dk.wildside.display.DisplayObject;
-
-
-
-// REGISTRATION / CONSTRUCTION / CONFIGURATION METHODS
-dk.wildside.display.widget.Widget.prototype.registerComponent = function(component) {
-	// Remove native dirty-listener (set by constructor) first to let Component
-	// manage sync strategy and prevent widget vigilantes ;)
-	this.removeEventListener(dk.wildside.event.Event.DIRTY, this.onDirty);
-	return this;
-};
-
-dk.wildside.display.widget.Widget.prototype.registerField = function(field) {
-	field.setParent(this);
-	this.fields.push(field);
-};
-
-dk.wildside.display.widget.Widget.prototype.getConfiguration = function() {
-	return this.config;
-};
-
+dk.wildside.display.widget.Widget.prototype = new dk.wildside.display.DisplayObject();
 
 
 
@@ -108,7 +73,7 @@ dk.wildside.display.widget.Widget.prototype.displayErrors = function(messages) {
 };
 
 dk.wildside.display.widget.Widget.prototype.displayMessages = function(messages) {
-	var container = this.fields.find('messages');
+	var container = this.children.find('messages');
 	if (typeof container != 'undefined') {
 		return container.setValue.call(container, messages);
 	} else {
@@ -146,7 +111,10 @@ dk.wildside.display.widget.Widget.prototype.getName = function() {
 
 dk.wildside.display.widget.Widget.prototype.setValues = function(object) {
 	for (var name in object) {
-		this.setValue(name, object[name]);
+		var child = this.children.find(name);
+		if (child) {
+			child.setValue(object[name]);
+		};
 	};
 	this.markClean();
 	this.dispatchEvent(this.events.UPDATED);
@@ -155,7 +123,7 @@ dk.wildside.display.widget.Widget.prototype.setValues = function(object) {
 dk.wildside.display.widget.Widget.prototype.getValues = function() {
 	var values = {};
 	var widget = this;
-	this.fields.each(function(field) {
+	this.children.each(function(field) {
 		var fieldName = field.getName();
 		if (typeof widget.config.data[fieldName] != 'undefined') {
 			values[fieldName] = field.getValue();
@@ -180,7 +148,7 @@ dk.wildside.display.widget.Widget.prototype.markClean = function() {
 };
 
 dk.wildside.display.widget.Widget.prototype.rollback = function() {
-	this.fields.each(function(field) { field.rollback(); });
+	this.children.each(function(field) { field.rollback(); });
 };
 
 dk.wildside.display.widget.Widget.prototype.remove = function() {
@@ -206,6 +174,10 @@ dk.wildside.display.widget.Widget.prototype.create = function() {
 };
 
 dk.wildside.display.widget.Widget.prototype.sync = function() {
+	if (this.dirty == false) {
+		this.dispatchEvent(this.events.CLEAN);
+		return this;
+	};
 	this.dispatchEvent(this.events.PRE_SYNC);
 	var request = new dk.wildside.net.Request(this);
 	var responder = new dk.wildside.net.Dispatcher(request).dispatchRequest();
@@ -217,7 +189,6 @@ dk.wildside.display.widget.Widget.prototype.sync = function() {
 	} else {
 		this.setValues(data);
 		this.dispatchEvent(this.events.CLEAN);
-		//console.log(messages);
 		if (messages.length > 0) {
 			this.messages.merge(messages);
 			this.dispatchEvent(this.events.MESSAGE);

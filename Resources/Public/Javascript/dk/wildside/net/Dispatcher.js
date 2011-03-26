@@ -20,7 +20,7 @@ dk.wildside.net.Dispatcher.prototype.dispatchRequest = function(request) {
 	};
 	var data = {};
 	var scope = request.getScope();
-	var configuration = request.getWidget().getConfiguration();
+	var configuration = request.getWidget().config;
 	var controller = configuration.controller.toLowerCase();
 	var objectData = request.getWidget().getValues();
 	if (configuration.data.uid > 0) {
