@@ -5,9 +5,7 @@ dk.wildside.display.field.Field = function(jQueryElement) {
 		return this;
 	};
 	dk.wildside.display.DisplayObject.call(this, jQueryElement);
-	if (typeof this.identity == 'undefined') {
-		this.identity = 'field';
-	};
+	this.identity = 'field';
 	this.sanitizer = dk.wildside.display.field.Sanitizer.noop;
 	this.events = dk.wildside.event.FieldEvent;
 	try {

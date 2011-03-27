@@ -10,6 +10,7 @@ dk.wildside.display.Sprite = function(jQueryElement) {
 	};
 	dk.wildside.display.DisplayObject.call(this, jQueryElement);
 	this.captureJQueryEvents(jQueryElement);
+	this.identity = 'sprite';
 };
 
 dk.wildside.display.Sprite.prototype = new dk.wildside.display.DisplayObject();

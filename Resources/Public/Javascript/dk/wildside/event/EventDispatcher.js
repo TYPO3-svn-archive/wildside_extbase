@@ -61,18 +61,18 @@ dk.wildside.event.EventDispatcher.prototype.removeEventListener = function(event
 };
 
 dk.wildside.event.EventDispatcher.prototype.dispatchEvent = function(event) {
-	//console.log(event);
+	var instance = this;
 	if (typeof event == 'string') {
 		var eventType = event;
 		event = {
 			type: eventType, 
-			target: this,
+			target: instance,
 			cancelled: false, 
 			id: Math.round(Math.random()*100000)
 		};
 	} else if (event.view) {
 		// is a jQuery event - transform to native event and attach originalEvent
-		var instance = jQuery(event.currentTarget).data('instance');
+		instance = jQuery(event.currentTarget).data('instance');
 		var original = event;
 		event = {
 			type: event.type, 
@@ -83,20 +83,25 @@ dk.wildside.event.EventDispatcher.prototype.dispatchEvent = function(event) {
 		};
 		return instance.dispatchEvent.call(instance, event);
 	};
-	event.currentTarget = this;
-	//console.info('Dispatching event: '+event.type+' with ID ' + event.id + '. My identity: ' + this.identity);
-	if (typeof this.listeners[event.type] != 'undefined') {
-		this.listeners[event.type].each(function(func) {
+	if (typeof instance.listeners == 'undefined') {
+		instance = jQuery(instance).data('instance');
+	};
+	event.currentTarget = instance;
+	//console.info(event.type);
+	//console.info('Dispatching event: '+event.type+' with ID ' + event.id + '. My identity: ' + instance.identity);
+	if (typeof instance.listeners[event.type] != 'undefined') {
+		instance.listeners[event.type].each(function(func) {
 			func.call(event.currentTarget, event);
 		});
 	};
-	var parent = this.getParent();
+	var parent = instance.getParent();
 	if (parent && event.cancelled == false) {
 		parent.dispatchEvent.call(parent, event);
 	} else {
+		//console.warn(instance);
 		delete(event); // reached top level, remove all traces of event
 	};
-	return this;
+	return instance;
 };
 
 dk.wildside.event.EventDispatcher.prototype.captureJQueryEvents = function(context, parent) {
