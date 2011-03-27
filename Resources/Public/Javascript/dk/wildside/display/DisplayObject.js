@@ -73,7 +73,8 @@ dk.wildside.display.DisplayObject.prototype.addChild = function(displayObject, a
 	this.children.push(displayObject);
 	displayObject.setParent(this);
 	if (addHtml) {
-		this.context.append(displayObject.context.html());
+		var html = jQuery('<div />').append(displayObject.context.clone()).html();
+		this.context.append(html);
 	};
 };
 

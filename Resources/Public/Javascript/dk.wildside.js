@@ -39,6 +39,7 @@ jQuery(document).ready(function() {
 // event/widget/RecordSelectorEvent.js
 // event/EventAttacher.js
 // display/DisplayObject.js
+// display/Sprite.js
 // display/Control.js
 // display/Component.js
 // display/field/Sanitizer.js
@@ -53,6 +54,7 @@ jQuery(document).ready(function() {
 // display/field/Textarea.js
 // display/field/Value.js
 // display/widget/Widget.js
+// display/widget/ListWidget.js
 // display/widget/DatePickerWidget.js
 // display/widget/FileUploadWidget.js
 // display/widget/RecordSelectorWidget.js
