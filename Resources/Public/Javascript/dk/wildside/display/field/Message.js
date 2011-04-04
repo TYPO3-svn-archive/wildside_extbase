@@ -5,6 +5,7 @@ dk.wildside.display.field.Message = function(jQueryElement) {
 	this.identity = 'field.Message';
 	this.fieldContext = this.context.children().last();
 	this.addEventListener(dk.wildside.event.FieldEvent.BLUR, this.onChange);
+	this.captureJQueryEvents(['blur'], this.fieldContext, this);
 	if (this.config.hidden > 0) {
 		this.hide();
 	}
@@ -25,7 +26,14 @@ dk.wildside.display.field.Message.prototype.setValue = function(val) {
 	arr.push('<ul>');
 	for (var i=0; i<val.length; i++) {
 		var msg = val[i];
-		arr.push('<li>' + msg.title + ' ' + msg.message + ' (code ' + msg.severity +')</li>');
+		if (typeof(msg)=="string") {
+			arr.push('<li>' + msg + '</li>');
+		} else if (typeof(msg) == "object"){
+			try {
+				arr.push('<li>' + msg.title + ' ' + msg.message + ' (code ' + msg.severity +')</li>');
+			} catch(e){};
+		};
+		
 	};
 	arr.push('</ul>');
 	this.fieldContext.html(arr.join("\n"));

@@ -43,6 +43,9 @@ class Tx_WildsideExtbase_ViewHelpers_DateViewHelper extends Tx_WildsideExtbase_C
 		if (!$timestamp && $date) {
 			$timestamp = strtotime($date);
 		}
+		if (!$timestamp && !$date) {
+			$timestamp = $this->renderChildren();
+		}
 		$str = date($format, $timestamp);
 		return $str;
 	}

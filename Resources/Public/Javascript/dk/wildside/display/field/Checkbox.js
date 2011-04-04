@@ -2,7 +2,8 @@
 
 dk.wildside.display.field.Checkbox = function(jQueryElement) {
 	dk.wildside.display.field.Field.call(this, jQueryElement);
-	this.addEventListener(dk.wildside.event.MouseEvent.CLICK, this.onChange);
+	this.addEventListener(dk.wildside.event.FieldEvent.CHANGE, this.onChange);
+	this.captureJQueryEvents(['click', 'change']);
 };
 
 dk.wildside.display.field.Checkbox.prototype = new dk.wildside.display.field.Field();

@@ -14,7 +14,6 @@ dk.wildside.display.field.Field = function(jQueryElement) {
 		this.trace("Error from field.Field:", 'warn');
 		this.trace(e, 'warn');
 	};
-	this.captureJQueryEvents(this.fieldContext);
 	return this;
 };
 
@@ -61,4 +60,12 @@ dk.wildside.display.field.Field.prototype.getName = function() {
 
 dk.wildside.display.field.Field.prototype.getValue = function() {
 	return this.context.val();
+};
+
+dk.wildside.display.field.Field.prototype.unlink = function() {
+	this.remove();
+};
+
+dk.wildside.display.field.Field.prototype.markDirty = function() {
+	
 };

@@ -99,7 +99,7 @@ class Tx_WildsideExtbase_Utility_CloningService implements t3lib_Singleton {
 		return $copy;
 	}
 	
-	protected function copyAsReference($value, $objectManager) {
+	protected function copyAsReference($value) {
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		if ($value instanceof Tx_Extbase_Persistence_ObjectStorage) {
 			// objectstorage; copy storage and attach items to this new storage
@@ -122,7 +122,7 @@ class Tx_WildsideExtbase_Utility_CloningService implements t3lib_Singleton {
 		}
 	}
 	
-	protected function copyAsClone($value, $objectManager) {
+	protected function copyAsClone($value) {
 		if ($value instanceof Tx_Extbase_Persistence_ObjectStorage) {
 			// objectstorage; copy storage and copy items, return new storage
 			$newStorage = $this->objectManager->get('Tx_Extbase_Persistence_ObjectStorage');

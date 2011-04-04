@@ -18,6 +18,7 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	this.events = dk.wildside.event.widget.WidgetEvent;
 	this.selectors = dk.wildside.util.Configuration.guiSelectors;
 	this.messages = new dk.wildside.util.Iterator();
+	this.errors = new dk.wildside.util.Iterator();
 	this.disabled = false;
 	this.dirty = false;
 	this.name = this.config.name;
@@ -31,12 +32,16 @@ dk.wildside.display.widget.Widget = function(jQueryElement) {
 	this.addEventListener(this.events.MESSAGE, this.onMessage);
 	this.addEventListener(dk.wildside.event.FieldEvent.DIRTY, this.onDirtyField);
 	this.addEventListener(dk.wildside.event.FieldEvent.CLEAN, this.onCleanField);
-	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")").each( function() {
+	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")")
+	.not(this.context.find("." + this.selectors.widget +" ." + this.selectors.widget))
+	.each( function() {
 		var obj = jQuery(this);
 		var widgetAsField = dk.wildside.spawner.get(obj);
 		widget.addChild.call(widget, widgetAsField); // will catch events from sub-Widgets
 	} );
-	this.context.find("." + this.selectors.field).each(function() {
+	this.context.find("." + this.selectors.field)
+	.not(this.context.find("." + this.selectors.widget + " ." + this.selectors.field))
+	.each(function() {
 		var obj = jQuery(this);
 		var field = dk.wildside.spawner.get(obj);
 		widget.addChild.call(widget, field);
@@ -63,13 +68,22 @@ dk.wildside.display.widget.Widget.prototype.disableControls = function() {
 	this.dispatchEvent(this.events.DISABLED);
 };
 
-dk.wildside.display.widget.Widget.prototype.displayErrors = function(messages) {
-	var parent = this.context.parents(this.selectors.itemParentLookup + ":first").find("." + this.selectors.messageDisplayElement + ":first");
-	messages.each(function(message) {
-		var msgObj = jQuery("<div>");
-		msgObj.html(message).addClass(selectors.messageClassError);
-		parent.append(msgObj);
-	});
+dk.wildside.display.widget.Widget.prototype.displayErrors = function(errors) {
+	var container = this.children.find('errors');
+	if (typeof container != 'undefined') {
+		return container.setValue.call(container, errors);
+	} else {
+		var error = new String();
+		for (var i=0; i<errors.length; i++) {
+			var msg = errors[i];
+			if (typeof(msg) == "string") {
+				error += msg;
+			} else if (typeof(msg) == "object"){
+				error += msg.title + ' ' + msg.message + ' (' + msg.severity + ')';
+			};
+		}
+		return alert(error);
+	};
 };
 
 dk.wildside.display.widget.Widget.prototype.displayMessages = function(messages) {
@@ -115,6 +129,7 @@ dk.wildside.display.widget.Widget.prototype.setValues = function(object) {
 		if (child) {
 			child.setValue(object[name]);
 		};
+		this.config.data[name] = object[name];
 	};
 	this.markClean();
 	this.dispatchEvent(this.events.UPDATED);
@@ -131,6 +146,8 @@ dk.wildside.display.widget.Widget.prototype.getValues = function() {
 	});
 	return values;
 };
+
+
 
 
 
@@ -167,9 +184,14 @@ dk.wildside.display.widget.Widget.prototype.update = function() {
 
 dk.wildside.display.widget.Widget.prototype.create = function() {
 	this.dispatchEvent(this.events.PRE_CREATE);
-	this.config.action = 'create';
-	this.sync();
-	this.config.action = this.defaultAction;
+	this.markDirty(); // tell the widget that sync() should be performed...
+	if (this.config.data.uid > 0) {
+		this.config.action = 'copy'; // ...with the "copy" action
+	} else {
+		this.config.action = 'create'; // ...with the "create" action instead
+	};
+	this.sync(); // to finally create records and reload this.config.data with new info
+	this.config.action = this.defaultAction; // and reset the action to "update"
 	return this;
 };
 
@@ -180,16 +202,20 @@ dk.wildside.display.widget.Widget.prototype.sync = function() {
 	};
 	this.dispatchEvent(this.events.PRE_SYNC);
 	var request = new dk.wildside.net.Request(this);
-	var responder = new dk.wildside.net.Dispatcher(request).dispatchRequest();
+	var responder = new dk.wildside.net.Dispatcher(request).dispatchRequest(request);
 	var data = responder.getData();
 	var messages = responder.getMessages();
 	var errors = responder.getErrors();
-	if (errors.length > 0) {
+	
+	if (errors.length) {
+		this.errors.clear();
+		this.errors.merge(errors);
 		return this.dispatchEvent(this.events.ERROR);
 	} else {
 		this.setValues(data);
 		this.dispatchEvent(this.events.CLEAN);
-		if (messages.length > 0) {
+		if (messages.length) {
+			this.messages.clear();
 			this.messages.merge(messages);
 			this.dispatchEvent(this.events.MESSAGE);
 		};
@@ -201,8 +227,8 @@ dk.wildside.display.widget.Widget.prototype.refresh = function() {
 	
 };
 
-dk.wildside.display.widget.Widget.prototype.dispatchRequest = function(request) {
-	var responder = new dk.wildside.net.Dispatcher(request).dispatchRequest();
+dk.wildside.display.widget.Widget.prototype.dispatchRequest = function(request, parameterWrap) {
+	var responder = new dk.wildside.net.Dispatcher(request).dispatchRequest(request, parameterWrap);
 	var data = responder.getData();
 	var messages = responder.getMessages();
 	var errors = responder.getErrors();
@@ -224,13 +250,15 @@ dk.wildside.display.widget.Widget.prototype.dispatchRequest = function(request) 
 
 
 
+
+
 // EVENT LISTENER METHODS
 dk.wildside.display.Component.prototype.onRefresh = function(event) {
 	
 };
 
 dk.wildside.display.widget.Widget.prototype.onError = function(event) {
-	var errors = event.target;
+	var errors = this.errors;
 	this.displayErrors(errors);
 };
 

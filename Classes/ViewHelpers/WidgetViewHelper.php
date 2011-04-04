@@ -45,6 +45,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 	 * @param string $title Title of the widget
 	 * @param int $type TypeNum, if any, for building request URI. Defaults to the build-in Bootstrap for WildsideExtbase - which responds in raw JSON format
 	 * @param string $html InnerHTML, if any. Overrides renderChildren()
+	 * @param object $config Object containing base configuration
 	 * @return string
 	 */
 	public function render(
@@ -58,7 +59,8 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 			$class=NULL,
 			$title=NULL,
 			$type=4815162342,
-			$html=NULL
+			$html=NULL,
+			$config=NULL
 			) {
 		if ($page === NULL) {
 			$page = $GLOBALS['TSFE']->id;
@@ -71,6 +73,11 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 		$obj->title = $title;
 		$obj->action = $action;
 		$obj->name = $name;
+		if (is_object($config)) {
+			foreach ($config as $k=>$v) {
+				$obj->$k = $v;
+			}
+		}
 		
 		if ($plugin) {
 			$obj->plugin = $plugin;

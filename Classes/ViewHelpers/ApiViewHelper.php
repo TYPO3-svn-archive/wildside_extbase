@@ -51,6 +51,9 @@ class Tx_WildsideExtbase_ViewHelpers_ApiViewHelper extends Tx_WildsideExtbase_Vi
 		if ($extension === NULL) {
 			$extension = 'wildside_extbase';
 		}
+		
+		$concat = FALSE;
+		
 		$this->extension = $extension;
 		$this->domain = $domain;
 		$this->cache = $cache;
@@ -59,6 +62,14 @@ class Tx_WildsideExtbase_ViewHelpers_ApiViewHelper extends Tx_WildsideExtbase_Vi
 		$this->obfuscate = $obfuscate;
 		$this->cacheTTL = $cacheTTL;
 		$files = $this->detectNamespaceFiles();
+		
+		$commonCSSfile = t3lib_extMgm::siteRelPath($this->extension) . 'Resources/Public/Stylesheet/Common.css';
+		if (file_exists($commonCSSfile)) {
+			$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+			$injector = $objectManager->get("Tx_WildsideExtbase_ViewHelpers_Inject_CssViewHelper");
+			$injector->render($commonCSSfile);
+		}
+		
 		return $this->renderChildren();
 	}
 	

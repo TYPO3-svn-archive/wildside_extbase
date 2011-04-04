@@ -2,7 +2,8 @@
 
 dk.wildside.display.field.Radio = function() {
 	dk.wildside.display.field.Field.apply(this, arguments);
-	this.addEventListener(dk.wildside.event.MouseEvent.CLICK, this.onChange);
+	this.addEventListener(dk.wildside.event.FieldEvent.CHANGE, this.onChange);
+	this.captureJQueryEvents(['click', 'change'], this.fieldContext, this);
 };
 
 dk.wildside.display.field.Radio.prototype = new dk.wildside.display.field.Field();

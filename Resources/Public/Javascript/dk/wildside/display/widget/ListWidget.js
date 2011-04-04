@@ -9,27 +9,52 @@ dk.wildside.display.widget.ListWidget = function(jQueryElement) {
 		return this;
 	};
 	dk.wildside.display.widget.Widget.call(this, jQueryElement);
-	this.members = new dk.wildside.util.Iterator();
+	this.id = parseInt(Math.random()*100);
+	var widget = this;
+	this.addEventListener(dk.wildside.event.MouseEvent.CLICK, this.onClick);
+	this.context.find(".wildside-extbase-sprite:not(." + this.selectors.inUse +")").each(function() {
+		var obj = jQuery(this);
+		var sprite = dk.wildside.spawner.get(this);
+		widget.addChild.call(widget, sprite);
+	});
 };
 
+
+
 dk.wildside.display.widget.ListWidget.prototype = new dk.wildside.display.widget.Widget();
+
+dk.wildside.display.widget.ListWidget.prototype.getValue = function() {
+	//console.log('Asked for value');
+};
+
+dk.wildside.display.widget.ListWidget.prototype.getMembers = function() {
+	var members = new dk.wildside.util.Iterator();
+	this.children.each(function(memberSprite) {
+		var member = {
+			value : memberSprite.getValue(),
+			name : memberSprite.getName()
+		};
+		members.push(member);
+	});
+	return members;
+}
 
 dk.wildside.display.widget.ListWidget.prototype.checkMember = function(member) {
 	if (typeof member != 'object') {
 		console.info('Member must be an object.');
 		return false;
 	};
-	if (!member.label) {
-		member.label = member.value;
+	if (!member.name) {
+		member.name = member.value;
 	};
-	if (!member.value || !member.label) {
-		console.info('Member must have both .value and .label properties');
+	if (!member.name || !member.value) {
+		console.info('Member must have both .value and .name properties');
 	};
 	return true;
 };
 
-dk.wildside.display.widget.ListWidget.prototype.checkMembers = function(input) {
-	if (typeof members != 'array' && members instanceof dk.wildside.util.Iterator) {
+dk.wildside.display.widget.ListWidget.prototype.checkMembers = function(members) {
+	if (typeof members != 'array' && members instanceof dk.wildside.util.Iterator == false) {
 		console.info('ListWidget does not know what to do with this value:');
 		console.warn(members);
 		return false;
@@ -39,20 +64,27 @@ dk.wildside.display.widget.ListWidget.prototype.checkMembers = function(input) {
 
 dk.wildside.display.widget.ListWidget.prototype.addMember = function(member) {
 	if (!this.checkMember(member)) {
+		console.log('Trying to add invalid member');
+		console.warn(member);
 		return;
 	};
-	// translate the member info to a usable dk.wildside.display.Sprite, add to child list
-	// and attach the necessary event listener to react to selection
-	var sprite = new dk.wildside.display.Sprite('<li title="' + member.value + '">MEMBER: ' + member.label + '</li>');
-	//dk.wildside.event.EventAttacher.attachEvent(dk.wildside.event.MouseEvent.CLICK, sprite.context);
-	//sprite.addEventListener(dk.wildside.event.MouseEvent.CLICK, sprite.dispatchEvent); // re-dispatch as WS Event
-	this.addChild(sprite, true); // add child AND insert HTML
-	//this.setCaptureJQueryEvents(true, sprite);
+	var html = "<div class='wildside-extbase-sprite'><div class='wildside-extbase-json'>" +
+			"{\"displayType\":\"dk.wildside.display.Sprite\",\"name\":\""+member.name+"\",\"value\":"+member.value+"}" +
+			"</div><div class='list-item'>" + member.name + "</div></div>";
+	this.context.find('.list-container').append(html);
+	var context = this.context.find(".wildside-extbase-sprite:not(." + this.selectors.inUse +")");
+	var sprite = dk.wildside.spawner.get(context);
+	this.addChild(sprite);
 };
 
 dk.wildside.display.widget.ListWidget.prototype.removeMember = function(member) {
-	if (!this.checkMember(member)) {
-		return;
+	var sprite = this.children.find(member.name);
+	if (sprite) {
+		this.children = this.children.remove(sprite);
+		sprite.remove();
+	} else {
+		console.log('Tried to remove illegal member');
+		return false;
 	};
 };
 
@@ -79,11 +111,14 @@ dk.wildside.display.widget.ListWidget.prototype.removeAllMembers = function() {
 };
 
 dk.wildside.display.widget.ListWidget.prototype.onClick = function(event) {
-	this.onSelectMember(event);
+	event.cancelled = false;
+	event.currentTarget = this;
+	event.type = dk.wildside.event.widget.ListWidgetEvent.MEMBER_REMOVED;
+	this.dispatchEvent(event);
 };
 
 // NOTE: this function should analyze the event.originalEvent to determine which member was clicked
 dk.wildside.display.widget.ListWidget.prototype.onSelectMember = function(event) {
-	console.info('Member clicked, event:');
-	console.warn(event);
+	//console.info('Member clicked, event:');
+	//console.warn(event);
 };

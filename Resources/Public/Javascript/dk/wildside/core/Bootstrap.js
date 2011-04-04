@@ -20,9 +20,11 @@ dk.wildside.core.Bootstrap.prototype.run = function() {
 	
 	// Now, bootstrap all existing components on the page. This automatically handles
 	// any sub-widgets found in there too.
-	jQuery("." + dk.wildside.util.Configuration.guiSelectors.component).each( function() {
-		var component = dk.wildside.spawner.get(this);
-	});
+	jQuery("." + dk.wildside.util.Configuration.guiSelectors.component)
+		.not(jQuery("." + dk.wildside.util.Configuration.guiSelectors.component + " ." + dk.wildside.util.Configuration.guiSelectors.component))
+		.each( function() {
+			var component = dk.wildside.spawner.get(this);
+		});
 	
 	// Now, if any widgets are left untouched, we need to bootstrap them as stand-alone
 	jQuery("." + dk.wildside.util.Configuration.guiSelectors.widget +":not(." + dk.wildside.util.Configuration.guiSelectors.inUse +")").each( function() {

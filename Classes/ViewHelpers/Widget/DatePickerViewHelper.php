@@ -48,6 +48,8 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_DatePickerViewHelper extends Tx_Wild
 	 * @param string $title The title of the Widget
 	 * @param string $templateFile siteroot-relative path of template file to use
 	 * @param int $type
+	 * @param string $dateFormat Internal format of the timestamp, used for output
+	 * @param string $dateFormatJS Format of the timestamp, as sent to the jQueryUI widget
 	 * @return string
 	 */
 	public function render(
@@ -61,18 +63,26 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_DatePickerViewHelper extends Tx_Wild
 			$class=NULL,
 			$title=NULL,
 			$templateFile=NULL,
-			$type=0
+			$type=0,
+			$dateFormat="d/m/Y",
+			$dateFormatJS="dd/mm/yy"
 			) {
 		$page = NULL;
 		$data = new stdClass();
 		$data->value = $date;
 		$data->name = $name;
+		$data->dateFormat = $dateFormatJS;
 		$html = $this->renderChildren();
 		if (strlen(trim($html)) == 0) {
 			$defaultTemplateFile = 'Widget/DatePickerWidget.html';
 			$template = $this->getTemplate($templateFile, $defaultTemplateFile);
 			$template->assign('name', $name);
 			$template->assign('date', $date);
+			
+			if ($date) {
+				$template->assign('dateDisplayed', date($dateFormat, $date));
+			}
+			
 			$template->assign('dates', $dates);
 			$html = $template->render();
 		}

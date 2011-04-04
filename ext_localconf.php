@@ -6,8 +6,14 @@ if (!defined ('TYPO3_MODE')) {
 Tx_Extbase_Utility_Extension::configurePlugin(
 	$_EXTKEY,
 	'API',
-	array('FileUploadWidget' => 'index,show'),
-	array('RecordSelectorWidget' => 'index,show')
+	array(
+		'FileuploadWidget' => 'upload',
+		'RecordSelectorWidget' => 'search'
+	),
+	array(
+		'FileuploadWidget' => 'upload',
+		'RecordSelectorWidget' => 'search'
+	)
 );
 
 ?>

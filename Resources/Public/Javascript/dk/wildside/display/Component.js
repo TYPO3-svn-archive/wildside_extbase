@@ -25,18 +25,25 @@ dk.wildside.display.Component = function(jQueryElement) {
 	// Widget detection, only detect Widgets which are not members of Component below this Component
 	var parent = this; // necessary reference for the following jQuery enclosure
 	this.context.find("." + this.selectors.widget +":not(." + this.selectors.inUse +")")
-	.not(this.context.find("." + this.selectors.widget +" ." + this.selectors.widget))
-	.not(this.context.find("." + this.selectors.widget +" ." + this.selectors.widget))
-	.each( function() {
-		var widget = dk.wildside.spawner.get(this);
-		parent.addChild(widget);
-	});
+		.not(this.context.find("." + this.selectors.widget +" ." + this.selectors.widget))
+		.not(this.context.find("." + this.selectors.component +" ." + this.selectors.widget))
+		.each( function() {
+			var widget = dk.wildside.spawner.get(this);
+			parent.addChild.call(parent, widget);
+		});
+	
+	// Component detection - sorta the same thing as above.
+	this.context.find("." + this.selectors.component +":not(." + this.selectors.inUse +")")
+		.not(this.context.find("." + this.selectors.component + " ." + this.selectors.component))
+		.each( function() {
+			var component = dk.wildside.spawner.get(this);
+			parent.addChild.call(parent, component);
+		});
 	
 	this.addEventListener(dk.wildside.event.widget.WidgetEvent.DIRTY, this.onDirtyWidget);
 	this.addEventListener(dk.wildside.event.widget.WidgetEvent.CLEAN, this.onCleanWidget);
 	this.addEventListener(dk.wildside.event.widget.WidgetEvent.REFRESH, this.onRefreshWidget);
 	this.setLoadingStrategy(this.config.strategy);
-	this.setAlternating(false);
 	
 	return this;
 };
@@ -81,10 +88,3 @@ dk.wildside.display.Component.prototype.rollback = function() {
 	this.children.each(function(widget) { widget.rollback(); });
 };
 
-dk.wildside.display.Component.prototype.setAlternating = function(alternating) {
-	this.alternating = alternating;
-};
-
-dk.wildside.display.Component.prototype.getAlternating = function() {
-	return this.alternating;
-};

@@ -7,6 +7,7 @@ dk.wildside.display.field.Textarea = function(jQueryElement) {
 	dk.wildside.display.field.Field.call(this, jQueryElement);
 	this.fieldContext = this.context.find('textarea');
 	this.addEventListener(dk.wildside.event.FieldEvent.BLUR, this.onChange);
+	this.captureJQueryEvents(['blur'], this.fieldContext, this);
 };
 
 dk.wildside.display.field.Textarea.prototype = new dk.wildside.display.field.Field();

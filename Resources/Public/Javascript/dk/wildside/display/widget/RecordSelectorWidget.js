@@ -14,41 +14,26 @@ dk.wildside.display.widget.RecordSelectorWidget = function(jQueryElement) {
 	};
 	dk.wildside.display.widget.Widget.call(this, jQueryElement);
 	
+	this.identity = 'recordselector-widget';
+	this.searchTimer = false;
+	this.hasSearched = false;
 	this.resultList = this.children.find('results');
-	this.resultList.context.html('<ul></ul>');
 	this.memberList = this.children.find('selections');
-	this.memberList.context.html('<ul></ul>');
 	
-	var qField = this.children.find('q');
-	// remove the default CHANGE event listener on 'q'
-	//qField.removeEventListener(dk.wildside.event.FieldEvent.CHANGE);
-	// remove anything listening to BLUR on the search field. KEYPRESS should be used
-	//dk.wildside.event.EventAttacher.detachEvent(dk.wildside.event.FieldEvent.BLUR, qField.fieldContext);
-	// make the 'q' field react to keypress, fire SEARCH event when key pressed
-	//dk.wildside.event.EventAttacher.attachEvent(dk.wildside.event.FieldEvent.KEYPRESS, qField.fieldContext);
 	// use the DIRTYFIELD listener to determine which action was requested (by which Field triggered the event)
 	this.addEventListener(dk.wildside.event.FieldEvent.KEYPRESS, this.onDirtyField);
 	// make the widget itself listen for requests to start searching - these can come from the outside too
 	this.addEventListener(dk.wildside.event.widget.RecordSelectorEvent.SEARCH, this.onSearch);
 	// listen to own Events of type 'results received' (response containing listable results data)
 	this.addEventListener(dk.wildside.event.widget.RecordSelectorEvent.RESULT, this.onResult);
-	// listen to own Events of type 'result clicked' (clicking a result in the result list)
-	this.addEventListener(dk.wildside.event.widget.RecordSelectorEvent.ADD, this.onAdd);
 	// listen to own Events of type 'selection clicked' (can be an icon inside selection, which triggers the event - could use to remove, edit, sort etc)
-	this.addEventListener(dk.wildside.event.widget.RecordSelectorEvent.SELECT, this.onSelect);
+	this.addEventListener(dk.wildside.event.widget.ListWidgetEvent.MEMBER_ADDED, this.onAdd);
 	// listen to own Events of type 'selection removed' (will fire when an entry is removed; the Event will contain a reference to what was removed)
-	this.addEventListener(dk.wildside.event.widget.RecordSelectorEvent.REMOVE, this.onRemove);
+	this.addEventListener(dk.wildside.event.widget.ListWidgetEvent.MEMBER_REMOVED, this.onRemove);
 	
+	this.resultList.hide();
 	
-	var testMember = {
-		value : 1,
-		label : 'Test-member'
-	};
-	this.resultList.addMember(testMember);
-	this.resultList.addMember(testMember);
-	this.resultList.addMember(testMember);
-	this.resultList.addMember(testMember);
-	
+	//console.info(this.context);
 };
 
 
@@ -65,15 +50,47 @@ dk.wildside.display.widget.RecordSelectorWidget.setValue = function() {
 	// perform custom actions such as resolving additional information or setting a 
 	// special class on selected new additions
 };
-
-dk.wildside.display.widget.RecordSelectorWidget.getValue = function() {
-	// should return the value either as an array of values or as a single CSV
-	// string value - according to the this.config.dataType parameter
-};
 */
+dk.wildside.display.widget.RecordSelectorWidget.prototype.getValue = function() {
+	var value;
+	if (this.dataType == '1:1') {
+		return this.memberList.getChildAt(0).getValue();
+	}
+	value = [];
+	this.memberList.children.each(function(memberSprite) {
+		value.push(memberSprite.getValue());
+	});
+	if (this.config.dataType == '1:n') {
+		value = value.join(',');
+	};
+	return value;
+};
 
 
 
+
+
+dk.wildside.display.widget.RecordSelectorWidget.prototype.doSearch = function() {
+	clearTimeout(this.searchTimer);
+	var data = {
+		"q" : this.children.find('q').getValue(),
+		"table" : this.config.table,
+		"titleField" : this.config.titleField,
+		"storagePid" : this.config.storagePid
+	};
+	var request = new dk.wildside.net.Request(this, this.config.action);
+	request.setData(data);
+	var results = this.dispatchRequest(request, false).data;
+	var currentMembers = this.resultList.getMembers();
+	this.resultList.removeMembers(currentMembers);
+	for (var uid in results) {
+		var member = {
+			value : uid,
+			name : results[uid]
+		};
+		this.resultList.addMember.call(this.resultList, member);
+	};
+}
 
 
 
@@ -89,48 +106,88 @@ dk.wildside.display.widget.RecordSelectorWidget.prototype.onDirtyField = functio
 	var field = event.target;
 	var newEvent = {
 		target : this,
-		currentTarget : this
+		currentTarget : this,
+		type : event.type,
+		cancelled : false
 	};
 	switch (field.getName()) {
 		case 'q':
 			newEvent.type = dk.wildside.event.widget.RecordSelectorEvent.SEARCH;
 			break;
 		default:
-			newEvent.type = dk.wildside.event.widget.RecordSelectorEvent.NOOP;
+			newEvent.type = dk.wildside.event.FieldEvent.DIRTY;
+			return this.parent.dispatchEvent.call(this.parent, newEvent);
 			break;
-	}
-	console.log(newEvent.type);
+	};
 	this.dispatchEvent(newEvent);
 };
 
 dk.wildside.display.widget.RecordSelectorWidget.prototype.onSearch = function(event) {
+	clearTimeout(this.searchTimer);
 	var queryString = this.children.find('q').getValue();
 	if (queryString.length < 3) {
-		console.warn('Waiting for string length of 3: ' + queryString.length.toString());
-		event.cancelled = true;
+		//console.warn('Waiting for string length of 3: ' + queryString.length.toString());
 		return;
 	};
-	console.log('searching...');
+	var issuer = this;
+	setTimeout(function() {
+		issuer.doSearch.call(issuer);
+	}, 500);
 	event.cancelled = true;
+	this.resultList.show();
 };
 
 dk.wildside.display.widget.RecordSelectorWidget.prototype.onResult = function(event) {
 	
+	
+	this.hasSearched = false;
 	event.cancelled = true;
 };
 
 dk.wildside.display.widget.RecordSelectorWidget.prototype.onSelect = function(event) {
 	
-	event.cancelled = true;
 };
 
 dk.wildside.display.widget.RecordSelectorWidget.prototype.onAdd = function(event) {
-	
-	event.cancelled = true;
+	// suppressed; not used at this time
+	return;
 };
 
+dk.wildside.display.widget.RecordSelectorWidget.prototype.onDirty = function(event) {
+	// suppressed; not used at this time
+	return;
+};
+
+dk.wildside.display.widget.RecordSelectorWidget.prototype.sync = function() {
+	// suppressed; not used at this time
+	return;
+};
+
+
 dk.wildside.display.widget.RecordSelectorWidget.prototype.onRemove = function(event) {
-	
+	// NOTE: this function grabs "removed" members from both ListWidgets,
+	// determines what to do (add member, remove member) by which list was clicked
+	// - either memberList or resultList
+	var memberSprite = event.target;
+	var listWidget = memberSprite.getParent();
+	var member = {
+		name : memberSprite.getName(),
+		value : memberSprite.getValue()
+	};
+	if (listWidget.getName() == 'selections') {
+		// action is remove.
+		this.memberList.removeMember(member);
+		if (this.config.preload || this.hasSearched == true) {
+			this.resultList.addMember(member); // return to pool
+		} else {
+			this.resultList.hide();
+		}
+	} else if (listWidget.getName() == 'results') {
+		// action is to remove from results (already happened in ListWidget) and add to selections:
+		this.memberList.addMember(member);
+		this.resultList.removeMember(member);
+	};
+	this.dispatchEvent(dk.wildside.event.FieldEvent.DIRTY);
 	event.cancelled = true;
 };
 

@@ -56,6 +56,7 @@ dk.wildside.util.Iterator.prototype.each = function(func) {
 	return this;
 };
 
+
 dk.wildside.util.Iterator.prototype.copy = function() {
 	var copy = new dk.wildside.util.Iterator();
 	this.each(function(element) { copy.push(element); });
@@ -89,6 +90,22 @@ dk.wildside.util.Iterator.prototype.contains = function(arg) {
 dk.wildside.util.Iterator.prototype.merge = function(arr) {
 	for (i = 0; i < arr.length; i++) {
 		this.push(arr[i]);
+	};
+	return this;
+};
+
+
+dk.wildside.util.Iterator.prototype.first = function() {
+	return this[0];
+};
+
+dk.wildside.util.Iterator.prototype.last = function() {
+	return this[this.length - 1];
+};
+
+dk.wildside.util.Iterator.prototype.clear = function() {
+	for (i = 0; i < this.length; i++) {
+		delete(this[i]);
 	};
 	return this;
 };

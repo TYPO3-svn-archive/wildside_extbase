@@ -8,6 +8,7 @@ dk.wildside.display.field.Button = function(jQueryElement) {
 	
 	if (this.fieldContext.attr('type') == 'submit') {
 		this.addEventListener(dk.wildside.event.MouseEvent.CLICK, this.onSubmit);
+		this.captureJQueryEvents(['click'], this.fieldContext, this);
 	};
 	
 };

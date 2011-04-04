@@ -14,22 +14,36 @@ dk.wildside.net.Dispatcher.prototype.execute = function() {
 	return responder.execute();
 };
 
-dk.wildside.net.Dispatcher.prototype.dispatchRequest = function(request) {
+dk.wildside.net.Dispatcher.prototype.dispatchRequest = function(request, parameterWrap) {
 	if (request instanceof dk.wildside.net.Request == false) {
 		request = this.request;
 	};
+	if (typeof parameterWrap == 'undefined') {
+		parameterWrap = true;
+	};
 	var data = {};
+	var widget = request.getWidget();
+	var parent = widget.getParent();
 	var scope = request.getScope();
-	var configuration = request.getWidget().config;
-	var controller = configuration.controller.toLowerCase();
-	var objectData = request.getWidget().getValues();
+	var configuration = widget.config;
+	var controller = request.getController().toLowerCase();
+	var objectData = request.getData();
 	if (configuration.data.uid > 0) {
 		// Patch data; re-address UID to confirm with Extbase controller argument loading
-		objectData['__identity'] = configuration.data.uid;
+		objectData.__identity = configuration.data.uid;
 		delete(objectData.uid);
 	};
 	data[scope] = {};
-	data[scope][controller] = objectData;
+	if (parent && typeof parent.config.data != 'undefined' && parent.config.data.uid > 0) {
+		data[scope].parent = {
+			__identity : parent.config.data.uid
+		};
+	};
+	if (parameterWrap) {
+		data[scope][controller] = objectData;
+	} else {
+		data[scope] = objectData;
+	};
 	var ajaxOptions = {
 		async: false,
 		type: 'post',

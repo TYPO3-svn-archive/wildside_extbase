@@ -37,7 +37,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 	 * Render an entry for a Listener compatible with JS LocusController
 	 * @param string $widget JS namespace of widget to use - override this if you subclassed dk.wildside.display.widget.RecordSelectorWidget in JS
 	 * @param string $name Name of the (emulated) property
-	 * @param array $data Prefilled records
+	 * @param Tx_Extbase_Persistence_ObjectStorage $data Prefilled records
 	 * @param string $class Extra CSS-classes to use
 	 * @param string $title Title of the widget
 	 * @param int $page If specified, calls controller actions on this page uid
@@ -47,6 +47,8 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 	 * @param int $storagePid PID of the sysfolder or page where records are stored   
 	 * @param int $type TypeNum, if any, for building request URI
 	 * @param string $relationType Either '1:1', '1:n' or 'm:n' - affects how the field's values are returned. A single value is returned for 1:1, array of values for the others.
+	 * @param boolean $preload If TRUE, all possible search results are preloaded
+	 * @param string $condition If set, adds $condition as SQL condition for search query and list-all
 	 * @return string
 	 */
 	public function render(
@@ -60,29 +62,43 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 			$table='pages',
 			$titleField='title',
 			$storagePid=0,
-			$type=4815163242,
-			$relationType='1:n') {
+			$type=4815162342,
+			$relationType='1:n',
+			$preload=FALSE,
+			$condition=NULL) {
 		$this->name = $name;
 		$this->table = $table;
 		$this->query = $query;
 		$this->titleField = $titleField;
 		$this->storagePid = $storagePid;
-		$controller = 'RecordSelector';
-		$action = 'upload';
+		
+		$config = new stdClass();
+		$config->table = $table;
+		$config->titleField = $titleField;
+		$config->relationType = $relationType;
+		$config->storagePid = $storagePid;
+		$config->condition = $condition;
+		if ($preload) {
+			$config->preload = $preload;
+		};
+		
+		$controller = 'RecordSelectorWidget';
+		$action = 'search';
 		$plugin = 'tx_wildsideextbase_api';
 		$html = $this->renderChildren();
+		if ($data instanceof Tx_Extbase_Persistence_ObjectStorage == FALSE && is_array($data) == FALSE) {
+			$data = array($data);
+		}
 		if (strlen(trim($html)) == 0) {
 			$defaultTemplateFile = 'Widget/RecordSelectorWidget.html';
 			$template = $this->getTemplate($templateFile, $defaultTemplateFile);
-			$template->assign('available', $this->getPossibles());
-			$template->assign('selected', $this->getSelected($data));
-			// $template->assign($var, $value);
+			if ($preload) {
+				$template->assign('available', $this->getPossibles());
+			}
+			$template->assign('selected', $data);
 			$html = $template->render();
-			#header("Content-type: text/plain");
-			#echo $html;
-			#exit();
 		}
-		return parent::render($widget, $name, $controller, $action, $page, $plugin, $data, $class, $title, $type, $html);
+		return parent::render($widget, $name, $controller, $action, $page, $plugin, $data, $class, $title, $type, $html, $config);
 	}
 	
 	private function getPossibles() {

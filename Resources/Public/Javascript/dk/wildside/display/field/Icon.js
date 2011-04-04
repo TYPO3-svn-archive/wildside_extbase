@@ -5,6 +5,7 @@ dk.wildside.display.field.Icon = function(jQueryElement) {
 	dk.wildside.display.field.Field.call(this, jQueryElement);
 	
 	this.addEventListener(dk.wildside.event.MouseEvent.CLICK, this.onClick);
+	this.captureJQueryEvents(['click'], this.fieldContext, this);
 	
 };
 

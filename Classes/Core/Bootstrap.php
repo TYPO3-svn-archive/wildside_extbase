@@ -37,11 +37,14 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 		$requestHandlerResolver = $this->objectManager->get('Tx_Extbase_MVC_RequestHandlerResolver');
 		$requestHandler = $requestHandlerResolver->resolveRequestHandler();
 		$response = $requestHandler->handleRequest();
+		#die('test');
+		#var_dump($response);
 		if ($response === NULL) {
 			return;
 		}
 		try {
 			$content = $response->getContent();
+			#die($content);
 			// attemt JSON decode - if result is an object or array, use it as data
 			$testJSON = json_decode($content);
 			if (is_object($testJSON) || is_array($testJSON)) {
@@ -70,12 +73,15 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 				$msg->title = $message->getTitle();
 				$msg->message = $message->getMessage();
 				array_push($data->messages, $msg);
-			} 
+			}
 		} catch (Exception $e) {
-			#$this->resetSingletons();
-			die($e->getMessage());
+			$data->errors = array();
+			$err = new stdClass();
+			$err->severity = $e->getCode();
+			$err->title = 'Exception';
+			$err->message = $e->getMessage();
+			array_push($data->errors, $err);
 		}
-		
 		$this->resetSingletons();
 		$output = json_encode($data);
 		return $output;

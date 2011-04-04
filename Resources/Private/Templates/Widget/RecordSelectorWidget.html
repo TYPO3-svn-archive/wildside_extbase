@@ -9,11 +9,26 @@
 		<ws:field.input name="q" />
 	</div>
 	<div class="record-selector-select">
-		RESULTS
-		<ws:widget widget="dk.wildside.display.widget.ListWidget" name="results" />
+		<ws:widget widget="dk.wildside.display.widget.ListWidget" name="results">
+			<div class='list-container'>
+				<f:for each="{available}" as="name" key="uid">
+					<ws:sprite name="{name}" value="{uid}">
+						<div class='list-item'>{name}</div>
+					</ws:sprite>
+				</f:for>
+			</div>
+		</ws:widget>
 	</div>
 	<div class="record-selector-list">
-		LIST
-		<ws:widget widget="dk.wildside.display.widget.ListWidget" name="selections" />
+		<div class='record-selector-header'>SELECTION</div>
+		<ws:widget widget="dk.wildside.display.widget.ListWidget" name="selections">
+			<div class='list-container'>
+				<f:for each="{selected}" as="item">
+					<ws:sprite name="{item.name}" value="{item.uid}">
+						<div class='list-item'>{item.name}</div>
+					</ws:sprite>
+				</f:for>
+			</div>
+		</ws:widget>
 	</div>
 </div>

@@ -49,6 +49,10 @@ class Tx_WildsideExtbase_ViewHelpers_Field_SelectViewHelper extends Tx_WildsideE
 		
 		$html = "<select name='{$name}' class='{$class}'" . ($size && $size > 1 ? " size='{$size}'" : "") . ($multi ? " multiple='true'" : "") . ">";
 		foreach ($options as $value=>$label) {
+			if (is_object($label)) {
+				$value = $label->getUid();
+				$label = $label->getTitle();
+			}
 			if ($value == $selectedValue) {
 				$selected = " selected='selected'";
 			} else {

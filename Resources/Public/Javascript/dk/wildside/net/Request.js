@@ -5,6 +5,7 @@ dk.wildside.net.Request = function(widget, action) {
 	this.data = false;
 	this.action = action;
 	this.widget = widget;
+	this.base = false;
 	if (typeof widget == 'string') {
 		this.url = widget;
 	} else {
@@ -28,8 +29,11 @@ dk.wildside.net.Request.prototype.setScope = function(scope) {
 dk.wildside.net.Request.prototype.getController = function() {
 	if (this.controller) {
 		return this.controller;
-	} else {
+	} else if (this.widget.config.controller) {
 		return this.widget.config.controller;
+	} else {
+		console.info('Invalid controller configuration');
+		console.warn(this);
 	};
 };
 
@@ -64,6 +68,21 @@ dk.wildside.net.Request.prototype.getData = function(data) {
 	};
 };
 
+dk.wildside.net.Request.prototype.setBase = function(base) {
+	this.base = base;
+	return this;
+};
+
+dk.wildside.net.Request.prototype.getBase = function() {
+	if (this.base) {
+		return this.base;
+	} else {
+		return this.widget.config.api;
+	};
+};
+
+
+
 dk.wildside.net.Request.prototype.setUrl = function(url) {
 	this.url = url;
 	return this;
@@ -73,8 +92,8 @@ dk.wildside.net.Request.prototype.getUrl = function() {
 	if (this.url) {
 		return this.url;
 	};
-	var configuration = this.widget.config;
-	var base = configuration.api;
+	//var configuration = this.widget.config;
+	var base = this.getBase();
 	var scope = this.getScope();
 	var action = this.getAction();
 	var controller = this.getController();
@@ -86,6 +105,7 @@ dk.wildside.net.Request.prototype.getUrl = function() {
 
 dk.wildside.net.Request.prototype.setWidget = function(widget) {
 	this.widget = widget;
+	return this;
 };
 
 dk.wildside.net.Request.prototype.getWidget = function(widget) {

@@ -25,7 +25,7 @@ dk.wildside.net.Response.prototype.getData = function() {
 		var json = jQuery.parseJSON(ajax.responseText);
 		return json;
 	} else {
-		this.trace('invalid return code (not 200): ' + ajax.status, 'warn');
+		//this.trace('invalid return code (not 200): ' + ajax.status, 'warn');
 		return {};
 	};
 };

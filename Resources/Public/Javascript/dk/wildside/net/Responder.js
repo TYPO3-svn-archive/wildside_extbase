@@ -42,13 +42,16 @@ dk.wildside.net.Responder.prototype.getMessages = function() {
 
 dk.wildside.net.Responder.prototype.getErrors = function() {
 	var errors = new dk.wildside.util.Iterator();
-	var data = this.getData();
+	var data = this.response.getData();
 	if (typeof data.errors == 'undefined') {
+		errors.push({
+			message : 'Invalid server response: ' + this.getAjax().responseText,
+			severity : 0,
+			title : "Server error"
+		});
 		return errors;
 	} else if (typeof data != 'undefined' && data.errors.length > 0) {
 		errors.merge(data.errors);
-	} else {
-		errors.push('Invalid server response: ' + this.getAjax().responseText);
 	};
 	return errors;
 };

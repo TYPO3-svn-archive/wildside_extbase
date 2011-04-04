@@ -57,8 +57,31 @@ class Tx_WildsideExtbase_Controller_RecordSelectorWidgetController extends Tx_Wi
 		
 	}
 	
-	public function searchAction($q) {
-		
+	/**
+	 * 
+	 * @param string $q
+	 * @param string $table
+	 * @param string $titleField
+	 * @param int $storagePid
+	 * @param string $condition Additional SQL condition for query
+	 */
+	public function searchAction($q, $table, $titleField, $storagePid=0, $condition=NULL) {
+		if ($condition === NULL) {
+			$condition = "1 = 1";
+		}
+		if ($storagePid > 0) {
+			$condition .= " AND pid = {$storagePid}";
+		}
+		$condition .= " AND deleted = 0";
+		$condition .= " AND {$titleField} LIKE '%{$q}%'";
+		$fields = "uid, {$titleField}";
+		#$query = "SELECT {$fields} FROM {$table} WHERE {$condition} AND deleted = 0";
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $table, $condition);
+		$results = array();
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+			$results[$row['uid']] = $row[$titleField];
+		}
+		return (string) json_encode($results);
 	} 
 	
 	

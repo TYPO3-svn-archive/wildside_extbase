@@ -58,8 +58,32 @@ dk.wildside.display.DisplayObject.prototype.replaceWith = function(source) {
 	return this;
 };
 
+dk.wildside.display.DisplayObject.prototype.unlink = function(withChildren) {
+	if (typeof withChildren == 'undefined') {
+		withChildren = true;
+	};
+	this.config.action = 'delete';
+	try {
+		this.children.each(function(child) {
+			child.markDirty.call(child);
+			child.unlink.call(child);
+		});
+		this.markDirty();
+		this.sync();
+	} catch (e) {
+		//console.warn(this);
+		//console.info(e);
+	};
+	this.remove();
+	return this;
+};
+
 dk.wildside.display.DisplayObject.prototype.remove = function() {
+	if (this.parent) {
+		this.parent.children.remove(this);
+	};
 	this.replaceWith('');
+	this.context.remove();
 	return this;
 };
 
@@ -69,13 +93,13 @@ dk.wildside.display.DisplayObject.prototype.copy = function() {
 	return newItem;
 };
 
-dk.wildside.display.DisplayObject.prototype.addChild = function(displayObject, addHtml) {
+dk.wildside.display.DisplayObject.prototype.addChild = function(displayObject) {
 	this.children.push(displayObject);
-	displayObject.setParent(this);
-	if (addHtml) {
-		var html = jQuery('<div />').append(displayObject.context.clone()).html();
-		this.context.append(html);
-	};
+	displayObject.setParent.call(displayObject, this);
+};
+
+dk.wildside.display.DisplayObject.prototype.getChildAt = function(index) {
+	return this.children[index];
 };
 
 dk.wildside.display.DisplayObject.prototype.expose = function() {

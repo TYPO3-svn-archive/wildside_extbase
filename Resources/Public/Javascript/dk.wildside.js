@@ -35,6 +35,7 @@ jQuery(document).ready(function() {
 // event/MouseEvent.js
 // event/EventDispatcher.js
 // event/widget/WidgetEvent.js
+// event/widget/ListWidgetEvent.js
 // event/widget/FileUploadEvent.js
 // event/widget/RecordSelectorEvent.js
 // display/DisplayObject.js
