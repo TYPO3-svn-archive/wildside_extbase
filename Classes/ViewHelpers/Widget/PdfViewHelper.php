@@ -19,6 +19,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_PdfViewHelper extends Tx_WildsideExt
 	 * @param string $extension
 	 * @param string $stylesheet Optional extra stylesheet to load on PDF creation
 	 * @param string $filename Optional filename of downloaded PDF. Default is print.pdf
+	 * @param string $wkhtmltopdf Optional path of wkhtmltopdf binary - specify only if you need your own version
 	 * @return string
 	 */
 	public function render(

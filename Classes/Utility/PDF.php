@@ -11,11 +11,14 @@
 class Tx_WildsideExtbase_Utility_PDF {
 	
 	
+	protected $wkhtmltopdf;
+	
 	public function run() {
 		$post = $_POST['tx_wildsideextbase_pdf'];
 		$source = $post['html'];
 		$stylesheet = $post['stylesheet'];
 		$filename = $post['filename'];
+		$this->wkhtmltopdf = $pdf['wkhtmltopdf'];
 		$pdf = $this->grabPDF($source);
 		header("Content-type: application/pdf");
 		header("Content-Length: " . strlen($pdf));
@@ -49,7 +52,11 @@ class Tx_WildsideExtbase_Utility_PDF {
 	 */
 	public function buildCommand($url) {
 			
-		$cmd = t3lib_extMgm::extPath('wildside_extbase', 'Resources/Shell/wkhtmltopdf');
+		if (strlen($this->wkhtmltopdf) > 0 && is_file($this->wkhtmltopdf)) {
+			$cmd = $this->wkhtmltopdf;
+		} else {			
+			$cmd = t3lib_extMgm::extPath('wildside_extbase', 'Resources/Shell/wkhtmltopdf');
+		}
 		
 		# Footers
 		if (strlen($this->footerRight)) $cmd .= " --footer-right \"{$this->footerRight}\"";
