@@ -9,7 +9,7 @@ dk.wildside.display.field.Field = function(jQueryElement) {
 	this.sanitizer = dk.wildside.display.field.Sanitizer.noop;
 	this.events = dk.wildside.event.FieldEvent;
 	try {
-		this.fieldContext = this.context.find(':input').data('instance', this);
+		this.fieldContext = this.context.find(':input').data('instance', this.getId());
 	} catch(e) {
 		this.trace("Error from field.Field:", 'warn');
 		this.trace(e, 'warn');

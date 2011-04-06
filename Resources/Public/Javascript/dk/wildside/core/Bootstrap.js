@@ -4,9 +4,10 @@ dk.wildside.core.Bootstrap = function() {
 
 dk.wildside.core.Bootstrap.prototype.run = function() {
 	
+	dk.wildside.config = {};
 	dk.wildside.bootstrap = this;
 	dk.wildside.spawner = new dk.wildside.core.Spawner();
-	dk.wildside.config = {};
+	dk.wildside.objectManager = new dk.wildside.core.ObjectManager();
 	
 	// Find the settings-div, which is somewhere near the top of the page, and read all global settings
 	// from it. These will be stored in the global object Locus.configuration.

@@ -7,6 +7,7 @@ if (typeof dk.wildside == 'undefined') {
 	dk.wildside = {};
 	dk.wildside.bootstrap = {};
 	dk.wildside.spawner = {};
+	dk.wildside.objectManager = {};
 	dk.wildside.core = {};
 	dk.wildside.display = {};
 	dk.wildside.display.widget = {};
@@ -26,6 +27,7 @@ jQuery(document).ready(function() {
 // util/String.js
 // util/Iterator.js
 // util/Configuration.js
+// core/ObjectManager.js
 // net/Request.js
 // net/Response.js
 // net/Responder.js

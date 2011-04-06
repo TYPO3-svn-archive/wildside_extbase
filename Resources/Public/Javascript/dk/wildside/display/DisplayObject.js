@@ -15,7 +15,7 @@ dk.wildside.display.DisplayObject = function(jQueryElement) {
 	this.context = jQueryElement;
 	this.config = jQueryElement.data('config');
 	this.selectors = dk.wildside.util.Configuration.guiSelectors;
-	this.context.data('instance', this); // back-reference
+	this.context.data('instance', this.getId()); // back-reference
 	this.context.addClass(this.selectors.inUse); // claim DOM element
 	this.children = new dk.wildside.util.Iterator();
 	// defaults for visual effects:
