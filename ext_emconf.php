@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Wildside Extbase Framework',
-	'description' => 'For Extbase extension developers. Provides ViewHelpers and an AS3-for-JS style API for Widget-style AJAX components. Includes an injectable CloningService to easily clone (copy) Domain Objects with full control over relations.',
+	'description' => 'For Extbase extension developers. Provides ViewHelpers and an AS3-for-JS style API for Widget-style AJAX components. Includes an injectable CloningService to easily clone (copy) Domain Objects with full control over relations. Includes a VERY easy-to-use "download page as PDF" ViewHelper which can be included with a single line and supports custom filename and stylesheet. Can be triggered by anything which can be wrapped in a regular HTML link. Renders the exact, computed source of the page - no need to emulate FE logins, cookies or any such things.',
 	'category' => 'plugin',
 	'author' => 'Claus Due',
 	'author_email' => 'claus@wildside.dk',
