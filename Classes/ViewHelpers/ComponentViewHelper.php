@@ -41,6 +41,7 @@ class Tx_WildsideExtbase_ViewHelpers_ComponentViewHelper extends Tx_WildsideExtb
 	 * @param string $extensionName Name of the extension containing the controller
 	 * @param string $class Extra CSS-classes to use
 	 * @param string $strategy The saving strategy to use. "lazy" or "eager" - if "lazy" you need other means to issue sync, i.e. a Submit button
+	 * @param object $object If specified, uses $object for Controller information. If ObjectStorage, if $strategy="lazy" and if "bulkUpdateAction" exists in target controller, bulk-update features in AJAX become active 
 	 * @return string
 	 */
 	public function render(
@@ -50,7 +51,8 @@ class Tx_WildsideExtbase_ViewHelpers_ComponentViewHelper extends Tx_WildsideExtb
 			$page=NULL,
 			$plugin=NULL,
 			$class=NULL,
-			$strategy='eager'
+			$strategy='eager',
+			$object=NULL
 		) {
 		if ($component == '') {
 			$component = 'dk.wildside.display.Component';
@@ -64,6 +66,18 @@ class Tx_WildsideExtbase_ViewHelpers_ComponentViewHelper extends Tx_WildsideExtb
 		$obj->extensionName = $extensionName;
 		$obj->title = $title;
 		$obj->strategy = $strategy;
+		$obj->bulk = 0;
+		if ($object instanceof Tx_Extbase_Persistence_ObjectStorage && $strategy == 'lazy') {
+			// analyze for Controller name and type:
+			$probe = $object->current();
+			$probeClass = get_class($probe);
+			$controllerClass = str_replace("_Domain_Model", "_Controller_", $probeClass) . "Controller";
+			$bulkAction = "bulk{$action}Action";
+			if (method_exists($controllerClass, $bulkAction)) {
+				$obj->bulk = 1;
+				$obj->action = $bulkAction;
+			}
+		}
 		$json = json_encode($obj);
 		$html = "<div class='wildside-extbase-component {$class}'>
 			<div class='wildside-extbase-json'>{$json}</div>

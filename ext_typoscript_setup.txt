@@ -13,3 +13,19 @@ WildsideAjaxMVCBridge {
         pluginName = API
     }
 }
+
+WildsidePDFBridge = PAGE
+WildsidePDFBridge {
+    typeNum = 48151623420
+    config {
+    	no_cache = 1
+        disableAllHeaderCode = 1
+    }
+    headerData >
+    10 = USER_INT
+    10 {
+		userFunc = tx_wildsideextbase_utility_pdf->run
+        extensionName = WildsideExtbase
+        pluginName = API
+    }
+}

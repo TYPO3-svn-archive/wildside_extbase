@@ -60,5 +60,6 @@ jQuery(document).ready(function() {
 // display/widget/DatePickerWidget.js
 // display/widget/FileUploadWidget.js
 // display/widget/RecordSelectorWidget.js
+// display/widget/PDFWidget.js
 // core/Spawner.js
 // core/Bootstrap.js
