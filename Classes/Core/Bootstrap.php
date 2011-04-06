@@ -30,39 +30,36 @@
 
 class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 	
+	private $mapper;
+	
 	public function run($content, $configuration) {
 		$this->initialize($configuration);
+		$this->mapper = $this->objectManager->get('Tx_WildsideExtbase_Utility_PropertyMapper');
 		$messager = $this->objectManager->get('Tx_Extbase_MVC_Controller_FlashMessages');
-		$mapper = $this->objectManager->get('Tx_WildsideExtbase_Utility_PropertyMapper');
 		$requestHandlerResolver = $this->objectManager->get('Tx_Extbase_MVC_RequestHandlerResolver');
 		$requestHandler = $requestHandlerResolver->resolveRequestHandler();
 		$response = $requestHandler->handleRequest();
-		#die('test');
-		#var_dump($response);
 		if ($response === NULL) {
 			return;
 		}
 		try {
 			$content = $response->getContent();
-			#die($content);
-			// attemt JSON decode - if result is an object or array, use it as data
 			$testJSON = json_decode($content);
-			if (is_object($testJSON) || is_array($testJSON)) {
+			$object = $this->detectModelObject($content);
+			if (is_object($object) && !$testJSON) {
+				$data = $object;
+			} else if (is_array($testJSON)) {
+				foreach ($testJSON as $k=>$v) {
+					$testJSON[$k] = $this->detectModelObject($v);
+				}
+				$data = $testJSON;
+			} else if (is_object($testJSON)) {
+				foreach ($testJSON as $k=>$v) {
+					$testJSON->$k = $this->detectModelObject($v);
+				}
 				$data = $testJSON;
 			} else {
-				$sub = explode(':', $content);
-				$dataType = array_shift($sub);
-				$uid = array_pop($sub);
-				$argument = $this->objectManager->get('Tx_Extbase_MVC_Controller_Argument', 'content', $dataType);
-				$object = $argument->setValue($uid)->getValue(); // transformation to object
-				if ($object instanceof Tx_Extbase_DomainObject_DomainObjectInterface) {
-					// inevitability: DomainObject, get json variables by annotation
-					$data = $mapper->getValuesByAnnotation($object, 'json', TRUE);
-				} else {
-					$data = array(
-						'Decode error' => 'WildsideExtbase Bootstrap does not know how to decode string: ' . $content
-					);
-				}
+				$data = $content;
 			}
 			$data = $this->wrapResponse($data);
 			$messages = $messager->getAllMessagesAndFlush();
@@ -98,6 +95,20 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 		$data->messages = array();
 		$data->errors = array();
 		$data->info = array();
+		return $data;
+	}
+	
+	private function detectModelObject($content) {
+		$sub = explode(':', $content);
+		$dataType = array_shift($sub);
+		$uid = array_pop($sub);
+		$argument = $this->objectManager->get('Tx_Extbase_MVC_Controller_Argument', 'content', $dataType);
+		$object = $argument->setValue($uid)->getValue(); // hopefully a transformation to an object
+		if ($object instanceof Tx_Extbase_DomainObject_DomainObjectInterface) {
+			$data = $this->mapper->getValuesByAnnotation($object, 'json', TRUE);
+		} else {
+			$data = $content;
+		}
 		return $data;
 	}
 	
