@@ -5,10 +5,11 @@ dk.wildside.display.field.Button = function(jQueryElement) {
 		
 	this.fieldContext = this.context.find(':input');
 	this.fieldContext.data('field', this);
+	this.captureJQueryEvents(['click'], this.fieldContext, this);
+	this.addEventListener(dk.wildside.event.MouseEvent.CLICK, this.onClick);
 	
 	if (this.fieldContext.attr('type') == 'submit') {
 		this.addEventListener(dk.wildside.event.MouseEvent.CLICK, this.onSubmit);
-		this.captureJQueryEvents(['click'], this.fieldContext, this);
 	};
 	
 };
@@ -30,5 +31,5 @@ dk.wildside.display.field.Button.prototype.onSubmit = function() {
 };
 
 dk.wildside.display.field.Button.prototype.onClick = function() {
-	
+	//console.info('Clicked');
 };

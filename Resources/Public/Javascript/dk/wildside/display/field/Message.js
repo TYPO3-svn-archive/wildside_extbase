@@ -37,7 +37,7 @@ dk.wildside.display.field.Message.prototype.setValue = function(val) {
 	};
 	arr.push('</ul>');
 	this.fieldContext.html(arr.join("\n"));
-	this.fadeIn();
+	this.slideDown();
 	var target = this;
-	setTimeout(function() { target.fadeOut(); }, parseInt(this.config.timeout) * 1000 );
+	setTimeout(function() { target.slideUp(); }, parseInt(this.config.timeout) * 1000 );
 };

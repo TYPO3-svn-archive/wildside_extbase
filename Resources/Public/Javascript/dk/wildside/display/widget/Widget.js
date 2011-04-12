@@ -201,6 +201,9 @@ dk.wildside.display.widget.Widget.prototype.sync = function() {
 		return this;
 	};
 	this.dispatchEvent(this.events.PRE_SYNC);
+	
+	this.context.find(".loadingIndicator").show();
+	
 	var request = new dk.wildside.net.Request(this);
 	var responder = new dk.wildside.net.Dispatcher(request).dispatchRequest(request);
 	var data = responder.getData();
@@ -220,6 +223,9 @@ dk.wildside.display.widget.Widget.prototype.sync = function() {
 			this.dispatchEvent(this.events.MESSAGE);
 		};
 	};
+	
+	this.context.find(".loadingIndicator").hide();
+	
 	return this;
 };
 

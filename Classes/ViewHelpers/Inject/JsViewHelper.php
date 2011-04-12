@@ -63,17 +63,14 @@ class Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper extends Tx_WildsideExtb
 		if ($js === NULL && $file === NULL) {
 			$js = $this->renderChildren();
 		}
-		if ($file && $header) {
+		if ($file) {
 			if (is_array($file)) {
 				$this->includeFiles($file, $cache, $compress);
 			} else {
-				$this->includeFile($filename, $cache, $compress);
+				$this->includeFile($file, $cache, $compress);
 			}
 		} else if ($js) {
-			#die($js);
 			$code = $this->wrap($js, $file);
-			#var_dump($code);
-			#die($code);
 			$this->process($code, $key);
 		}
 		return '';

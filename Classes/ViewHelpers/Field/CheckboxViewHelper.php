@@ -39,7 +39,7 @@ class Tx_WildsideExtbase_ViewHelpers_Field_CheckboxViewHelper extends Tx_Wildsid
 		if ($checked == TRUE) {
 			$checked = " checked='checked'";
 		}
-		$field = "<input type='checkbox' name='{$name}' class='checkbox {$class}' value='{$value}' {$checked}/>";
+		$field = "<span class='input-checkbox-wrap'><input type='checkbox' name='{$name}' class='checkbox {$class}' value='{$value}' {$checked}/></span>";
 		return parent::render($field, $displayType, $name, $value, NULL, $sanitizer);
 	}
 	

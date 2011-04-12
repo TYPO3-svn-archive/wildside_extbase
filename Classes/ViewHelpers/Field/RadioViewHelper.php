@@ -34,6 +34,7 @@ class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideEx
 	 * @param string $class Class property of the Field
 	 * @param mixed $options If multiple options, specify them here as value => label array
 	 * @param string $selectedValue The pre-selected value among $options
+	 * @param boolean $labels If FALSE, no labels are echoed
 	 * @param string $sanitizer WS JS Domain style reference to validator method
 	 */
 	public function render(
@@ -43,6 +44,7 @@ class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideEx
 			$class=NULL, 
 			$options=array('No', 'Yes'), 
 			$selectedValue=NULL,
+			$labels=TRUE,
 			$sanitizer=NULL) {
 		if (is_string($options)) {
 			$options = explode(',', $options);
@@ -58,6 +60,11 @@ class Tx_WildsideExtbase_ViewHelpers_Field_RadioViewHelper extends Tx_WildsideEx
 			} else {
 				$checked = '';
 			}
+			
+			if ($labels === FALSE) {
+				$label = '';
+			}
+			
 			$field = "<label class='input-field-label'><span class='input-field-label-text'>{$label}</span> <input type='radio' name='{$name}_{$uniqID}' class='input-radio {$class}' onclick='this.blur();' value='{$value}' {$checked} /></label>";
 			$html .= $field;
 		}

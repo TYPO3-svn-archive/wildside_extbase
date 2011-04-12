@@ -16,8 +16,8 @@ class Tx_WildsideExtbase_Utility_PDF {
 	public function run() {
 		$post = $_POST['tx_wildsideextbase_pdf'];
 		$source = $post['html'];
-		$stylesheet = $post['stylesheet'];
 		$filename = $post['filename'];
+		$this->stylesheet = $post['stylesheet'];
 		$this->wkhtmltopdf = $pdf['wkhtmltopdf'];
 		$pdf = $this->grabPDF($source);
 		header("Content-type: application/pdf");
@@ -39,6 +39,7 @@ class Tx_WildsideExtbase_Utility_PDF {
 		$tmp = tempnam(PATH_site . 'typo3temp/', 'wspdfhtml');
 		file_put_contents($tmp, $source);
 		$cmd = $this->buildCommand('http://' . $_SERVER['HTTP_HOST'] . str_replace(PATH_site, '/', $tmp));
+		#print $cmd; exit();
 		$output = shell_exec($cmd);
 		unlink($tmp);
 		return $output;
@@ -69,7 +70,11 @@ class Tx_WildsideExtbase_Utility_PDF {
 		if (strlen($this->marginLeft)) $cmd .= " --margin-left {$this->marginLeft}";
 		
 		# user style sheet
-		if (strlen($this->stylesheet)) $cmd .= " --user-stylesheet {$this->stylesheet}";
+		if (strlen($this->stylesheet) > 0) {
+			#$host = "http://" . $_SERVER['HTTP_HOST'] . '/';
+			$host = PATH_site . '/';
+			$cmd .= " --user-style-sheet \"{$host}{$this->stylesheet}\"";
+		}
 		
 		# Target URL
 		$cmd .= " \"{$url}\"";

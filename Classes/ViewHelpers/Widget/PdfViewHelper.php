@@ -52,7 +52,7 @@ SCRIPT;
 		
 		$html = $this->renderChildren();
 		$html .= $code;
-		$html = "<a href='javascript:;' onclick='{$uniqId}();'>{$html}</a>";
+		$html = "<a href='javascript:;' class='wsExtBase_pdfLink' onclick='{$uniqId}();'>{$html}</a>";
 		return $html; 
 	}
 

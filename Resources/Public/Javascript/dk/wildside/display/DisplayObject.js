@@ -43,6 +43,22 @@ dk.wildside.display.DisplayObject.prototype.fadeOut = function(duration) {
 	return this;
 };
 
+dk.wildside.display.DisplayObject.prototype.slideDown = function(duration) {
+	if (typeof duration == 'undefined') {
+		duration = this.visuals.duration;
+	};
+	this.context.slideDown(duration);
+	return this;
+};
+
+dk.wildside.display.DisplayObject.prototype.slideUp = function(duration) {
+	if (typeof duration == 'undefined') {
+		duration = this.visuals.duration;
+	};
+	this.context.slideUp(duration);
+	return this;
+};
+
 dk.wildside.display.DisplayObject.prototype.show = function() {
 	this.context.show();
 	return this;
