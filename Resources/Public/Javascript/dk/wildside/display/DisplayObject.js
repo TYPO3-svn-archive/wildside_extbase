@@ -95,8 +95,9 @@ dk.wildside.display.DisplayObject.prototype.unlink = function(withChildren) {
 };
 
 dk.wildside.display.DisplayObject.prototype.remove = function() {
-	if (this.parent) {
-		this.parent.children.remove(this);
+	var parent = this.getParent(); 
+	if (parent) {
+		parent.children.remove(this);
 	};
 	this.replaceWith('');
 	this.context.remove();

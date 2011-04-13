@@ -103,23 +103,19 @@ dk.wildside.display.widget.RecordSelectorWidget.prototype.doSearch = function() 
 dk.wildside.display.widget.RecordSelectorWidget.prototype.onDirtyField = function(event) {
 	// TODO: change this from a wrapper into a single listener - if no other Fields except for 'q' are needed
 	event.cancelled = true;
-	var field = event.target;
-	var newEvent = {
-		target : this,
-		currentTarget : this,
-		type : event.type,
-		cancelled : false
-	};
+	var field = event.getTarget();
+	var eventType = 'unknown';
+	var parent = this.getParent();
 	switch (field.getName()) {
 		case 'q':
-			newEvent.type = dk.wildside.event.widget.RecordSelectorEvent.SEARCH;
+			eventType = dk.wildside.event.widget.RecordSelectorEvent.SEARCH;
 			break;
 		default:
-			newEvent.type = dk.wildside.event.FieldEvent.DIRTY;
-			return this.parent.dispatchEvent.call(this.parent, newEvent);
+			eventType = dk.wildside.event.FieldEvent.DIRTY;
+			return parent.dispatchEvent.call(parent, eventType);
 			break;
 	};
-	this.dispatchEvent(newEvent);
+	this.dispatchEvent(eventType);
 };
 
 dk.wildside.display.widget.RecordSelectorWidget.prototype.onSearch = function(event) {
@@ -168,7 +164,7 @@ dk.wildside.display.widget.RecordSelectorWidget.prototype.onRemove = function(ev
 	// NOTE: this function grabs "removed" members from both ListWidgets,
 	// determines what to do (add member, remove member) by which list was clicked
 	// - either memberList or resultList
-	var memberSprite = event.target;
+	var memberSprite = event.getTarget();
 	var listWidget = memberSprite.getParent();
 	var member = {
 		name : memberSprite.getName(),
