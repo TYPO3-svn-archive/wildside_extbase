@@ -1,4 +1,4 @@
-<?php
+<?php 
 /***************************************************************
 *  Copyright notice
 *
@@ -23,32 +23,32 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-/**
- * Helps with formatting numbers
- *
- * @package TYPO3
- * @subpackage Fluid
- * @version
- */
-class Tx_WildsideExtbase_ViewHelpers_NumberViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
+
+class Tx_WildsideExtbase_ViewHelpers_FuncViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
-	 * Render a select
-	 * @param float $number The number to be formatted
-	 * @param int $decimals The number of decimals to output
-	 * @param string $dsep The character used as decimal separator
-	 * @param string $tsep The character used as thousands separator
-	 * @param string $unit The unit to use as suffix for the rendered number
-	 * @return string
+	 * 
+	 * @param string $func Function name to be called; can be an absolute reference (leave out $instance) or a method name for $instance
+	 * @param object $instance If specified, runs $func on $instance
+	 * @param array $arguments Array of arguments, in order, to pass to the function
 	 */
-	public function render($number, $decimals=NULL, $dsep=NULL, $tsep=NULL, $unit=NULL) {
-		$str = number_format($number, $decimals, $dsep, $tsep);
-		if ($unit) {
-			$str .= $unit;
+	public function render($func, $instance=NULL, array $arguments=array()) {
+		$content = $this->renderChildren();
+		if (count($arguments) == 0 && trim($content) != '') {
+			// innerHTML is assumed to be the only parameter to pass to $func
+			array_push($arguments, $content);
 		}
-		return $str;
+		
+		if ($instance) {
+			$method = array($instance, $func);
+		} else {
+			$method = $func;
+		}
+		
+		$output = call_user_func($method, $arguments);
+		return $output;
 	}
-}
 	
+}
 
 ?>
