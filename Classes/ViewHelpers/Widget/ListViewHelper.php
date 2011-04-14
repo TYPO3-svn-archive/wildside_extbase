@@ -25,7 +25,7 @@
 
 class Tx_WildsideExtbase_ViewHelpers_Widget_ListViewHelper extends Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper {
 	
-	const NAMESPACE = 'dk.wildside.display.widget.ListWidget';
+	const NS = 'dk.wildside.display.widget.ListWidget';
 	
 	/**
 	 * Render an entry for a Listener compatible with JS LocusController
@@ -38,7 +38,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_ListViewHelper extends Tx_WildsideEx
 	 * @param string $template siteroot-relative path of template file to use - leave out for default
 	 * @return string
 	 */
-	public function render($widget=self::NAMESPACE, $name='files', $data=NULL, $class=NULL, $title=NULL, $templateFile=NULL) {
+	public function render($widget=self::NS, $name='files', $data=NULL, $class=NULL, $title=NULL, $templateFile=NULL) {
 		$type = 4815163242;
 		$controller = '';
 		$action = '';

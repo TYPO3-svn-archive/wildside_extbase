@@ -26,6 +26,29 @@
 class Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
+	 * @var Tx_WildsideExtbase_Utility_JSON
+	 */
+	protected $jsonService;
+	
+	/**
+	 * Inject JSON Service
+	 * @param Tx_WildsideExtbase_Utility_JSON $service
+	 */
+	protected function injectJSONService(Tx_WildsideExtbase_Utility_JSON $service) {
+		$this->jsonService = $service;
+	}
+	
+	/**
+ 	 * Enter description here ...
+	 */
+	public function initialize() {
+		parent::initialize();
+		$this->objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$jsonService = $this->objectManager->get('Tx_WildsideExtbase_Utility_JSON');
+		$this->injectJSONService($jsonService);
+	}
+	
+	/**
 	 * Get all values (or values specified in $properties
 	 * 
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $object

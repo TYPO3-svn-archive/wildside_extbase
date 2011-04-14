@@ -95,7 +95,7 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 		} else {
 			$obj->data = $data;
 		}
-		$json = json_encode($obj);
+		$json = $this->jsonService->encode($obj);
 		if ($html === NULL) {
 			$html = $this->renderChildren();
 		}

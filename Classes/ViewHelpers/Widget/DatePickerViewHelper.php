@@ -32,7 +32,7 @@
  */
 class Tx_WildsideExtbase_ViewHelpers_Widget_DatePickerViewHelper extends Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper {
 	
-	const NAMESPACE = 'dk.wildside.display.widget.DatePickerWidget';
+	const NS = 'dk.wildside.display.widget.DatePickerWidget';
 	
 	/**
 	 * Creates a jQuery datepicker element
@@ -53,7 +53,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_DatePickerViewHelper extends Tx_Wild
 	 * @return string
 	 */
 	public function render(
-			$widget=self::NAMESPACE, 
+			$widget=self::NS, 
 			$name='date',
 			$controller=NULL,
 			$plugin=NULL,

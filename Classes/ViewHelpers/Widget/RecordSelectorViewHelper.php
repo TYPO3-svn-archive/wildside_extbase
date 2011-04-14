@@ -25,7 +25,7 @@
 
 class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper {
 	
-	const NAMESPACE = 'dk.wildside.display.widget.RecordSelectorWidget';
+	const NS = 'dk.wildside.display.widget.RecordSelectorWidget';
 	
 	private $name;
 	private $table;
@@ -52,7 +52,7 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 	 * @return string
 	 */
 	public function render(
-			$widget=self::NAMESPACE,
+			$widget=self::NS,
 			$name='records', 
 			$data=NULL, 
 			$class=NULL, 
@@ -125,14 +125,13 @@ class Tx_WildsideExtbase_ViewHelpers_Widget_RecordSelectorViewHelper extends Tx_
 			$condition .= " AND pid = '{$this->storagePid}'";
 		}
 		$array = array();
-		#die($condition);
 		$fields = implode(', ', array_merge(explode('.', $this->titleField), array('uid')));
 		$result = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $this->table, $condition);
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
 			$title = $row[$this->titleField];
 			$array[$row['uid']] = $title;
 		}
-		echo mysql_error();
+		#echo mysql_error();
 		#var_dump($array);
 		return $array;
 	}

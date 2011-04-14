@@ -31,10 +31,12 @@
 class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 	
 	private $mapper;
+	private $jsonService;
 	
 	public function run($content, $configuration) {
 		$this->initialize($configuration);
 		$this->mapper = $this->objectManager->get('Tx_WildsideExtbase_Utility_PropertyMapper');
+		$this->jsonService = $this->objectManager->get('Tx_WildsideExtbase_Utility_JSON');
 		$messager = $this->objectManager->get('Tx_Extbase_MVC_Controller_FlashMessages');
 		$requestHandlerResolver = $this->objectManager->get('Tx_Extbase_MVC_RequestHandlerResolver');
 		$requestHandler = $requestHandlerResolver->resolveRequestHandler();
@@ -80,7 +82,7 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 			array_push($data->errors, $err);
 		}
 		$this->resetSingletons();
-		$output = json_encode($data);
+		$output = $this->jsonService->encode($data);
 		return $output;
 	}
 	

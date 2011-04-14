@@ -54,7 +54,7 @@ class Tx_WildsideExtbase_ViewHelpers_FieldViewHelper extends Tx_WildsideExtbase_
 				$json->$k = $v;
 			}
 		}
-		$jsonString = json_encode($json);
+		$jsonString = $this->jsonService->encode($json);
 		if ($field === NULL) {
 			// check for the last part of $displayType
 			$subClass = array_pop(explode('.', $displayType));

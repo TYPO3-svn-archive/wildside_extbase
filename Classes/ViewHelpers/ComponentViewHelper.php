@@ -78,7 +78,7 @@ class Tx_WildsideExtbase_ViewHelpers_ComponentViewHelper extends Tx_WildsideExtb
 				$obj->action = $bulkAction;
 			}
 		}
-		$json = json_encode($obj);
+		$json = $this->jsonService->encode($obj);
 		$html = "<div class='wildside-extbase-component {$class}'>
 			<div class='wildside-extbase-json'>{$json}</div>
 			{$html}
