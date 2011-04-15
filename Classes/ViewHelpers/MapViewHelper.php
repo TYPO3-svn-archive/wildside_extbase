@@ -24,21 +24,26 @@
 ***************************************************************/
 
 
-class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
-	
-	
+class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_ViewHelpers_InjectViewHelper {
 	
 	/**
 	 * @param array $addresses
 	 * @param float $lat
 	 * @param float $lng
+	 * @param string $api
 	 */
-	public function render(array $addresses=array(), $lat=NULL, $lng=NULL) {
-		
-		
+	public function render(array $addresses=array(), $lat=NULL, $lng=NULL, $api=NULL) {
+		if ($api === NULL) {
+			$api = "http://maps.google.com/maps/api/js?v=3.2&sensor=true_or_false";
+		}
+		$this->includeFile($api);
+		$init = <<< INIT
+
+INIT;
+		$code = $this->wrap($init);
+		$this->process($code, Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_JAVASCRIPT);
 		return 'MAP';
 	}
-	
 	
 }
 ?>
