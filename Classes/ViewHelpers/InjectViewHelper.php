@@ -30,7 +30,7 @@
  * @subpackage Fluid
  * @version
  */
-abstract class Tx_WildsideExtbase_ViewHelpers_InjectViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
+abstract class Tx_WildsideExtbase_ViewHelpers_InjectViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper {
 	
 	const TYPE_JAVASCRIPT = 'js';
 	const TYPE_STYLESHEET = 'css';
