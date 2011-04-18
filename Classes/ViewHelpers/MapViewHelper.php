@@ -201,21 +201,18 @@ CSS;
 		foreach ($layers as $name=>$markers) {
 			foreach ($markers as $marker) {
 				$markerId = uniqid('marker');
-				$options = $this->getMarkerOptions($marker);
-				
-				#$obj = json_decode($options);
-				#var_dump($options);
-				#var_dump($obj);
-				#exit();
-				$str = "var {$markerId} = new google.maps.Marker($options); ";
-				#$str .= "   console.info({$markerId});";
 				if ($marker['infoWindow']) {
-					$content = $marker['infoWindow'];
-					$content = addslashes($content);
-					#$str .= "    console.log('{$content}');";
-					//$str .= "    jQuery(markers[{$i}]).data('infoWindow', '" . addslashes($options['infoWindow']) . "');";
-					#$str .= "    google.maps.event.addListener({$markerId}, 'click', wildsideExtbaseGoogleMapShowInfoWindow);";
-					$str .= "    google.maps.event.addListener({$markerId}, 'click', function(event) { infoWindow.setContent('{$content}'); infoWindow.setPosition(event.latLng); infoWindow.open(map, {$markerId}); });";
+					$infoWindow = $marker['infoWindow'];
+					$infoWindow = str_replace("\n", "\\n", $infoWindow);
+					$infoWindow = str_replace('"', '\"', $infoWindow);
+					unset($marker['infoWindow']);
+				} else {
+					$infoWindow = FALSE;
+				}
+				$options = $this->getMarkerOptions($marker);
+				$str = "var {$markerId} = new google.maps.Marker($options); ";
+				if ($infoWindow) {	
+					$str .= "    google.maps.event.addListener({$markerId}, 'click', function(event) { infoWindow.setContent(\"{$infoWindow}\"); infoWindow.setPosition(event.latLng); infoWindow.open(map, {$markerId}); });";
 				}
 				array_push($allMarkers, $str);
 			}

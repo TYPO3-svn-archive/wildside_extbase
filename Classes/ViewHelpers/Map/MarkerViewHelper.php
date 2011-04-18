@@ -44,12 +44,12 @@ class Tx_WildsideExtbase_ViewHelpers_Map_MarkerViewHelper extends Tx_WildsideExt
 	/**
 	 * Render a Map Marker
 	 * 
-	 * @param string $infoBox
 	 */
-	public function render($infoBox=NULL) {
+	public function render() {
 		$marker = $this->inheritArguments();
 		if ($infoBox === NULL) {
 			$infoBox = $this->renderChildren();
+			$infoBox = trim($infoBox);
 			$marker['infoWindow'] = $infoBox;
 		}
 		$this->addMarker($marker);
