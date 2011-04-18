@@ -96,6 +96,7 @@ class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Vi
 		
 		$this->includeFile($api);
 		$this->templateVariableContainer->add('layers', array());
+		$this->templateVariableContainer->add('infoWindows', array());
 		
 		$this->inheritArguments();
 		$this->renderChildren();
@@ -109,12 +110,20 @@ class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Vi
 		
 		$init = <<< INIT
 jQuery(document).ready(function() {
-    var myLatlng = new google.maps.LatLng({$lat}, {$lng});
-    var myOptions = {$options};
-    var map = new google.maps.Map(document.getElementById("{$elementId}"), myOptions);
-    var markers = [];
-    {$markers}
-    
+var myLatlng = new google.maps.LatLng({$lat}, {$lng});
+var myOptions = {$options};
+var infoWindow = infoWindow = new google.maps.InfoWindow();
+var map = new google.maps.Map(document.getElementById("{$elementId}"), myOptions);
+{$markers}
+
+function wildsideExtbaseGoogleMapShowInfoWindow(event, content) {
+	//console.warn(jQuery(event.currentTarget).data('infoWindow'));
+    infoWindow.setContent(content);
+    infoWindow.setPosition(event.latLng);
+    infoWindow.open(map, markers[event.currentTarget.getAttribute('id')]);
+    console.info(event.currentTarget);
+    console.warn(content);
+};
 });
 INIT;
 
@@ -189,13 +198,26 @@ CSS;
 	public function renderMarkers() {
 		$layers = $this->get('layers');
 		$allMarkers = array();
-		$i = 0;
 		foreach ($layers as $name=>$markers) {
 			foreach ($markers as $marker) {
+				$markerId = uniqid('marker');
 				$options = $this->getMarkerOptions($marker);
-				$str = "	markers[{$i}] = new google.maps.Marker($options);";
+				
+				#$obj = json_decode($options);
+				#var_dump($options);
+				#var_dump($obj);
+				#exit();
+				$str = "var {$markerId} = new google.maps.Marker($options); ";
+				#$str .= "   console.info({$markerId});";
+				if ($marker['infoWindow']) {
+					$content = $marker['infoWindow'];
+					$content = addslashes($content);
+					#$str .= "    console.log('{$content}');";
+					//$str .= "    jQuery(markers[{$i}]).data('infoWindow', '" . addslashes($options['infoWindow']) . "');";
+					#$str .= "    google.maps.event.addListener({$markerId}, 'click', wildsideExtbaseGoogleMapShowInfoWindow);";
+					$str .= "    google.maps.event.addListener({$markerId}, 'click', function(event) { infoWindow.setContent('{$content}'); infoWindow.setPosition(event.latLng); infoWindow.open(map, {$markerId}); });";
+				}
 				array_push($allMarkers, $str);
-				$i++;
 			}
 		}
 		return implode("\n", $allMarkers);

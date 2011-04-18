@@ -47,11 +47,11 @@ class Tx_WildsideExtbase_ViewHelpers_Map_MarkerViewHelper extends Tx_WildsideExt
 	 * @param string $infoBox
 	 */
 	public function render($infoBox=NULL) {
+		$marker = $this->inheritArguments();
 		if ($infoBox === NULL) {
 			$infoBox = $this->renderChildren();
+			$marker['infoWindow'] = $infoBox;
 		}
-		$marker = $this->inheritArguments();
-		#var_dump($marker);
 		$this->addMarker($marker);
 	}
 	
@@ -60,6 +60,12 @@ class Tx_WildsideExtbase_ViewHelpers_Map_MarkerViewHelper extends Tx_WildsideExt
 		$last = array_pop(array_keys($layers));
 		array_push($layers[$last], $marker);
 		$this->reassign('layers', $layers);
+	}
+	
+	public function addInfoWindow($infoWindow) {
+		$infoWindows = $this->get('infoWindows');
+		array_push($infoWindows, $infoWindow);
+		$this->reassign('infoWindows', $infoWindows);
 	}
 	
 }
