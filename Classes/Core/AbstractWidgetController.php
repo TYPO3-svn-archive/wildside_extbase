@@ -30,7 +30,7 @@
  * @copyright Copyright belongs to the respective authors
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-abstract class Tx_WildsideExtbase_Controller_AbstractWidgetController extends Tx_Extbase_MVC_Controller_ActionController {
+abstract class Tx_WildsideExtbase_Controller_AbstractWidgetController extends Tx_WildsideExtbase_Core_AbstractController {
 	
 	
 	
