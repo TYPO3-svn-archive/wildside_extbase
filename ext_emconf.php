@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Wildside Extbase Framework',
-	'description' => 'Provides an extension building framework for Extbase extension developers. Includes a range of ViewHelpers and Javascript AJAX features.',
+	'description' => 'Provides an extension building framework for Extbase extension developers. Includes a range of ViewHelpers and AJAX features. NEW FEATURES ADDED REGULARLY, CHECK FOR UPDATES OFTEN!',
 	'category' => 'misc',
 	'author' => 'Claus Due',
 	'author_email' => 'claus@wildside.dk',
