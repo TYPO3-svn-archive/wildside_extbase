@@ -16,4 +16,28 @@ Tx_Extbase_Utility_Extension::configurePlugin(
 	)
 );
 
+Tx_Extbase_Utility_Extension::configurePlugin(
+	$_EXTKEY,
+	'Template',
+	array(
+		'Template' => 'show',
+	),
+	array(
+		'Template' => 'show',
+	)
+);
+
+
+Tx_Extbase_Utility_Extension::configurePlugin(
+	$_EXTKEY,
+	'Datasource',
+	array(
+		'DataSource' => 'list,show',
+	),
+	array(
+		'DataSource' => 'list,show',
+	)
+);
+
+
 ?>

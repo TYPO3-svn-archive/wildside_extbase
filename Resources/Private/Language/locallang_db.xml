@@ -6,6 +6,15 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
+			<label index="tx_wildsideextbase_domain_model_datasource">Data Source</label>
+			<label index="tx_wildsideextbase_domain_model_datasource.name">Name</label>
+			<label index="tx_wildsideextbase_domain_model_datasource.description">Description</label>
+			<label index="tx_wildsideextbase_domain_model_datasource.query">Query</label>
+			<label index="tx_wildsideextbase_domain_model_datasource.func">Func</label>
+			<label index="tx_wildsideextbase_domain_model_datasource.url">Url</label>
+			<label index="tx_wildsideextbase_domain_model_datasource.url_method">Url Method</label>
+			<label index="tx_wildsideextbase_domain_model_datasource.template_file">Template File</label>
+			<label index="tx_wildsideextbase_domain_model_datasource.template_source">Template Source</label>
 		</languageKey>
 	</data>
 </T3locallang>

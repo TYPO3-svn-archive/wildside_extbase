@@ -30,7 +30,7 @@
  * @copyright Copyright belongs to the respective authors
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class Tx_WildsideExtbase_Controller_FileuploadWidgetController extends Tx_WildsideExtbase_Controller_AbstractWidgetController {
+class Tx_WildsideExtbase_Controller_FileuploadWidgetController extends Tx_WildsideExtbase_Core_AbstractWidgetController {
 	
 }
 

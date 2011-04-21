@@ -1,4 +1,12 @@
-plugin.tx_wildsideextbase.settings {
+plugin.tx_wildsideextbase {
+	view {
+		templateRootPath = {$plugin.tx_wildsideextbase.view.templateRootPath}
+		partialRootPath = {$plugin.tx_wildsideextbase.view.partialRootPath}
+		layoutRootPath = {$plugin.tx_wildsideextbase.view.layoutRootPath}
+	}
+	persistence {
+		storagePid = {$plugin.tx_wildsideextbase.persistence.storagePid}
+	}
 }
 
 plugin.tx_wildsideextbase._CSS_DEFAULT_STYLE (
