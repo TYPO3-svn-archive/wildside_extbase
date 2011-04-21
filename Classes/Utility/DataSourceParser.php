@@ -25,6 +25,10 @@
 
 class Tx_WildsideExtbase_Utility_DataSourceParser implements t3lib_Singleton {
 
+	const URLMETHOD_JSON = 0;
+	const URLMETHOD_XML = 1;
+	const URLMETHOD_URI = 2;
+	
 	/**
 	 * @var Tx_WildsideExtbase_Utility_JSON
 	 */
@@ -65,7 +69,10 @@ class Tx_WildsideExtbase_Utility_DataSourceParser implements t3lib_Singleton {
 	public function gatherData(Tx_WildsideExtbase_Domain_Model_DataSource $source) {
 		$probeUrl = $source->getUrl();
 		$probeQuery = $source->getQuery();
-		if ($probeQuery) {
+		$probeFunction = $source->getFunc();
+		if ($probeFunction) {
+			$data = $this->fetchDataByFunction($probeFunction);
+		} else if ($probeQuery) {
 			$data = $this->fetchDataByQuery($probeQuery);
 		} else if ($probeUrl) {
 			$probeUrlMethod = $source->getUrlMethod();
@@ -95,9 +102,39 @@ class Tx_WildsideExtbase_Utility_DataSourceParser implements t3lib_Singleton {
 	 * Fetch data by $url and $method
 	 * @param string $url
 	 * @param string $method
+	 * @return array
 	 */
 	private function fetchDataByUrl($url, $method) {
-		
+		$contents = file_get_contents($url);
+		switch ($methpd) {
+			case self::URLMETHOD_JSON:
+				return (array) $this->jsonHandler->decode($contents);
+				break;
+			case self::URLMETHOD_XML:
+				return (array) simplexml_load_string($contents, 'stdClass');
+				break;
+			case self::URLMETHOD_URI:
+				return (array) parse_url($content, PHP_URL_SCHEME);
+				break;
+			default:
+				return (array) array();
+				break;
+		}
+	}
+	
+	/**
+	 * Fetch data by $function call
+	 * @param string $function
+	 * @return array
+	 */
+	private function fetchDataByFunction($function) {
+		if (strpos($function, '::')) {
+			list ($object, $function) = explode('::', $function);
+			$object = $this->objectManager->get($object);
+			return (array) $object->$function();
+		} else {
+			return (array) $function();
+		}
 	}
 	
 }
