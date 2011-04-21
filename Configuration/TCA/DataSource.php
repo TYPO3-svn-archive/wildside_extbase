@@ -6,7 +6,7 @@ if (!defined ('TYPO3_MODE')) {
 $TCA['tx_wildsideextbase_domain_model_datasource'] = array(
 	'ctrl' => $TCA['tx_wildsideextbase_domain_model_datasource']['ctrl'],
 	'interface' => array(
-		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, name, description, query, func, url, url_method, template_file, template_source',
+		'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, name, description, query, func, url, url_method',
 	),
 	'types' => array(
 		'1' => array('showitem' => 'sys_language_uid;;;;1-1-1, l10n_parent, l10n_diffsource, hidden;;1, name, description, query, func, url, url_method, template_file, template_source,--div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access,starttime, endtime'),
@@ -143,7 +143,9 @@ $TCA['tx_wildsideextbase_domain_model_datasource'] = array(
 			'config' => array(
 				'type' => 'select',
 				'items' => array(
-					array('-- Label --', 0),
+					array('JSON', 0),
+					array('XML', 1),
+					array('URI', 2),
 				),
 				'size' => 1,
 				'maxitems' => 1,
@@ -154,22 +156,26 @@ $TCA['tx_wildsideextbase_domain_model_datasource'] = array(
 			'exclude' => 0,
 			'label' => 'LLL:EXT:wildside_extbase/Resources/Private/Language/locallang_db.xml:tx_wildsideextbase_domain_model_datasource.template_file',
 			'config' => array(
-				'type' => 'group',
-				'internal_type' => 'file',
-				'uploadfolder' => 'uploads/tx_wildside_extbase',
-				'allowed' => '*',
-				'disallowed' => 'php',
-				'size' => 5,
+				'type' => 'passthrough',
+				#'type' => 'group',
+				#'internal_type' => 'file',
+				#'uploadfolder' => 'uploads/tx_wildside_extbase',
+				#'allowed' => 'html',
+				#'disallowed' => 'php',
+				#'size' => 1,
+				#'maxitems' => 1,
+				#'multiple' => 0
 			),
 		),
 		'template_source' => array(
 			'exclude' => 0,
 			'label' => 'LLL:EXT:wildside_extbase/Resources/Private/Language/locallang_db.xml:tx_wildsideextbase_domain_model_datasource.template_source',
 			'config' => array(
-				'type' => 'text',
-				'cols' => 40,
-				'rows' => 15,
-				'eval' => 'trim'
+				'type' => 'passthrough',
+				#'type' => 'text',
+				#'cols' => 40,
+				#'rows' => 15,
+				#'eval' => 'trim'
 			),
 		),
 	),

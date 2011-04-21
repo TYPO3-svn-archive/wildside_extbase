@@ -26,10 +26,12 @@
 	      	<config>
 		      	<type>group</type>
 		      	<internal_type>file</internal_type>
-		      	<allowed>html</allowed>
+				<allowed>html</allowed>
+				<disallowed>php</disallowed>
 		      	<minitems>0</minitems>
 		      	<maxitems>1</maxitems>
 		      	<size>1</size>
+		      	<multiple>0</multiple>
 	      	</config>
 	      </TCEforms>
 	      </templateFile>
