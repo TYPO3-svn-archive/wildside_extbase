@@ -108,14 +108,11 @@ class Tx_WildsideExtbase_ViewHelpers_WidgetViewHelper extends Tx_WildsideExtbase
 		return $html;
 	}
 	
-	protected function getTemplate($templateFile, $default='Widget/Widget.html') {
+	public function getTemplate($templateFile, $default='Widget/Widget.html') {
 		if ($templateFile === NULL) {
 			$templateFile = t3lib_extMgm::extPath('wildside_extbase', 'Resources/Private/Templates/' . $default);
 		}
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$template = $objectManager->get('Tx_Fluid_View_StandaloneView');
-		$template->setTemplatePathAndFilename($templateFile);
-		return $template;
+		return parent::getTemplate($templateFile);
 	}
 	
 }

@@ -83,6 +83,13 @@ class Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper extends Tx_Fluid_Cor
 		return $values;
 	}
 	
+	public function getTemplate($templateFile) {
+		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
+		$template = $objectManager->get('Tx_Fluid_View_StandaloneView');
+		$template->setTemplatePathAndFilename($templateFile);
+		return $template;
+	}
+	
 }
 
 

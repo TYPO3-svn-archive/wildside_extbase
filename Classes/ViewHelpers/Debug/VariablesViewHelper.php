@@ -1,4 +1,4 @@
-<?php
+<?php 
 /***************************************************************
 *  Copyright notice
 *
@@ -23,38 +23,37 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-/**
- * Injector, CSS
- *
- * @package TYPO3
- * @subpackage Fluid
- * @version
- */
-class Tx_WildsideExtbase_ViewHelpers_Inject_CssViewHelper extends Tx_WildsideExtbase_ViewHelpers_InjectViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_Debug_VariablesViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
-	public $type = Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_STYLESHEET;
 	
 	/**
-	 * Inject CSS file in header or code. See examples in Inject/JsViewHelper.php;
-	 * the pragma is identical - only the output wrapper tags are different.
+	 * Dumps registered template variables
 	 * 
-	 * @param string $file
-	 * @param string $css
-	 * @param string $key
+	 * @param int $crop Maximum number of chars allowed in strings
+	 * @return string
 	 */
-	public function render($file=NULL, $css=NULL, $key=NULL) {
-		if ($css === NULL) {
-			$css = $this->renderChildren();
+	public function render($crop=100) {
+		$vars = $this->templateVariableContainer->getAll();
+		$vars = $this->trim($vars);
+		#$export = "<pre>" . var_export($vars, TRUE) . "</pre>";
+		$export = t3lib_div::view_array($vars);
+		return $export;
+	}
+	
+	private function trim($vars) {
+		if (is_array($vars) || is_object($vars)) {
+			foreach ($vars as $k=>$v) {
+				if ($v instanceof Tx_Extbase_DomainObject_AbstractDomainObject) {
+					$vars[$k] = (string) $v;
+				} else if (is_array($v) || $v instanceof ArrayAccess) {
+					$vars[$k] = $this->trim($v);
+				}
+			}
+		} else if (is_string($vars) && strlen($vars) > 100) {
+			
 		}
-		if ($file) {
-			$code = $this->includeFile($file);
-			return $code;
-		} else if ($css) {
-			$code = "<style type='text/css'>{$css}</style>";
-			return $this->process($code, $key);
-		}
+		return $vars;
 	}
 }
-	
 
 ?>

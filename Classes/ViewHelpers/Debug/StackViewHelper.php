@@ -1,4 +1,4 @@
-<?php
+<?php 
 /***************************************************************
 *  Copyright notice
 *
@@ -23,38 +23,17 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-/**
- * Injector, CSS
- *
- * @package TYPO3
- * @subpackage Fluid
- * @version
- */
-class Tx_WildsideExtbase_ViewHelpers_Inject_CssViewHelper extends Tx_WildsideExtbase_ViewHelpers_InjectViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_Debug_StackViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
-	public $type = Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_STYLESHEET;
 	
 	/**
-	 * Inject CSS file in header or code. See examples in Inject/JsViewHelper.php;
-	 * the pragma is identical - only the output wrapper tags are different.
 	 * 
-	 * @param string $file
-	 * @param string $css
-	 * @param string $key
+	 * @return string
 	 */
-	public function render($file=NULL, $css=NULL, $key=NULL) {
-		if ($css === NULL) {
-			$css = $this->renderChildren();
-		}
-		if ($file) {
-			$code = $this->includeFile($file);
-			return $code;
-		} else if ($css) {
-			$code = "<style type='text/css'>{$css}</style>";
-			return $this->process($code, $key);
-		}
+	public function render() {
+		
+		return $this->renderChildren();
 	}
 }
-	
 
 ?>
