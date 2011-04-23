@@ -43,7 +43,7 @@ class Tx_WildsideExtbase_ViewHelpers_Inject_CssViewHelper extends Tx_WildsideExt
 	 * @param string $key
 	 */
 	public function render($file=NULL, $css=NULL, $key=NULL) {
-		if ($css === NULL) {
+		if ($css === NULL && $file === NULL) {
 			$css = $this->renderChildren();
 		}
 		if ($file) {
