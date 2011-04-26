@@ -48,7 +48,7 @@
  * 
  * 
  * 
- * CAVEATS AND WARNINGS:0
+ * CAVEATS AND WARNINGS
  * 
  * 1) Keep in mind that for the cookies to actually "become" EverCookies, 
  * at least one succesful FE rendering is required AFTER setting the 

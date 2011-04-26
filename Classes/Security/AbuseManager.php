@@ -25,6 +25,8 @@
 
 class Tx_WildsideExtbase_Security_AbuseManager implements t3lib_Singleton {
 	
+	const sessionKey = 'Tx_WildsideExtbase_Security_AbuseManager::sessionKey'; 
+	
 	/**
 	 * Start a new SecuritySession and register for monitoring. Chaining available on return value
 	 * 
@@ -32,10 +34,12 @@ class Tx_WildsideExtbase_Security_AbuseManager implements t3lib_Singleton {
 	 * @param string $id Mandatory ID for this particular session (not browser session; security session - multiple security sessions may be registed for each browser session)
 	 * @return Tx_WildsideExtbase_Security_SecuritySession
 	 */
-	public function startSession($id) {
+	public function startSession($id=NULL) {
+		if ($id === NULL) {
+			$id = md5(time()*microtime(TRUE));
+		}
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$session = $objectManager->get('Tx_WildsideExtbase_Security_SecuritySession');
-		$session->setId($id);
+		$session = $objectManager->get('Tx_WildsideExtbase_Security_SecuritySession', $id);
 		return $this->registerSecuritySession($session);
 	}
 	
@@ -47,6 +51,12 @@ class Tx_WildsideExtbase_Security_AbuseManager implements t3lib_Singleton {
 	 * @return void
 	 */
 	public function registerSecuritySession(Tx_WildsideExtbase_Security_SecuritySession $session) {
+		$id = $session->getId();
+		$storage = $this->getSessionStorage();
+		if (isset($storage[$id]) === FALSE) {
+			$storage[$id] = $session;
+		}
+		$this->updateSessionStorage($storage);
 		return $session;
 	}
 	
@@ -57,8 +67,14 @@ class Tx_WildsideExtbase_Security_AbuseManager implements t3lib_Singleton {
 	 * @param Tx_WildsideExtbase_Security_SecuritySession $session
 	 * @return void
 	 */
-	public function unregisterSecuritySession(Tx_WildsideExtbase_Security_SecuritySession $session=NULL) {
-		
+	public function unregisterSecuritySession(Tx_WildsideExtbase_Security_SecuritySession $session) {
+		$id = $session->getId();
+		$storage = $this->getSessionStorage();
+		if (isset($storage[$id]) === TRUE) {
+			unset($storage[$id]);
+		}
+		$this->updateSessionStorage($storage);
+		return $session;
 	}
 	
 	/**
@@ -69,8 +85,12 @@ class Tx_WildsideExtbase_Security_AbuseManager implements t3lib_Singleton {
 	 * @return Tx_WildsideExtbase_Security_SecuritySession
 	 */
 	public function getSecuritySession($id=NULL) {
-		
-		return $session;
+		$storage = $this->getSessionStorage();
+		if (isset($storage[$id]) === TRUE) {
+			return $storage[$id];
+		} else {
+			return NULL;
+		}
 	}
 	
 	/**
@@ -80,8 +100,25 @@ class Tx_WildsideExtbase_Security_AbuseManager implements t3lib_Singleton {
 	 * @return array
 	 */
 	public function getAllSecuritySessions() {
-		$sessions = array();
+		$sessions = $this->getSessionStorage();
 		return (array) $sessions;
+	}
+	
+	/**
+	 * Patrol all SecuritySessions and trigger redirects if necessary
+	 * @api
+	 * @return void
+	 */
+	public function patrol() {
+		$sessions = $this->getAllSecuritySessions();
+		foreach ($sessions as $session) {
+			if ($session->isBlackHoled()) {
+				$this->triggerBlackHole();
+			} else if ($session->isQuarantined()) {
+				$this->triggerQuarantine($session);
+				$this->triggerRedirect($session->getQuarantinePage());
+			} 
+		}
 	}
 	
 	/**
@@ -98,5 +135,76 @@ class Tx_WildsideExtbase_Security_AbuseManager implements t3lib_Singleton {
 		return $session;
 	}
 	
+	/**
+	 * Trigger a Header Redirect to page $pageUid (using UriBuilder)
+	 * 
+	 * @param int $pageUid
+	 */
+	private function triggerRedirect($pageUid) {
+		
+	}
 	
+	/**
+	 * Put the client into a Black Hole - do whatever we can to lock-up the client without 
+	 * putting load on the server
+	 */
+	private function triggerBlackHole() {
+		
+	}
+	
+	/**
+	 * Trigger various logging mechanisms when Quarantine is requested by SecuritySession
+	 */
+	private function triggerQuarantine() {
+		
+	}
+	
+	/**
+	 * Gets the session storage array
+	 * 
+	 * @return array
+	 */
+	private function getSessionStorage() {
+		$this->maintainSession();
+		$id = $session->getId();
+		$storage = $_SESSION[self::sessionKey];
+		return $storage;
+	}
+	
+	/**
+	 * Update the session storage
+	 * 
+	 * @param array $storage
+	 */
+	private function updateSessionStorage(array $storage) {
+		$_SESSION[self::sessionKey] = $storage;
+	}
+	
+	/**
+	 * Maintains the session storage - starts it if not initialized
+	 */
+	private function maintainSession() {
+		if (is_array($_SESSION[self::sessionKey]) === FALSE) {
+			$_SESSION[self::sessionKey] = array();
+		}
+	}
+	
+	/**
+	 * Process SecuritySessions, redirect if any SecuritySession demands it
+	 * 
+	 * @return void
+	 */
+	public function __destruct() {
+		$this->patrol();
+	}
+	
+	public function __serialize() {
+		
+	}
+	
+	public function __unserialize() {
+		
+	}
 }
+
+?>

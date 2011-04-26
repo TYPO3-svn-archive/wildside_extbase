@@ -32,8 +32,8 @@ dk.wildside.net.Request.prototype.getController = function() {
 	} else if (this.widget.config.controller) {
 		return this.widget.config.controller;
 	} else {
-		console.info('Invalid controller configuration');
-		console.warn(this);
+		//console.info('Invalid controller configuration');
+		//console.warn(this);
 	};
 };
 

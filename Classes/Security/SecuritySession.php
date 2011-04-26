@@ -1,4 +1,5 @@
 <?php 
+
 /***************************************************************
 *  Copyright notice
 *
@@ -55,6 +56,11 @@ class Tx_WildsideExtbase_Security_SecuritySession {
 	/**
 	 * @var boolean
 	 */
+	protected $abuseCountGlobal = TRUE;
+	
+	/**
+	 * @var boolean
+	 */
 	protected $quarantine = FALSE;
 	
 	/**
@@ -97,120 +103,247 @@ class Tx_WildsideExtbase_Security_SecuritySession {
 	 */
 	private $_abuseLog = array();
 	
-	
+	/**
+	 * CONSTRUCTOR
+	 * 
+	 * @param string $id Optional ID for SecuritySession
+	 */
 	public function __construct($id=NULL) {
-		
+		if ($id) {
+			$this->setId($id);
+		} else {
+			$id = md5(time()*microtime(TRUE));
+			$this->setId($id);
+		}
 	}
 	
-	
-	
-	
+	/**
+	 * @param string $id
+	 * @return Tx_WildsideExtbase_Security_SecuritySession
+	 */
 	public function setId($id) {
 		$this->id = $id;
+		return $this;
 	}
 	
+	/**
+	 * @return string
+	 */
 	public function getId() {
 		return $this->id;
 	}
 	
+	/**
+	 * @param int $tolerance
+	 * @return Tx_WildsideExtbase_Security_SecuritySession
+	 */
 	public function setTolerance($tolerance) {
 		$this->tolerance = $tolerance;
+		return $this;
 	}
 	
+	/**
+	 * @return int
+	 */
 	public function getTolerance() {
 		return $this->tolerance;
 	}
 	
+	/**
+	 * @param int $gracePeriod
+	 * @return Tx_WildsideExtbase_Security_SecuritySession
+	 */
 	public function setGracePeriod($gracePeriod) {
 		$this->gracePeriod = $gracePeriod;
+		return $this;
 	}
 	
+	/**
+	 * @return int
+	 */
 	public function getGracePeriod() {
 		return $this->gracePeriod;
 	}
 	
+	/**
+	 * @param int $abusePage
+	 * @return Tx_WildsideExtbase_Security_SecuritySession
+	 */
 	public function setAbusePage($abusePage) {
 		$this->abusePage = $abusePage;
+		return $this;
 	}
 	
+	/**
+	 * @return int
+	 */
 	public function getAbusePage() {
 		return $this->abusePage;
 	}
 	
-	public function setQuarantine($quarantine) {
-		$this->quarantine = $quarantine;
+	/**
+	 * @param int $abuseCountGlobal
+	 * @return Tx_WildsideExtbase_Security_SecuritySession
+	 */
+	public function setAbuseCountGlobal($abuseCountGlobal) {
+		$this->abuseCountGlobal = $abuseCountGlobal;
+		return $this;
 	}
 	
+	/**
+	 * @return int
+	 */
+	public function getAbuseCountGlobal() {
+		return $this->abuseCountGlobal;
+	}
+	
+	/**
+	 * @param boolean $quarantine
+	 * @return Tx_WildsideExtbase_Security_SecuritySession
+	 */
+	public function setQuarantine($quarantine) {
+		$this->quarantine = $quarantine;
+		return $this;
+	}
+	
+	/**
+	 * @return boolean
+	 */
 	public function getQuarantine() {
 		return $this->quarantine;
 	}
 	
-	public function setQuarantined($quarantine) {
-		$this->quarantine = $quarantine;
+	/**
+	 * @param boolean $quarantined
+	 * @return Tx_WildsideExtbase_Security_SecuritySession
+	 */
+	public function setQuarantined($quarantined) {
+		$this->quarantined = $quarantined;
+		return $this;
 	}
 	
+	/**
+	 * @return boolean
+	 */
 	public function getQuarantined() {
-		return $this->quarantine;
+		return $this->quarantined;
 	}
 	
+	/**
+	 * @param boolean $quarantineIpAddress
+	 * @return Tx_WildsideExtbase_Security_SecuritySession
+	 */
 	public function setQuarantineIpAddress($quarantineIpAddress) {
 		$this->quarantineIpAddress = $quarantineIpAddress;
+		return $this;
 	}
 	
+	/**
+	 * @return boolean
+	 */
 	public function getQuarantineIpAddress() {
 		return $this->quarantineIpAddress;
 	}
 	
+	/**
+	 * @param int $quarantinePage
+	 * @return Tx_WildsideExtbase_Security_SecuritySession
+	 */
 	public function setQuarantinePage($quarantinePage) {
 		$this->quarantinePage = $quarantinePage;
+		return $this;
 	}
 	
+	/**
+	 * @return int
+	 */
 	public function getQuarantinePage() {
 		return $this->quarantinePage;
 	}
 	
+	/**
+	 * @param int $quarantineDuration
+	 * @return Tx_WildsideExtbase_Security_SecuritySession
+	 */
 	public function setQuarantineDuration($quarantineDuration) {
 		$this->quarantineDuration = $quarantineDuration;
+		return $this;
 	}
 	
+	/**
+	 * @return int
+	 */
 	public function getQuarantineDuration() {
 		return $this->quarantineDuration;
 	}
 	
+	/**
+	 * @param boolean $blackHole
+	 * @return Tx_WildsideExtbase_Security_SecuritySession
+	 */
 	public function setBlackHole($blackHole) {
 		$this->blackHole = $blackHole;
+		return $this;
 	}
 	
+	/**
+	 * @return boolean
+	 */
 	public function getBlackHole() {
 		return $this->blackHole;
 	}
 	
+	/**
+	 * @param boolean $syslog
+	 * @return Tx_WildsideExtbase_Security_SecuritySession
+	 */
 	public function setSyslog($syslog) {
 		$this->syslog = $syslog;
+		return $this;
 	}
 	
+	/**
+	 * @return boolean
+	 */
 	public function getSyslog() {
 		return $this->syslog;
 	}
 	
+	/**
+	 * Return the number of times abuse of type $abuseType has occurred.
+	 * If abuseCountGlobal is set to TRUE and $abuseType is NULL then
+	 * the total number of abuse instances recorded is returned
+	 * 
+	 * @api
+	 * @param string $abuseType If specified, returns count for particular type of abuse. Otherwise global.
+	 * @return int
+	 */
 	public function getAbuseCount($abuseType=NULL) {
 		if ($abuseType === NULL) {
 			$abuseType = 'Tx_WildsideExtbase_Security_SecuritySession::abuseType';
+			if ($this->abuseCountGlobal) {
+				return array_sum($this->_abuseLog);
+			}
 		}
 		return intval($this->_abuseLog[$abuseType]);
 	}	
 	
 	/**
-	 * Checks if the current session is tainted by abuse
+	 * Checks if the current session is tainted by abuse of optional type $abuseType
 	 * 
 	 * @api
 	 * @param string $abuseType The type of abuse which occurred. If specified, a local-to-type abuse counter is checked; otherwise the global counter is checked
 	 * @return boolean
 	 */
 	public function isAbuser($abuseType=NULL) {
-		return FALSE;
+		return ($this->getAbuseCount($abuseType) > $this->tolerance);
 	}
 	
+	/**
+	 * Register an abuse occurrence (of optional specific type) 
+	 * 
+	 * @param string $abuseType
+	 */
 	public function registerAbuse($abuseType=NULL) {
 		if ($abuseType === NULL) {
 			$abuseType = 'Tx_WildsideExtbase_Security_SecuritySession::abuseType';
@@ -249,18 +382,21 @@ class Tx_WildsideExtbase_Security_SecuritySession {
 		if ($duration < 0) {
 			$duration = $this->quarantineDuration;
 		}
+		$this->setQuarantined(TRUE);
 	}
 	
 	/**
 	 * Lift quarantine on session
 	 * 
 	 * @api
-	 * @param Tx_WildsideExtbase_Security_SecuritySession $session
-	 * @return void
+	 * @return Tx_WildsideExtbase_Security_SecuritySession $session
 	 */
 	public function liftQuarantine() {
-			
+		$this->setQuarantined(FALSE);
+		return $this;
 	}
 	
 	
 }
+
+?>
