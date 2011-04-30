@@ -89,17 +89,17 @@ class Tx_WildsideExtbase_Utility_PropertyMapper implements t3lib_Singleton {
 		if ($addUid) {
 			$return['uid'] = $object->getUid();
 		}
-		#var_dump($properties);
-		#exit();
 		foreach ($properties as $propertyName) {
 			$tags = $this->reflectionService->getPropertyTagsValues($className, $propertyName);
 			$getter = 'get' . ucfirst($propertyName);
 			$annotationValues = $tags[$annotation];
+			if (method_exists($object, $getter) === FALSE) {
+				continue;
+			}
 			if ($annotationValues !== NULL && (in_array($value, $annotationValues) || $value === TRUE)) {
 				$returnValue = $object->$getter();
 				if ($returnValue instanceof Tx_Extbase_Persistence_ObjectStorage) {
 					$array = $returnValue->toArray();
-					#var_dump($array);
 					foreach ($array as $k=>$v) {
 						$array[$k] = $this->getValuesByAnnotation($v, $annotation, $value, $addUid);
 					}

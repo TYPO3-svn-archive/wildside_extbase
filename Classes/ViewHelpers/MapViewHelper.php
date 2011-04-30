@@ -45,23 +45,24 @@ class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Vi
 	 * @param string $api
 	 * @param string $width
 	 * @param string $height
-	 * @param string backgroundColor Color used for the background of the Map div. This color will be visible when tiles have not yet loaded as the user pans. This option can only be set when the map is initialized.
-	 * @param boolean disableDefaultUI Enables/disables all default UI. May be overridden individually.
-	 * @param boolean disableDoubleClickZoom Enables/disables zoom and center on double click. Enabled by default.
-	 * @param boolean draggable If false, prevents the map from being dragged. Dragging is enabled by default.
-	 * @param string draggableCursor The name or url of the cursor to display on a draggable object.
-	 * @param string draggingCursor The name or url of the cursor to display when an object is dragging.
-	 * @param string keyboardShortcuts If false, prevents the map from being controlled by the keyboard. Keyboard shortcuts are enabled by default.
-	 * @param boolean mapTypeControl The initial enabled/disabled state of the Map type control.
-	 * @param float maxZoom The maximum zoom level which will be displayed on the map. If omitted, or set to null, the maximum zoom from the current map type is used instead.
-	 * @param float minZoom The minimum zoom level which will be displayed on the map. If omitted, or set to null, the minimum zoom from the current map type is used instead.
-	 * @param boolean noClear If true, do not clear the contents of the Map div.
-	 * @param boolean panControl The enabled/disabled state of the pan control.
-	 * @param boolean scaleControl The initial enabled/disabled state of the scale control.
-	 * @param boolean scrollwheel If false, disables scrollwheel zooming on the map. The scrollwheel is enabled by default.
-	 * @param boolean streetViewControl The initial enabled/disabled state of the Street View pegman control.
-	 * @param float zoom The initial Map zoom level. Required.
-	 * @param boolean zoomControl The enabled/disabled state of the zoom control.
+	 * @param string $backgroundColor Color used for the background of the Map div. This color will be visible when tiles have not yet loaded as the user pans. This option can only be set when the map is initialized.
+	 * @param boolean $disableDefaultUI Enables/disables all default UI. May be overridden individually.
+	 * @param boolean $disableDoubleClickZoom Enables/disables zoom and center on double click. Enabled by default.
+	 * @param boolean $draggable If false, prevents the map from being dragged. Dragging is enabled by default.
+	 * @param string $draggableCursor The name or url of the cursor to display on a draggable object.
+	 * @param string $draggingCursor The name or url of the cursor to display when an object is dragging.
+	 * @param string $keyboardShortcuts If false, prevents the map from being controlled by the keyboard. Keyboard shortcuts are enabled by default.
+	 * @param boolean $mapTypeControl The initial enabled/disabled state of the Map type control.
+	 * @param float $maxZoom The maximum zoom level which will be displayed on the map. If omitted, or set to null, the maximum zoom from the current map type is used instead.
+	 * @param float $minZoom The minimum zoom level which will be displayed on the map. If omitted, or set to null, the minimum zoom from the current map type is used instead.
+	 * @param boolean $noClear If true, do not clear the contents of the Map div.
+	 * @param boolean $panControl The enabled/disabled state of the pan control.
+	 * @param boolean $scaleControl The initial enabled/disabled state of the scale control.
+	 * @param boolean $scrollwheel If false, disables scrollwheel zooming on the map. The scrollwheel is enabled by default.
+	 * @param boolean $streetViewControl The initial enabled/disabled state of the Street View pegman control.
+	 * @param float $zoom The initial Map zoom level. Required.
+	 * @param boolean $zoomControl The enabled/disabled state of the zoom control.
+	 * @param string $instanceName Javascript instance name to use. Default is "map".
 	 */
 	public function render(
 			// CUSTOM parameters
@@ -85,7 +86,8 @@ class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Vi
 			$scrollWheel=TRUE,
 			$streetViewControl=TRUE,
 			$zoom=7,
-			$zoomControl=TRUE
+			$zoomControl=TRUE,
+			$instanceName='map'
 			) {
 		if ($api === NULL) {
 			$api = "http://maps.google.com/maps/api/js?v=3.2&sensor=true";
@@ -99,7 +101,7 @@ class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Vi
 		$this->templateVariableContainer->add('infoWindows', array());
 		
 		$this->inheritArguments();
-		$this->renderChildren();
+		$children = $this->renderChildren();
 		
 		$markers = $this->renderMarkers();
 		
@@ -109,21 +111,51 @@ class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Vi
 		$options = $this->getMapOptions();
 		
 		$init = <<< INIT
-jQuery(document).ready(function() {
-var myLatlng = new google.maps.LatLng({$lat}, {$lng});
-var myOptions = {$options};
-var infoWindow = infoWindow = new google.maps.InfoWindow();
-var map = new google.maps.Map(document.getElementById("{$elementId}"), myOptions);
-{$markers}
-
-function wildsideExtbaseGoogleMapShowInfoWindow(event, content) {
-	//console.warn(jQuery(event.currentTarget).data('infoWindow'));
-    infoWindow.setContent(content);
-    infoWindow.setPosition(event.latLng);
-    infoWindow.open(map, markers[event.currentTarget.getAttribute('id')]);
-    console.info(event.currentTarget);
-    console.warn(content);
+var markers = [];
+var {$instanceName};
+var {$instanceName}timeout;
+var {$instanceName}refreshList = function() {
+	var i;
+	var markerlist = jQuery('.wildside-extbase-maplist');
+	for (i=0; i<markers.length; i++) {
+		var marker = markers[i];
+		var row = markerlist.find('tr.' + marker.get('id'));
+		if (map.getBounds().contains(marker.getPosition())) {
+			row.show();
+		} else {
+			row.hide();
+		}
+	};
+	markerlist.trigger("appendCache"); 
 };
+var {$instanceName}timer = function() {
+	clearTimeout({$instanceName});
+	{$instanceName}timeout = setTimeout({$instanceName}refreshList, 200);
+};
+
+jQuery(document).ready(function() {
+	var myLatlng = new google.maps.LatLng({$lat}, {$lng});
+	var myOptions = {$options};
+	var infoWindow = infoWindow = new google.maps.InfoWindow();
+	{$instanceName} = new google.maps.Map(document.getElementById("{$elementId}"), myOptions);
+{$markers}
+	
+	function wildsideExtbaseGoogleMapShowInfoWindow(event, content) {
+	    infoWindow.setContent(content);
+	    infoWindow.setPosition(event.latLng);
+	    infoWindow.open(map, markers[event.currentTarget.getAttribute('id')]);
+	};
+	
+	// check for a map list instance. If found, hook it up to various map events
+	var listElement = jQuery('.wildside-extbase-maplist');
+	if (listElement.html() != '') {
+		//{$instanceName}refreshList();
+		google.maps.event.addListener(map, 'zoom_changed', {$instanceName}timer);
+		google.maps.event.addListener(map, 'bounds_changed', {$instanceName}timer);
+		google.maps.event.addListener(map, 'center_changed', {$instanceName}timer);
+		google.maps.event.addListener(map, 'resize', {$instanceName}timer);
+	}
+	
 });
 INIT;
 
@@ -145,10 +177,9 @@ CSS;
 		
 		$this->tag->addAttribute('id', $elementId);
 		
+		$this->tag->setContent($children);
 		
-		$this->tag->setContent('');
-		
-		$this->templateVariableContainer->remove('layers');
+		#$this->templateVariableContainer->remove('layers');
 		
 		return $this->tag->render();
 	}
@@ -199,8 +230,8 @@ CSS;
 		$layers = $this->get('layers');
 		$allMarkers = array();
 		foreach ($layers as $name=>$markers) {
-			foreach ($markers as $marker) {
-				$markerId = uniqid('marker');
+			foreach ($markers as $index=>$marker) {
+				$markerId = $marker['id'];
 				if ($marker['infoWindow']) {
 					$infoWindow = $marker['infoWindow'];
 					$infoWindow = str_replace("\n", "\\n", $infoWindow);
@@ -210,13 +241,14 @@ CSS;
 					$infoWindow = FALSE;
 				}
 				$options = $this->getMarkerOptions($marker);
-				$str = "var {$markerId} = new google.maps.Marker($options); ";
 				if ($infoWindow) {	
+				$str = "\tvar {$markerId} = new google.maps.Marker($options); {$markerId}.set('id', '{$markerId}'); markers.push({$markerId}); ";
 					$str .= "    google.maps.event.addListener({$markerId}, 'click', function(event) { infoWindow.setContent(\"{$infoWindow}\"); infoWindow.setPosition(event.latLng); infoWindow.open(map, {$markerId}); });";
 				}
 				array_push($allMarkers, $str);
 			}
 		}
+		$this->reassign('layers', $layers);
 		return implode("\n", $allMarkers);
 	}
 	

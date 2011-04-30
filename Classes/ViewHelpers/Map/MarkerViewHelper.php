@@ -25,6 +25,10 @@
 
 class Tx_WildsideExtbase_ViewHelpers_Map_MarkerViewHelper extends Tx_WildsideExtbase_ViewHelpers_MapViewHelper {
 	
+	/**
+	 * @var Tx_WildsideExtbase_Utility_PropertyMapper $propertyMapper
+	 */
+	protected $propertyMapper;
 	
 	public function initializeArguments() {
 		parent::initializeArguments();
@@ -38,20 +42,49 @@ class Tx_WildsideExtbase_ViewHelpers_Map_MarkerViewHelper extends Tx_WildsideExt
 		$this->registerTagAttribute('visible ', 'boolean ', 'If true, the marker is visible');
 		$this->registerTagAttribute('zIndex', 'float', 'All Markers are displayed on the map in order of their zIndex, with higher values displaying in front of Markers with lower values. By default, Markers are displayed according to their latitude, with Markers of lower latitudes appearing in front of Markers at higher latitudes.');
 		$this->registerTagAttribute('infobox', 'string', 'Optional infobox HTML');
-		
+	}
+	
+	/**
+	 * @param Tx_WildsideExtbase_Utility_PropertyMapper $mapper
+	 */
+	public function injectPropertyMapper(Tx_WildsideExtbase_Utility_PropertyMapper $mapper) {
+		$this->propertyMapper = $mapper;
 	}
 	
 	/**
 	 * Render a Map Marker
 	 * 
+	 * @param array $data Optional data (for list display among other things) of Marker. Use keynames for labels.
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $object If specified and $data not specified, reads data from this DomainObject
+	 * @param array $properties If specified, uses this array of property names for data reading. If not specified, if $object and !$data then the source annotation "@map list" is used to determine which values to read from $object (see manual about GoogleMap ViewHelper)
+	 * @param string $markerId Id of this map marker - used for referencing afterwards
+	 * @return string
 	 */
-	public function render() {
+	public function render(
+			array $data=array(), 
+			Tx_Extbase_DomainObject_AbstractDomainObject $object=NULL,
+			array $properties=array(),
+			$markerId=NULL
+			) {
 		$marker = $this->inheritArguments();
 		if ($infoBox === NULL) {
 			$infoBox = $this->renderChildren();
 			$infoBox = trim($infoBox);
 			$marker['infoWindow'] = $infoBox;
 		}
+		$marker['id'] = $markerId ? 'marker' . $markerId : uniqid('wsgmkr');
+		if (count($data) == 0 && $object) {
+			if (count($properties) == 0) {
+				$data = $this->propertyMapper->getPropertiesByAnnytation($object, 'map', 'list');
+			} else {
+				$data = array();
+				foreach ($properties as $property) {
+					$getter = "get" . ucfirst($property);
+					$data[$property] = $object->$getter();
+				}
+			}
+		}
+		$marker['data'] = $data;
 		$this->addMarker($marker);
 	}
 	

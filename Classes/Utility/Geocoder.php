@@ -1,4 +1,4 @@
-<?php
+<?php 
 /***************************************************************
 *  Copyright notice
 *
@@ -23,29 +23,27 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-/**
- * Controller 
- *
- * @version $Id$
- * @copyright Copyright belongs to the respective authors
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
- */
-abstract class Tx_WildsideExtbase_Core_AbstractController extends Tx_Extbase_MVC_Controller_ActionController {
+class Tx_WildsideExtbase_Utility_Geocoder implements t3lib_Singleton {
 	
-	public function getFlexForm() {
-		$data = $this->request->getContentObjectData();
-		$flexform = $data['pi_flexform'];
-		$array = array();
-		$dom = new DOMDocument();
-		$dom->loadXML($flexform);
-		foreach ($dom->getElementsByTagName('field') as $field) {
-			$name = $field->getAttribute('index');
-			$value = $field->getElementsByTagName('value')->item(0)->nodeValue;
-			$value = trim($value);
-			$array[$name] = $value;
+	/**
+	 * Geocodes an address
+	 * 
+	 * @param string $address The address to geocode
+	 * @return array
+	 */
+	public function geocode($address) {
+		$address = urlencode($address);
+		$url = 'http://maps.googleapis.com/maps/api/geocode/json?address='.$address.'&region=DK&sensor=true';
+		$json = file_get_contents($url);
+		$response = json_decode($json);
+		if ($response->status != 'OK') {
+			return FALSE;
+		} else {
+			$location = $response->results[0]->geometry->location;
+			return array('lat' => $location->lat, 'lng' => $location->lng);
 		}
-		return $array;
 	}
+	
 }
 
 ?>

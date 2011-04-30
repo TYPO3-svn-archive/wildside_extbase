@@ -26,6 +26,11 @@
 
 class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper {
 	
+	/**
+	 * @var Tx_WildsideExtbase_Utility_PropertyMapper $propertyMapper
+	 */
+	protected $propertyMapper;
+	
 	protected $tagName = 'table';
 	
 	protected $iconAsc = FALSE;
@@ -33,6 +38,15 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	protected $iconDesc = FALSE;
 	
 	protected $iconDefault = FALSE;
+	
+	public $rowClassPrefix = 'row';
+
+	/**
+	 * @param Tx_WildsideExtbase_Utility_PropertyMapper $mapper
+	 */
+	public function injectPropertyMapper(Tx_WildsideExtbase_Utility_PropertyMapper $mapper) {
+		$this->propertyMapper = $mapper;
+	}
 	
 	/**
 	 * Initialization
@@ -53,9 +67,28 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	 * @param string $iconDesc Icon file for DESC order indication
 	 * @param string $iconDefault Icon file for sorting indication
 	 * @param string $textExtraction Which method to use for text extraction. Valid values are "simple", "compex" or string name of a Javascript function you created
+	 * @param array $data If specified, renders array $data as table rows using keys for headers
+	 * @param array $headers If specified, uses $headers as array of header names
+	 * @param array $objects If specified, considers $object an array of DomainObjects or associative arrays. If !$properties and !$annotationName then all properties are rendered
+	 * @param array $properties If specified, uses array $properties as list of properties on each object to render as a row
+	 * @param string $annotationName If specified, source code annotation (for example @myannotation) is used to determine which object properties to render as a row
+	 * @param string $annotationValue If specified, source code annotation $annotationName must have $annotationValue as one of its listed attributes (for example @myannotation value1 value2 matches $annotationValue='value1' and $annotationValue='value2') 
 	 * @return string
 	 */
-	public function render($cellspacing=FALSE, $cellpadding=FALSE, $iconAsc=FALSE, $iconDesc=FALSE, $iconDefault=FALSE, $textExtraction='simple') {
+	public function render(
+			$cellspacing=FALSE, 
+			$cellpadding=FALSE, 
+			$iconAsc=FALSE, 
+			$iconDesc=FALSE, 
+			$iconDefault=FALSE, 
+			$textExtraction='simple',
+			array $data=NULL,
+			array $headers=NULL,
+			array $objects=NULL,
+			array $properties=NULL,
+			$annotationName=NULL,
+			$annotationValue=NULL
+			) {
 		
 		if ($iconAsc === FALSE) {
 			$iconAsc = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Images/asc.gif';
@@ -78,9 +111,22 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		$this->addScripts();
 		$this->addStyles();
 		
-		$children = $this->renderChildren();
+		$thead = $this->renderHeaders($headers, $objects, $properties, $annotationName, $annotationValue);
+		if ($data) {
+			$tbody = $this->renderData($data, $properties);
+		} else if ($objects) {
+			$tbody = $this->renderObjects($objects, $properties, $annotationName, $annotationValue);
+		} else {
+			$tbody = $this->renderChildren();
+		}
 		
-		$this->tag->setContent($children);
+		if ($thead) {
+			$content = "{$thead}{$tbody}";
+		} else {
+			$content = "{$tbody}";
+		}
+		#die($content);
+		$this->tag->setContent($content);
 		
 		if ($cellspacing !== FALSE) {
 			$this->tag->addAttribute('cellspacing', $cellspacing);
@@ -91,6 +137,74 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		}
 		
 		return $this->tag->render();
+	}
+	
+	private function renderHeaders($headers, $objects, $properties, $annotationName, $annotationValue) {
+		if (!$headers && !$objects && !$properties) {
+			return NULL;
+		}
+		if ($objects && !$headers) {
+			if ($properties) {
+				$headers = $properties;
+			} else {
+				$values = $this->getValues($objects[0], $annotationName, $annotationValue);
+				$headers = array_keys($values);
+			}
+			$headers = $this->translatePropertyNames($objects[0], $headers);
+		}
+		$html = "<thead>";
+		foreach ($headers as $header) {
+			$html .= "<th>{$header}</th>";
+		}
+		$html .= "</thead>";
+		return $html;
+	}
+	
+	private function renderObjects($objects, $properties, $annotationName, $annotationValue) {
+		if (!$properties) {
+			$values = $this->getValues($objects[0], $annotationName, $annotationValue);
+			$properties = array_keys($values);
+		}
+		return $this->renderData($objects, $properties);
+	}
+	
+	private function renderData($data, $properties) {
+		$html = "<tbody>";
+		foreach ($data as $item) {
+			if (is_array($item)) {				
+				$id = $item['id'];
+			} else {
+				$id = $item->getUid();
+			}
+			$html .= "<tr class='{$this->rowClassPrefix}{$id}'>";
+			foreach ($properties as $property) {
+				if (is_array($item)) {
+					$value = $item[$property];
+				} else {
+					$getter = "get" . ucfirst($property);
+					$value = $item->$getter();
+				}
+				$html .= "<td>{$value}</td>";
+			}
+			$html .= "</tr>";
+		}
+		$html .= "</tbody>";
+		return $html;
+	}
+	
+	private function getValues($object, $annotationName, $annotationValue) {
+		if (!$annotationName) {
+			$annotationName = "var";
+			if (!$annotationValue) {
+				$annotationValue = TRUE;
+			}
+		}
+		$values = $this->propertyMapper->getValuesByAnnotation($object, $annotationName, $annotationValue);
+		return $values;
+	}
+	
+	private function translatePropertyNames($object, $properties) {
+		return array_combine($properties, $properties);
 	}
 	
 	/**
@@ -147,8 +261,9 @@ INITSCRIPT;
 .wildside-extbase-sortable th {
 	cursor: pointer;
 	background-repeat: no-repeat;
-    background-position: center right;
-    padding-right: 18px;
+    background-position: center left;
+    padding-left: 18px;
+    text-align: left;
     background-image: url('{$this->iconDefault}');
 }
 
