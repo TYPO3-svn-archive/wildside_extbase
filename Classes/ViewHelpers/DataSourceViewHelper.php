@@ -28,20 +28,24 @@ class Tx_WildsideExtbase_ViewHelpers_DataSourceViewHelper extends Tx_Fluid_Core_
 	/**
 	 * 
 	 * @param string $name
-	 * @param string $source
-	 * @param string $table
-	 * @param string $fields
-	 * @param string $condition
-	 * @param string $offset
-	 * @param string $limit
-	 * @param string $orderBy
-	 * @param string $order
-	 * @param boolean $silent
+	 * @param mixed $source
 	 */
 	public function render($name=NULL, $source) {
 		$repository = $this->objectManager->get('Tx_WildsideExtbase_Domain_Repository_DataSourceRepository');
 		$parser = $this->objectManager->get('Tx_WildsideExtbase_Utility_DataSourceParser');
-		$sources = $repository->searchByName($source)->toArray();
+		if (is_array($source)) {
+			$sources = $respository->findByUids($source);
+		} else {
+			$sources = $repository->searchByName($source)->toArray();
+			if (count($source) == 0) {
+				// see íf $source is an uid, if it is then load - and subject to parsing as usual
+				$testUid = intval($source);
+				if ($testUid > 0) {
+					$sources = $repository->findOneByUid($source);
+				}
+			}
+		}
+		
 		$sources = $parser->parseSources($sources); // property data is filled in all sources
 		
 		if (count($sources) == 1) {
