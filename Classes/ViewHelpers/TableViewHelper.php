@@ -234,7 +234,7 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		$init = <<< INITSCRIPT
 jQuery(document).ready(function() {
 	var options = {
-		widthFixed : false,
+		widthFixed : true,
 		widgets : ['zebra'],
 		textExtraction : '{$this->arguments['textExtraction']}'
 	};

@@ -27,7 +27,13 @@
 /**
  * Repository for Tx_WildsideExtbase_Domain_Model_DataSource
  */
- class Tx_WildsideExtbase_Domain_Repository_DataSourceRepository extends Tx_WildsideExtbase_Persistence_Repository {
-
+class Tx_WildsideExtbase_Domain_Repository_DataSourceRepository extends Tx_WildsideExtbase_Persistence_Repository {
+	
+	public function searchByName($name) {
+		$query = $this->createQuery();
+		$query->matching($query->like('name', $name));
+		return $query->execute();
+	}
+	
 }
 ?>

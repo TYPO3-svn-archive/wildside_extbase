@@ -67,8 +67,8 @@ class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Vi
 	public function render(
 			// CUSTOM parameters
 			$api=NULL, 
-			$width="500px", 
-			$height="500px", 
+			$width="450px", 
+			$height="550px", 
 			// next is Google Map parameters
 			$backgroundColor=NULL,
 			$disableDefaultUi=FALSE,
@@ -105,8 +105,8 @@ class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Vi
 		
 		$markers = $this->renderMarkers();
 		
-		$lat = $this->arguments['lat'] ? $this->arguments['lat'] : 56.5;
-		$lng = $this->arguments['lng'] ? $this->arguments['lng'] : 10.6;
+		$lat = $this->arguments['lat'] ? $this->arguments['lat'] : 56.25;
+		$lng = $this->arguments['lng'] ? $this->arguments['lng'] : 10.45;
 		
 		$options = $this->getMapOptions();
 		
