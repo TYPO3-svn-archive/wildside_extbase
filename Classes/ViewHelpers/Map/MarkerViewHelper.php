@@ -75,7 +75,8 @@ class Tx_WildsideExtbase_ViewHelpers_Map_MarkerViewHelper extends Tx_WildsideExt
 		$marker['id'] = $markerId ? 'marker' . $markerId : uniqid('wsgmkr');
 		if (count($data) == 0 && $object) {
 			if (count($properties) == 0) {
-				$data = $this->propertyMapper->getPropertiesByAnnytation($object, 'map', 'list');
+				$addUidToProperties = FALSE;
+				$data = $this->propertyMapper->getPropertiesByAnnytation($object, 'map', 'list', $addUidToProperties);
 			} else {
 				$data = array();
 				foreach ($properties as $property) {

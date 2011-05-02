@@ -40,6 +40,7 @@ class Tx_WildsideExtbase_ViewHelpers_Map_TableViewHelper extends Tx_WildsideExtb
 	 * @param array $properties If specified, uses array $properties as list of properties on each object to render as a row
 	 * @param string $annotationName If specified, source code annotation (for example @myannotation) is used to determine which object properties to render as a row
 	 * @param string $annotationValue If specified, source code annotation $annotationName must have $annotationValue as one of its listed attributes (for example @myannotation value1 value2 matches $annotationValue='value1' and $annotationValue='value2')
+	 * @param boolean $auto If TRUE, renders markers automatically. If FALSE you need to manually iterate all markers or data manually
 	 * @return string
 	 */
 	public function render(
@@ -54,11 +55,16 @@ class Tx_WildsideExtbase_ViewHelpers_Map_TableViewHelper extends Tx_WildsideExtb
 			array $objects=NULL,
 			array $properties=NULL,
 			$annotationName=NULL,
-			$annotationValue=NULL) {
+			$annotationValue=NULL,
+			$auto=TRUE) {
 		$this->rowClassPrefix = 'marker';
 		parent::render($cellspacing, $cellpadding, $iconAsc, $iconDesc, $iconDefault, $textExtraction, $data, $headers, $objects, $properties, $annotationName, $annotationValue);
-		$this->tag->addAttribute('class', 'wildside-extbase-sortable wildside-extbase-maplist');
+		$this->tag->addAttribute('class', 'wildside-extbase-sortable wildside-extbase-maplist '.$this->arguments['class']);
 		if ($objects || $data) {
+			#$this->tag->setContent($this->renderChildren());
+			return $this->tag->render();
+		} else if ($auto === FALSE) {
+			$this->tag->setContent($this->renderChildren());
 			return $this->tag->render();
 		}
 		$layers = $this->templateVariableContainer->get('layers');
@@ -71,7 +77,7 @@ class Tx_WildsideExtbase_ViewHelpers_Map_TableViewHelper extends Tx_WildsideExtb
 				foreach ($data as $name=>$value) {
 					$rows .= "<td class='{$name}'>{$value}</td>";
 				}
-				$rows .= "</tr>";
+				$rows .= "</tr>\n";
 			}
 		}
 		$first = array_shift(array_shift($layers));

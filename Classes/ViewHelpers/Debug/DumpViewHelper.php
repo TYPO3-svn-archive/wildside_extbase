@@ -43,7 +43,7 @@ class Tx_WildsideExtbase_ViewHelpers_Debug_DumpViewHelper extends Tx_WildsideExt
 				return (string) $subject;
 				break;
 			default:
-				return var_export($subject, TRUE);
+				#return var_export($subject, TRUE);
 				break;
 		}
 		

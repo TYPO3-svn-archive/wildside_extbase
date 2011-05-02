@@ -130,13 +130,13 @@ var {$instanceName}refreshList = function() {
 };
 var {$instanceName}timer = function() {
 	clearTimeout({$instanceName});
-	{$instanceName}timeout = setTimeout({$instanceName}refreshList, 200);
+	{$instanceName}timeout = setTimeout({$instanceName}refreshList, 800);
 };
 
 jQuery(document).ready(function() {
 	var myLatlng = new google.maps.LatLng({$lat}, {$lng});
 	var myOptions = {$options};
-	var infoWindow = infoWindow = new google.maps.InfoWindow();
+	var infoWindow = infoWindow = new google.maps.InfoWindow({maxWidth: 400, maxHeight: 400});
 	{$instanceName} = new google.maps.Map(document.getElementById("{$elementId}"), myOptions);
 {$markers}
 	
@@ -176,6 +176,7 @@ CSS;
 		$this->process($css, Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_STYLESHEET);
 		
 		$this->tag->addAttribute('id', $elementId);
+		$this->tag->addAttribute('class', $this->arguments['class']);
 		
 		$this->tag->setContent($children);
 		
@@ -241,9 +242,9 @@ CSS;
 					$infoWindow = FALSE;
 				}
 				$options = $this->getMarkerOptions($marker);
-				if ($infoWindow) {	
 				$str = "\tvar {$markerId} = new google.maps.Marker($options); {$markerId}.set('id', '{$markerId}'); markers.push({$markerId}); ";
-					$str .= "    google.maps.event.addListener({$markerId}, 'click', function(event) { infoWindow.setContent(\"{$infoWindow}\"); infoWindow.setPosition(event.latLng); infoWindow.open(map, {$markerId}); });";
+				if ($infoWindow) {	
+					$str .= "    google.maps.event.addListener({$markerId}, 'click', function(event) { infoWindow.close(); infoWindow.setOptions({maxWidth: 600}); infoWindow.open(map, {$markerId}); infoWindow.setContent(\"{$infoWindow}\"); });";
 				}
 				array_push($allMarkers, $str);
 			}
@@ -291,6 +292,12 @@ CSS;
 	}
 	
 	public function getMarkerOptions($marker) {
+		$removables = array(
+			"width", "height", "disableDefaultUi", "disableDoubleClickZoom", "draggable", 
+			"keyboardShortcuts", "mapTypeControl", "noClear", "panControl", "scaleControl", 
+			"scrollWheel", "streetViewControl", "zoom", "zoomControl", "instanceName", "class", 
+			"data", "properties"
+		);
 		$lines = array(
 			"position: new google.maps.LatLng({$marker['lat']},{$marker['lng']})",
 			"map: map",
@@ -299,6 +306,15 @@ CSS;
 			#shape MarkerShape Image map region definition used for drag/click.
 		);
 		$lines = array_merge($lines, $this->getOptions($marker));
+		foreach ($lines as $k=>$v) {
+			$key = substr($v, 0, strpos($v, ':'));
+			#var_dump($key);
+			if (in_array($key, $removables)) {
+				unset($lines[$k]);
+			}
+		}
+		// now we need to unset the parameters which are only related to Map:
+		
 		return $this->objWrap($lines);
 	}
 	

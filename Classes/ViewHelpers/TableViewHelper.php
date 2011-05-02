@@ -125,7 +125,6 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		} else {
 			$content = "{$tbody}";
 		}
-		#die($content);
 		$this->tag->setContent($content);
 		
 		if ($cellspacing !== FALSE) {
@@ -186,7 +185,7 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 				}
 				$html .= "<td>{$value}</td>";
 			}
-			$html .= "</tr>";
+			$html .= "</tr>\n";
 		}
 		$html .= "</tbody>";
 		return $html;
@@ -199,7 +198,7 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 				$annotationValue = TRUE;
 			}
 		}
-		$values = $this->propertyMapper->getValuesByAnnotation($object, $annotationName, $annotationValue);
+		$values = $this->propertyMapper->getValuesByAnnotation($object, $annotationName, $annotationValue, FALSE);
 		return $values;
 	}
 	
@@ -228,10 +227,31 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	 * @return void
 	 */
 	private function addScripts() {
-		$scriptFile1 = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Javascript/com/jquery/plugins/jquery.tablesorter.min.js';
-		$scriptFile2 = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Javascript/com/jquery/plugins/jquery.tablesorter.pager.js';
+		$scriptFile1 = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Javascript/com/jquery/plugins/jquery.dataTables.min.js';
+		#$scriptFile1 = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Javascript/com/jquery/plugins/jquery.tablesorter.min.js';
+		#$scriptFile2 = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Javascript/com/jquery/plugins/jquery.tablesorter.pager.js';
 		
 		$init = <<< INITSCRIPT
+		
+jQuery(document).ready(function() {
+	jQuery('.wildside-extbase-sortable').dataTable( {
+		"aaSorting" : [[ 0, "asc" ]],
+		"bPaginate" : true,
+		"bFilter" : true,
+		"bInfo" : true,
+		"oPaginate.sFirst" : "First",
+		"oPaginate.sLast" : "Last",
+		"oPaginate.sPrevious" : "Previous",
+		"oPaginate.sNext" : "Next",
+		"oPaginate.iFullNumbersShowPages" : 9,
+		"iDisplayLength" : 20,
+		"aLengthMenu" : [[20, 50, 100, -1], [20, 50, 100, "-"]],
+		"sPaginationType" : "full_numbers",
+	} );
+	jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 9;
+} );	
+		
+/*
 jQuery(document).ready(function() {
 	var options = {
 		widthFixed : true,
@@ -241,13 +261,15 @@ jQuery(document).ready(function() {
 	var pagerOptions = {
 		container : jQuery('.wildside-extbase-sortable tfoot td')
 	};
-	jQuery('.wildside-extbase-sortable').tablesorter(options); //.tablesorterPager(pagerOptions);
+	var tableSorter = jQuery('.wildside-extbase-sortable').tablesorter(options);
+	tableSorter(pagerOptions);
 });
+*/
 INITSCRIPT;
 		
 		$injector = $this->objectManager->get('Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper');
 		$injector->render(NULL, $scriptFile1);
-		$injector->render(NULL, $scriptFile2);
+		#$injector->render(NULL, $scriptFile2);
 		$injector->render($init);
 	}
 	
@@ -271,11 +293,11 @@ INITSCRIPT;
 	padding: {$this->arguments['cellpadding']}px;
 }
 
-.wildside-extbase-sortable th.headerSortUp {
+.wildside-extbase-sortable th.sorting_asc {
 	background-image: url('{$this->iconAsc}');
 }
 
-.wildside-extbase-sortable th.headerSortDown {
+.wildside-extbase-sortable th.sorting_desc {
 	background-image: url('{$this->iconDesc}');
 }
 
@@ -286,7 +308,11 @@ INITSCRIPT;
 
 CSS;
 		
+		$file1 = 
+		
 		$injector = $this->objectManager->get('Tx_WildsideExtbase_ViewHelpers_Inject_CssViewHelper');
+		
+		
 		$injector->render(NULL, $css);
 	}
 	

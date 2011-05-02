@@ -86,7 +86,7 @@ class Tx_WildsideExtbase_Utility_PropertyMapper implements t3lib_Singleton {
 		$this->recursionHandler->check($className);
 		$properties = $this->reflectionService->getClassPropertyNames($className);
 		$return = array();
-		if ($addUid) {
+		if ($addUid === TRUE) {
 			$return['uid'] = $object->getUid();
 		}
 		foreach ($properties as $propertyName) {
