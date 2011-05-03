@@ -33,12 +33,6 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	
 	protected $tagName = 'table';
 	
-	protected $iconAsc = FALSE;
-	
-	protected $iconDesc = FALSE;
-	
-	protected $iconDefault = FALSE;
-	
 	public $rowClassPrefix = 'row';
 
 	/**
@@ -54,68 +48,70 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	 * @return void
 	 */
 	public function initializeArguments() {
+		$imagePath = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Images/';
+		$i18n = array(
+			'oPaginate' => array(
+				'sFirst' => "First",
+				'sLast' => "Last",
+				'sPrevious' => "Previous",
+				'sNext' => "Next"
+			),
+			'sEmptyTable' => 'Nothing to display',
+			'sInfo' => "Showing _START_ to _END_ of _TOTAL_ entries",
+			'sInfoEmpty' => "No table information to display",
+			'sInfoFiltered' => "- filtering from _MAX_ entries",
+			'sInfoPostFix' => "",
+			'sLengthMenu' => "Show _MENU_ items",
+			'sProcessing' => "",
+			'sSearch' => "Filter records:",
+			'sUrl' => "",
+			'sZeroRecords' => "Nothing to display - no visible table content" 
+			
+		);
 		$this->registerUniversalTagAttributes();
+		$this->registerArgument('cellspacing', 'int', 'Cell spacing', FALSE);
+		$this->registerArgument('cellpadding', 'int', 'Cell padding', FALSE);
+		$this->registerArgument('iconAsc', 'string', 'Icon for sort ascending', FALSE, "{$imagePath}asc.gif");
+		$this->registerArgument('iconDesc', 'string', 'Icon for sort descending', FALSE, "{$imagePath}desc.gif");
+		$this->registerArgument('iconDefault', 'string', 'Default icon for sorting', FALSE, "{$imagePath}sort.gif");
+		$this->registerArgument('textExtraction', 'string', 'Which method to use for text extraction. Valid values are "simple", "compex" or string name of a Javascript function you created', FALSE);
+		$this->registerArgument('data', 'array', 'If specified, renders array $data as table rows using keys for headers', FALSE);
+		$this->registerArgument('headers', 'array', 'If specified, uses $headers as array of header names', FALSE);
+		$this->registerArgument('objects', 'array', 'If specified, considers $object an array of DomainObjects or associative arrays. If !$properties and !$annotationName then all properties are rendered', FALSE);
+		$this->registerArgument('properties', 'array', 'If specified, uses array $properties as list of properties on each object to render as a row', FALSE);
+		$this->registerArgument('annotaitonName', 'string', 'If specified, source code annotation (for example @myannotation) is used to determine which object properties to render as a row', FALSE);
+		$this->registerArgument('annotationValue', 'string', 'If specified, source code annotation $annotationName must have $annotationValue as one of its listed attributes (for example @myannotation value1 value2 matches $annotationValue="value1" and $annotationValue="value2")', FALSE);
+		$this->registerArgument('sortable', 'boolean', 'If TRUE, makes table sortable', FALSE, TRUE);
+		$this->registerArgument('aaSorting', 'string', 'jQuery DataTable aaSorting notation format column sorting setup - depends on sortable=TRUE', FALSE, '[[ 0, "asc" ]]');
+		$this->registerArgument('oLanguage', 'array', 'Internationalization. See DataSorter jQuery plugin for string names and scopes - depends on sortable=TRUE', FALSE, $i18n);
+		$this->registerArgument('iDisplayLength', 'int', 'Length of listing (best combiend with bPaginate=TRUE; depends on sortable=TRUE)', FALSE, -1);
+		$this->registerArgument('bPaginate', 'boolean', 'Display pagination change options - depends on sortable=TRUE', FALSE, TRUE);
+		$this->registerArgument('bSaveState', 'boolean', 'Set to TRUE to save the state of the table in a cookie', FALSE, FALSE);
+		$this->registerArgument('bFilter', 'boolean', 'Display filtering search box - depends on sortable=TRUE', FALSE, TRUE);
+		$this->registerArgument('bInfo', 'boolean', 'Display table information - depends on sortable=TRUE', FALSE, TRUE);
+		$this->registerArgument('sPaginationType', 'string', 'Which paginateion method to use. "two_buttons" or "full_numbers", default "full_numbers"', FALSE, 'full_numbers');
+		$this->registerArgument('aLengthMenu', 'string', 'aLengthMenu-format notation for the "display X items" dropdown. See DataTables jQuery plugin documentation.', FALSE, '[[20, 50, 100, -1], [20, 50, 100, "-"]]');
 		parent::initializeArguments();
 	}
 	
 	/**
 	 * Render method
 	 * 
-	 * @param int $cellspacing
-	 * @param int $cellpadding
-	 * @param string $iconAsc Icon file for ASC order indication
-	 * @param string $iconDesc Icon file for DESC order indication
-	 * @param string $iconDefault Icon file for sorting indication
-	 * @param string $textExtraction Which method to use for text extraction. Valid values are "simple", "compex" or string name of a Javascript function you created
-	 * @param array $data If specified, renders array $data as table rows using keys for headers
-	 * @param array $headers If specified, uses $headers as array of header names
-	 * @param array $objects If specified, considers $object an array of DomainObjects or associative arrays. If !$properties and !$annotationName then all properties are rendered
-	 * @param array $properties If specified, uses array $properties as list of properties on each object to render as a row
-	 * @param string $annotationName If specified, source code annotation (for example @myannotation) is used to determine which object properties to render as a row
-	 * @param string $annotationValue If specified, source code annotation $annotationName must have $annotationValue as one of its listed attributes (for example @myannotation value1 value2 matches $annotationValue='value1' and $annotationValue='value2') 
 	 * @return string
 	 */
-	public function render(
-			$cellspacing=FALSE, 
-			$cellpadding=FALSE, 
-			$iconAsc=FALSE, 
-			$iconDesc=FALSE, 
-			$iconDefault=FALSE, 
-			$textExtraction='simple',
-			array $data=NULL,
-			array $headers=NULL,
-			array $objects=NULL,
-			array $properties=NULL,
-			$annotationName=NULL,
-			$annotationValue=NULL
-			) {
-		
-		if ($iconAsc === FALSE) {
-			$iconAsc = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Images/asc.gif';
-		}
-		
-		if ($iconDesc === FALSE) {
-			$iconDesc = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Images/desc.gif';
-		}
-		
-		if ($iconDefault === FALSE) {
-			$iconDefault = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Images/sort.gif';
-		}
-		
-		$this->iconAsc = $iconAsc;
-		$this->iconDesc = $iconDesc;
-		$this->iconDefault = $iconDefault;
+	public function render() {
 		
 		$this->addClassAttribute();
+		if ($this->arguments['sortable']) {
+			$this->addScripts();
+			$this->addStyles();
+		}
 		
-		$this->addScripts();
-		$this->addStyles();
-		
-		$thead = $this->renderHeaders($headers, $objects, $properties, $annotationName, $annotationValue);
-		if ($data) {
-			$tbody = $this->renderData($data, $properties);
-		} else if ($objects) {
-			$tbody = $this->renderObjects($objects, $properties, $annotationName, $annotationValue);
+		$thead = $this->renderHeaders();
+		if ($this->arguments['data']) {
+			$tbody = $this->renderData($this->arguments['data'], $this->arguments['properties']);
+		} else if ($this->arguments['objects']) {
+			$tbody = $this->renderObjects();
 		} else {
 			$tbody = $this->renderChildren();
 		}
@@ -128,17 +124,20 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		$this->tag->setContent($content);
 		
 		if ($cellspacing !== FALSE) {
-			$this->tag->addAttribute('cellspacing', $cellspacing);
+			$this->tag->addAttribute('cellspacing', $this->arguments['cellspacing']);
 		}
-		
+				
 		if ($cellpadding !== FALSE) {
-			$this->tag->addAttribute('cellpadding', $cellpadding);
+			$this->tag->addAttribute('cellpadding', $this->arguments['cellpadding']);
 		}
 		
 		return $this->tag->render();
 	}
 	
-	private function renderHeaders($headers, $objects, $properties, $annotationName, $annotationValue) {
+	private function renderHeaders() {
+		$headers = $this->arguments['headers'];
+		$objects = $this->arguments['objects'];
+		$properties = $this->arguments['properties'];
 		if (!$headers && !$objects && !$properties) {
 			return NULL;
 		}
@@ -146,7 +145,7 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 			if ($properties) {
 				$headers = $properties;
 			} else {
-				$values = $this->getValues($objects[0], $annotationName, $annotationValue);
+				$values = $this->getValues($objects[0]);
 				$headers = array_keys($values);
 			}
 			$headers = $this->translatePropertyNames($objects[0], $headers);
@@ -159,12 +158,14 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		return $html;
 	}
 	
-	private function renderObjects($objects, $properties, $annotationName, $annotationValue) {
+	private function renderObjects() {
+		$objects = $this->arguments['objects'];
+		$properties = $this->arguments['properties'];
 		if (!$properties) {
-			$values = $this->getValues($objects[0], $annotationName, $annotationValue);
+			$values = $this->getValues($objects[0]);
 			$properties = array_keys($values);
 		}
-		return $this->renderData($objects, $properties);
+		return $this->renderData($values, $properties);
 	}
 	
 	private function renderData($data, $properties) {
@@ -191,7 +192,9 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		return $html;
 	}
 	
-	private function getValues($object, $annotationName, $annotationValue) {
+	private function getValues($object) {
+		$annotationName = $this->arguments['annotationName'];
+		$annotaionValue = $this->arguments['annotationValue'];
 		if (!$annotationName) {
 			$annotationName = "var";
 			if (!$annotationValue) {
@@ -206,6 +209,10 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		return array_combine($properties, $properties);
 	}
 	
+	private function jsBoolean($bool) {
+		return ($bool ? 'true' : 'false'); 
+	}
+	
 	/**
 	 * Inject an additional classname in tag attributes
 	 * @return void
@@ -216,7 +223,9 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		} else {
 			$classes = array();
 		}
-		array_push($classes, 'wildside-extbase-sortable');
+		if ($this->arguments['sortable']) {
+			array_push($classes, 'wildside-extbase-sortable');
+		}
 		$classNames = implode(' ', $classes);
 		$this->tag->addAttribute('class', $classNames);
 	}
@@ -228,48 +237,33 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	 */
 	private function addScripts() {
 		$scriptFile1 = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Javascript/com/jquery/plugins/jquery.dataTables.min.js';
-		#$scriptFile1 = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Javascript/com/jquery/plugins/jquery.tablesorter.min.js';
-		#$scriptFile2 = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Javascript/com/jquery/plugins/jquery.tablesorter.pager.js';
+		
+		$bPaginate = $this->jsBoolean($this->arguments['bPaginate']);
+		$bFilter = $this->jsBoolean($this->arguments['bFilter']);
+		$bInfo = $this->jsBoolean($this->arguments['bInfo']);
+		$bSaveState = $this->jsBoolean($this->arguments['bSaveState']);
+		$oLanguage = json_encode($this->arguments['oLanguage']);
 		
 		$init = <<< INITSCRIPT
-		
+var tableSorter;
 jQuery(document).ready(function() {
-	jQuery('.wildside-extbase-sortable').dataTable( {
-		"aaSorting" : [[ 0, "asc" ]],
-		"bPaginate" : true,
-		"bFilter" : true,
-		"bInfo" : true,
-		"oPaginate.sFirst" : "First",
-		"oPaginate.sLast" : "Last",
-		"oPaginate.sPrevious" : "Previous",
-		"oPaginate.sNext" : "Next",
-		"oPaginate.iFullNumbersShowPages" : 9,
-		"iDisplayLength" : 20,
-		"aLengthMenu" : [[20, 50, 100, -1], [20, 50, 100, "-"]],
-		"sPaginationType" : "full_numbers",
+	tableSorter = jQuery('.wildside-extbase-sortable').dataTable( {
+		"aaSorting" : {$this->arguments['aaSorting']},
+		"bPaginate" : {$bPaginate},
+		"bFilter" : {$bFilter},
+		"bSaveState" : {$bSaveState},
+		"bInfo" : {$bInfo},
+		"oLanguage" : {$oLanguage},
+		"iDisplayLength" : {$this->arguments['iDisplayLength']},
+		"aLengthMenu" : {$this->arguments['aLengthMenu']},
+		"sPaginationType" : "{$this->arguments['sPaginationType']}",
 	} );
-	jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 9;
 } );	
-		
-/*
-jQuery(document).ready(function() {
-	var options = {
-		widthFixed : true,
-		widgets : ['zebra'],
-		textExtraction : '{$this->arguments['textExtraction']}'
-	};
-	var pagerOptions = {
-		container : jQuery('.wildside-extbase-sortable tfoot td')
-	};
-	var tableSorter = jQuery('.wildside-extbase-sortable').tablesorter(options);
-	tableSorter(pagerOptions);
-});
-*/
+
 INITSCRIPT;
 		
 		$injector = $this->objectManager->get('Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper');
 		$injector->render(NULL, $scriptFile1);
-		#$injector->render(NULL, $scriptFile2);
 		$injector->render($init);
 	}
 	
@@ -286,7 +280,7 @@ INITSCRIPT;
     background-position: center left;
     padding-left: 18px;
     text-align: left;
-    background-image: url('{$this->iconDefault}');
+    background-image: url('{$this->arguments['iconDefault']}');
 }
 
 .wildside-extbase-sortable td {
@@ -294,16 +288,20 @@ INITSCRIPT;
 }
 
 .wildside-extbase-sortable th.sorting_asc {
-	background-image: url('{$this->iconAsc}');
+	background-image: url('{$this->arguments['iconAsc']}');
 }
 
 .wildside-extbase-sortable th.sorting_desc {
-	background-image: url('{$this->iconDesc}');
+	background-image: url('{$this->arguments['iconDesc']}');
 }
 
 .wildside-extbase-sortable tr.even td,
 .wildside-extbase-sortable th {
 	background-color: #EDEDED;
+}
+
+.wildside-extbase-sortable tr.off {
+	display: none;
 }
 
 CSS;

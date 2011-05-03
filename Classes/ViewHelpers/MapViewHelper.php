@@ -116,17 +116,22 @@ var {$instanceName};
 var {$instanceName}timeout;
 var {$instanceName}refreshList = function() {
 	var i;
+
 	var markerlist = jQuery('.wildside-extbase-maplist');
 	for (i=0; i<markers.length; i++) {
 		var marker = markers[i];
 		var row = markerlist.find('tr.' + marker.get('id'));
+		
 		if (map.getBounds().contains(marker.getPosition())) {
-			row.show();
+			row.removeClass('off');
 		} else {
-			row.hide();
+			row.addClass('off');
 		}
 	};
-	markerlist.trigger("appendCache"); 
+
+	if (tableSorter) {
+		tableSorter.fnDraw();
+	};
 };
 var {$instanceName}timer = function() {
 	clearTimeout({$instanceName});

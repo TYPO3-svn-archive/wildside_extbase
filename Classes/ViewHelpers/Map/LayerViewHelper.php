@@ -36,7 +36,7 @@ class Tx_WildsideExtbase_ViewHelpers_Map_LayerViewHelper extends Tx_WildsideExtb
 		$this->renderChildren();
 	}
 	
-	public function addLayer($layer) {
+	public function addLayer() {
 		$layers = $this->get('layers');
 		$layers[] = array();
 		$this->reassign('layers', $layers);
