@@ -118,8 +118,8 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		if ($this->arguments['dataSource']) {
 			$source = $this->arguments['dataSource'];
 			$parser = $this->objectManager->get('Tx_WildsideExtbase_Utility_DataSourceParser');
+			$sourceRepository = $this->objectManager->get('Tx_WildsideExtbase_Domain_Repository_DataSourceRepository');
 			if ($source instanceof Tx_WildsideExtbase_Domain_Model_DataSource === FALSE) {
-				$sourceRepository = $this->objectManager->get('Tx_WildsideExtbase_Domain_Repository_DataSourceRepository');
 				$source = $sourceRepository->searchOneByName($source);
 			}
 			if ($source) {
