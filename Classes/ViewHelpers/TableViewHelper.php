@@ -84,6 +84,7 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		$this->registerArgument('sortable', 'boolean', 'If TRUE, makes table sortable', FALSE, TRUE);
 		$this->registerArgument('dateFormat', 'string', 'Format (php date() notation) to use when rendering DateTime objects', FALSE, 'Y-m-d H:i');
 		$this->registerArgument('labelField', 'string', 'Name of the property on objects in the $objects array/ObjectStorage which contains a "name"-type identifier for each object. NOTE: this property is used to render names of relations, too!', FALSE, 'name');
+		$this->registerArgument('section', 'string', 'If specified, will render the section you choose from the DomainObject template files based on the type of object. This section name is also used to render relational properties. For ObjectStorage, template "List.html" is used - for instances, "Show.html" is used.', FALSE, NULL);
 		$this->registerArgument('aaSorting', 'string', 'jQuery DataTable aaSorting notation format column sorting setup - depends on sortable=TRUE', FALSE, '[[ 0, "asc" ]]');
 		$this->registerArgument('oLanguage', 'array', 'Internationalization. See DataSorter jQuery plugin for string names and scopes - depends on sortable=TRUE', FALSE, $i18n);
 		$this->registerArgument('iDisplayLength', 'int', 'Length of listing (best combiend with bPaginate=TRUE; depends on sortable=TRUE)', FALSE, -1);
@@ -224,6 +225,8 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	private function renderValue($item, $property) {
 		$getter = "get" . ucfirst($property);
 		$labelField = $this->arguments['labelField'];
+		$section = $this->arguments['section'];
+		
 		// reading value
 		if (is_array($item)) {
 			$value = $item[$property];
@@ -246,10 +249,33 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 			}
 			$value = implode(', ', $names);
 		} else if ($value instanceof Tx_Extbase_DomainObject_AbstractDomainObject) {
-			$hasGetter = method_exists($value, $getter);
-			$value = ($hasGetter ? $value->$getter() : strval($value) . " - property '{$labelField}' does not exist.");
+			if ($section) {
+				$value = $this->renderDomainObjectTemplateSection($value, $section);
+			} else {
+				$hasGetter = method_exists($value, $getter);
+				$value = ($hasGetter ? $value->$getter() : strval($value) . " - property '{$labelField}' does not exist.");
+			}
 		}
+		
 		return (string) $value;
+	}
+	
+	/**
+	 * Render a single <f:section> from the DomainObject template (Resources/Private/Templates).
+	 * Extensionname etc. is detected from DomainObject's class name
+	 * @param mixed $object Either a single DomainObject or an ObjectStorage of DomainObjects
+	 * @param string $section
+	 */
+	private function renderDomainObjectTemplateSection($object, $section) {
+		$string = "";
+		if ($object instanceof Tx_Extbase_Persistence_ObjectStorage) {
+			foreach ($object as $child) {
+				$string .= $this->renderDomainObjectTemplateSection($child, $section);
+			}
+		} else if ($object instanceof Tx_Extbase_DomainObject_AbstractDomainObject) {
+			$template = $this->objectManager->get('Tx_Fluid_View_TemplateView');
+			$string = $template->render($section);
+		}
 	}
 	
 	/**
