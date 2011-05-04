@@ -69,8 +69,8 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 			
 		);
 		$this->registerUniversalTagAttributes();
-		$this->registerArgument('cellspacing', 'int', 'Cell spacing', FALSE);
-		$this->registerArgument('cellpadding', 'int', 'Cell padding', FALSE);
+		$this->registerArgument('cellspacing', 'int', 'Cell spacing', FALSE, 0);
+		$this->registerArgument('cellpadding', 'int', 'Cell padding', FALSE, 0);
 		$this->registerArgument('iconAsc', 'string', 'Icon for sort ascending', FALSE, "{$imagePath}asc.gif");
 		$this->registerArgument('iconDesc', 'string', 'Icon for sort descending', FALSE, "{$imagePath}desc.gif");
 		$this->registerArgument('iconDefault', 'string', 'Default icon for sorting', FALSE, "{$imagePath}sort.gif");
@@ -402,17 +402,12 @@ INITSCRIPT;
 	 */
 	private function addStyles() {
 		$css = <<< CSS
-.wildside-extbase-sortable th {
-	cursor: pointer;
-	background-repeat: no-repeat;
-    background-position: center left;
-    padding-left: 18px;
-    text-align: left;
-    background-image: url('{$this->arguments['iconDefault']}');
-}
-
 .wildside-extbase-sortable td {
 	padding: {$this->arguments['cellpadding']}px;
+}
+
+.wildside-extbase-sortable th {
+    background-image: url('{$this->arguments['iconDefault']}');	
 }
 
 .wildside-extbase-sortable th.sorting_asc {
@@ -422,23 +417,10 @@ INITSCRIPT;
 .wildside-extbase-sortable th.sorting_desc {
 	background-image: url('{$this->arguments['iconDesc']}');
 }
-
-.wildside-extbase-sortable tr.even td,
-.wildside-extbase-sortable th {
-	background-color: #EDEDED;
-}
-
-.wildside-extbase-sortable tr.off {
-	display: none;
-}
-
 CSS;
-		
-		$file1 = 
-		
+		$file = t3lib_extMgm::siteRelPath('wildside_extbase') . 'Resources/Public/Stylesheet/Table.css'; 
 		$injector = $this->objectManager->get('Tx_WildsideExtbase_ViewHelpers_Inject_CssViewHelper');
-		
-		
+		$injector->render($file);
 		$injector->render(NULL, $css);
 	}
 	
