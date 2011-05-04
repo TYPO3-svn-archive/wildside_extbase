@@ -82,6 +82,7 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		$this->registerArgument('annotaitonName', 'string', 'If specified, source code annotation (for example @myannotation) is used to determine which object properties to render as a row', FALSE);
 		$this->registerArgument('annotationValue', 'string', 'If specified, source code annotation $annotationName must have $annotationValue as one of its listed attributes (for example @myannotation value1 value2 matches $annotationValue="value1" and $annotationValue="value2")', FALSE);
 		$this->registerArgument('sortable', 'boolean', 'If TRUE, makes table sortable', FALSE, TRUE);
+		$this->registerArgument('dateFormat', 'string', 'Format (php date() notation) to use when rendering DateTime objects', FALSE, 'Y-m-d H:i');
 		$this->registerArgument('aaSorting', 'string', 'jQuery DataTable aaSorting notation format column sorting setup - depends on sortable=TRUE', FALSE, '[[ 0, "asc" ]]');
 		$this->registerArgument('oLanguage', 'array', 'Internationalization. See DataSorter jQuery plugin for string names and scopes - depends on sortable=TRUE', FALSE, $i18n);
 		$this->registerArgument('iDisplayLength', 'int', 'Length of listing (best combiend with bPaginate=TRUE; depends on sortable=TRUE)', FALSE, -1);
@@ -124,7 +125,6 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 			$content = "{$tbody}";
 		}
 		
-		
 		$this->tag->setContent($content);
 		
 		if ($cellspacing !== FALSE) {
@@ -138,6 +138,10 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		return $this->tag->render();
 	}
 	
+	/**
+	 * Render table headers based on supplied arguments
+	 * @return string
+	 */
 	private function renderHeaders() {
 		$data = $this->arguments['data'];
 		$headers = $this->arguments['headers'];
@@ -170,6 +174,10 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		return $html;
 	}
 	
+	/**
+	 * Render objects - convert to data array then forward to renderData()
+	 * @return string
+	 */
 	private function renderObjects() {
 		$objects = $this->arguments['objects'];
 		$properties = $this->arguments['properties'];
@@ -180,6 +188,12 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		return $this->renderData($values, $properties);
 	}
 	
+	/**
+	 * Render an array of (converted) data nodes based on $properties
+	 * @param array $data
+	 * @param array $properties
+	 * @return string
+	 */
 	private function renderData($data, $properties) {
 		$html = "<tbody>";
 		foreach ($data as $item) {
@@ -192,14 +206,7 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 			}
 			$html .= "<tr class='{$this->rowClassPrefix}{$id}'>";
 			foreach ($properties as $property) {
-				$getter = "get" . ucfirst($property);
-				if (is_array($item)) {
-					$value = $item[$property];
-				} else if (is_object($item) && method_exists($item, $getter)) {
-					$value = $item->$getter();
-				} else if (is_object($item)) {
-					$value = $item->$property;
-				}
+				$value = $this->renderValue($item, $property);
 				$html .= "<td>{$value}</td>";
 			}
 			$html .= "</tr>\n";
@@ -208,6 +215,46 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		return $html;
 	}
 	
+	/**
+	 * Render a single value (a cell's content) based on type and rendering configuration
+	 * @param mixed $value
+	 * @return string
+	 */
+	private function renderValue($item, $property) {
+		$getter = "get" . ucfirst($property);
+		if (is_array($item)) {
+			$value = $item[$property];
+		} else if (is_object($item) && method_exists($item, $getter)) {
+			$value = $item->$getter();
+		} else if (is_object($item)) {
+			$value = $item->$property;
+		} else {
+			$suspect = $value;
+			// try to render the value as a string. An Exception may occur - if it does
+			// then render the value type prefixed with "unrenderable: "
+			try {
+				$converted = strval($suspect);
+				$value = $converted;
+			} catch (Exception $e) {
+				$type = gettype($suspect);
+				$value = "Renderfail: {$type}";
+				if ($type == 'object') {
+					$value .= " (" . get_class($suspect) ."). 
+					Exclude the property '{$property}' or perform manual rendering of rows.";
+				}
+			}
+		}
+		if ($value instanceof DateTime) {
+			$value = (string) $value->format($this->arguments['dateFormat']);
+		}
+		return (string) $value;
+	}
+	
+	/**
+	 * Get values of a DomainObject based on annotations
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $object
+	 * @return array
+	 */
 	private function getValues($object) {
 		$annotationName = $this->arguments['annotationName'];
 		$annotaionValue = $this->arguments['annotationValue'];
@@ -221,10 +268,19 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		return $values;
 	}
 	
+	/**
+	 * If possible, render human-readable column names based on i18n etc.
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $object
+	 * @param array $properties
+	 */
 	private function translatePropertyNames($object, $properties) {
 		return array_combine($properties, $properties);
 	}
 	
+	/**
+	 * return a JSON-valid representation of a PHP-"boolean" which can be TRUE/FALSE or 1/0
+	 * @param mixed $bool
+	 */
 	private function jsBoolean($bool) {
 		return ($bool ? 'true' : 'false'); 
 	}
