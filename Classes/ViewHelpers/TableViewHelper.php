@@ -83,6 +83,7 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		$this->registerArgument('annotationValue', 'string', 'If specified, source code annotation $annotationName must have $annotationValue as one of its listed attributes (for example @myannotation value1 value2 matches $annotationValue="value1" and $annotationValue="value2")', FALSE);
 		$this->registerArgument('sortable', 'boolean', 'If TRUE, makes table sortable', FALSE, TRUE);
 		$this->registerArgument('dateFormat', 'string', 'Format (php date() notation) to use when rendering DateTime objects', FALSE, 'Y-m-d H:i');
+		$this->registerArgument('labelField', 'string', 'Name of the property on objects in the $objects array/ObjectStorage which contains a "name"-type identifier for each object. NOTE: this property is used to render names of relations, too!', FALSE, 'name');
 		$this->registerArgument('aaSorting', 'string', 'jQuery DataTable aaSorting notation format column sorting setup - depends on sortable=TRUE', FALSE, '[[ 0, "asc" ]]');
 		$this->registerArgument('oLanguage', 'array', 'Internationalization. See DataSorter jQuery plugin for string names and scopes - depends on sortable=TRUE', FALSE, $i18n);
 		$this->registerArgument('iDisplayLength', 'int', 'Length of listing (best combiend with bPaginate=TRUE; depends on sortable=TRUE)', FALSE, -1);
@@ -222,6 +223,8 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	 */
 	private function renderValue($item, $property) {
 		$getter = "get" . ucfirst($property);
+		$labelField = $this->arguments['labelField'];
+		// reading value
 		if (is_array($item)) {
 			$value = $item[$property];
 		} else if (is_object($item) && method_exists($item, $getter)) {
@@ -229,23 +232,22 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		} else if (is_object($item)) {
 			$value = $item->$property;
 		} else {
-			$suspect = $value;
-			// try to render the value as a string. An Exception may occur - if it does
-			// then render the value type prefixed with "unrenderable: "
-			try {
-				$converted = strval($suspect);
-				$value = $converted;
-			} catch (Exception $e) {
-				$type = gettype($suspect);
-				$value = "Renderfail: {$type}";
-				if ($type == 'object') {
-					$value .= " (" . get_class($suspect) ."). 
-					Exclude the property '{$property}' or perform manual rendering of rows.";
-				}
-			}
+			$value = (string) $value;
 		}
+		
+		// rendering value
 		if ($value instanceof DateTime) {
 			$value = (string) $value->format($this->arguments['dateFormat']);
+		} else if ($value instanceof Tx_Extbase_Persistence_ObjectStorage) {
+			// render the value as a CSV list of names based on labelField argument
+			$names = array();
+			foreach ($value as $child) {				
+				array_push($names, $this->renderValue($value, $labelField));
+			}
+			$value = implode(', ', $names);
+		} else if ($value instanceof Tx_Extbase_DomainObject_AbstractDomainObject) {
+			$hasGetter = method_exists($value, $getter);
+			$value = ($hasGetter ? $value->$getter() : strval($value) . " - property '{$labelField}' does not exist.");
 		}
 		return (string) $value;
 	}
