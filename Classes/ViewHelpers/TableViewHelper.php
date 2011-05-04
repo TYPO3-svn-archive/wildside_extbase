@@ -122,6 +122,9 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 				$sourceRepository = $this->objectManager->get('Tx_WildsideExtbase_Domain_Repository_DataSourceRepository');
 				$source = $sourceRepository->searchOneByName($source);
 			}
+			if ($source) {
+				$source = $sourceRepository->findOneByUid($this->arguments['dataSource']);
+			}
 			if (!$source) {
 				throw new Exception('Invalid data source selected in TableViewHelper');
 			}
