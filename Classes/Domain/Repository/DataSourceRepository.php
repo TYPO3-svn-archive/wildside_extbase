@@ -35,5 +35,14 @@ class Tx_WildsideExtbase_Domain_Repository_DataSourceRepository extends Tx_Wilds
 		return $query->execute();
 	}
 	
+	public function searchOneByName($name) {
+		$results = $this->searchByName($name);
+		if ($results->count() > 0) {
+			return $results->first();
+		} else {
+			return NULL;
+		}
+	}
+	
 }
 ?>

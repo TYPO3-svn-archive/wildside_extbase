@@ -76,6 +76,7 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		$this->registerArgument('iconDefault', 'string', 'Default icon for sorting', FALSE, "{$imagePath}sort.gif");
 		$this->registerArgument('textExtraction', 'string', 'Which method to use for text extraction. Valid values are "simple", "compex" or string name of a Javascript function you created', FALSE);
 		$this->registerArgument('data', 'array', 'If specified, renders array $data as table rows using keys for headers', FALSE);
+		$this->registerArgument('dataSource', 'mixed', 'If specified, tries to load a single DataSource (see DataSource Frontend plugin) and use it as data', FALSE);
 		$this->registerArgument('headers', 'array', 'If specified, uses $headers as array of header names', FALSE);
 		$this->registerArgument('objects', 'array', 'If specified, considers $object an array of DomainObjects or associative arrays. If !$properties and !$annotationName then all properties are rendered', FALSE);
 		$this->registerArgument('properties', 'array', 'If specified, uses array $properties as list of properties on each object to render as a row', FALSE);
@@ -111,9 +112,30 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 			$this->addStyles();
 		}
 		
-		$thead = $this->renderHeaders();
-		if ($this->arguments['data']) {
-			$properties = count($this->arguments['properties']) > 0 ? $this->arguments['properties'] : array_keys($this->arguments['data']);
+		$headers = $this->arguments['headers'];
+		$properties = count($this->arguments['properties']) > 0 ? $this->arguments['properties'] : array_keys($this->arguments['data']);
+		
+		if ($this->arguments['dataSource']) {
+			$source = $this->arguments['dataSource'];
+			$parser = $this->objectManager->get('Tx_WildsideExtbase_Utility_DataSourceParser');
+			if ($source instanceof Tx_WildsideExtbase_Domain_Model_DataSource === FALSE) {
+				$sourceRepository = $this->objectManager->get('Tx_WildsideExtbase_Domain_Repository_DataSourceRepository');
+				$source = $sourceRepository->searchOneByName($source);
+			}
+			if (!$source) {
+				throw new Exception('Invalid data source selected in TableViewHelper');
+			}
+			$source = $parser->parseDataSource($source);
+			$data = $source->getData();
+			if (!$properties) {
+				$properties = array_keys($data[0]);
+			}
+			if (!$headers) {
+				$headers = $this->translatePropertyNames($properties, $properties);
+				#var_dump($headers);
+			}
+			$tbody = $this->renderData($data, $properties);
+		} else if ($this->arguments['data']) {
 			$tbody = $this->renderData($this->arguments['data'], $properties);
 		} else if ($this->arguments['objects']) {
 			$tbody = $this->renderObjects();
@@ -121,6 +143,7 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 			$tbody = $this->renderChildren();
 		}
 		
+		$thead = $this->renderHeaders($headers);
 		if ($thead) {
 			$content = "{$thead}{$tbody}";
 		} else {
@@ -142,11 +165,11 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	
 	/**
 	 * Render table headers based on supplied arguments
+	 * @param array $headers Optional, render these defined headers
 	 * @return string
 	 */
-	private function renderHeaders() {
+	private function renderHeaders($headers=NULL) {
 		$data = $this->arguments['data'];
-		$headers = $this->arguments['headers'];
 		$objects = $this->arguments['objects'];
 		$properties = $this->arguments['properties'];
 		if (!$headers && !$objects && !$properties && !$data) {
@@ -274,6 +297,8 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 			}
 		} else if ($object instanceof Tx_Extbase_DomainObject_AbstractDomainObject) {
 			$template = $this->objectManager->get('Tx_Fluid_View_TemplateView');
+			$template->assign('object', $object);
+			$template->assign('arguments', $this->arguments);
 			$string = $template->render($section);
 		}
 	}
