@@ -100,6 +100,7 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	 * @return string
 	 */
 	public function render() {
+		#return var_export($this->arguments['data'], TRUE);
 		
 		$this->addClassAttribute();
 		if ($this->arguments['sortable']) {
@@ -109,7 +110,8 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		
 		$thead = $this->renderHeaders();
 		if ($this->arguments['data']) {
-			$tbody = $this->renderData($this->arguments['data'], $this->arguments['properties']);
+			$properties = count($this->arguments['properties']) > 0 ? $this->arguments['properties'] : array_keys($this->arguments['data']);
+			$tbody = $this->renderData($this->arguments['data'], $properties);
 		} else if ($this->arguments['objects']) {
 			$tbody = $this->renderObjects();
 		} else {
@@ -121,6 +123,8 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		} else {
 			$content = "{$tbody}";
 		}
+		
+		
 		$this->tag->setContent($content);
 		
 		if ($cellspacing !== FALSE) {
@@ -135,10 +139,11 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	}
 	
 	private function renderHeaders() {
+		$data = $this->arguments['data'];
 		$headers = $this->arguments['headers'];
 		$objects = $this->arguments['objects'];
 		$properties = $this->arguments['properties'];
-		if (!$headers && !$objects && !$properties) {
+		if (!$headers && !$objects && !$properties && !$data) {
 			return NULL;
 		}
 		if ($objects && !$headers) {
@@ -149,6 +154,13 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 				$headers = array_keys($values);
 			}
 			$headers = $this->translatePropertyNames($objects[0], $headers);
+		}
+		if ($data && !$headers) {
+			if ($properties) {
+				$headers = $properties;
+			} else {
+				$headers = array_keys($data[0]);
+			}
 		}
 		$html = "<thead>";
 		foreach ($headers as $header) {
@@ -173,16 +185,20 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 		foreach ($data as $item) {
 			if (is_array($item)) {				
 				$id = $item['id'];
-			} else {
+			} else if (is_object($item) && method_exists($item, 'getUid')) {
 				$id = $item->getUid();
+			} else if (is_object) {
+				$id = $item->uid;
 			}
 			$html .= "<tr class='{$this->rowClassPrefix}{$id}'>";
 			foreach ($properties as $property) {
+				$getter = "get" . ucfirst($property);
 				if (is_array($item)) {
 					$value = $item[$property];
-				} else {
-					$getter = "get" . ucfirst($property);
+				} else if (is_object($item) && method_exists($item, $getter)) {
 					$value = $item->$getter();
+				} else if (is_object($item)) {
+					$value = $item->$property;
 				}
 				$html .= "<td>{$value}</td>";
 			}

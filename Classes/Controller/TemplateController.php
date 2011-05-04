@@ -36,21 +36,23 @@
  	public function showAction() {
  		$json = $this->objectManager->get('Tx_WildsideExtbase_Utility_JSON');
  		$flexform = $this->getFlexForm();
- 		$view =& $this->view;
+		$this->view = $this->objectManager->get('Tx_Fluid_View_StandaloneView');
  		if ($flexform['templateFile']) {
-			$view = $this->objectManager->get('Tx_Fluid_View_StandaloneView');
-			$view->setTemplateSource(file_get_contents(PATH_site . $flexform['templateFile']));
+			$this->view->setTemplateSource(file_get_contents(PATH_site . $flexform['templateFile']));
 		} else if ($flexform['templateSource']) {
-			$view = $this->objectManager->get('Tx_Fluid_View_StandaloneView');
-			$view->setTemplateSource($flexform['templateSource']);
+			$source = $flexform['templateSource'];
+			#var_dump($source);
+			#exit();
+			$this->view->setTemplateSource($source);
 		}
 		if ($flexform['fluidVars']) {
 			$object = $json->decode($flexform['fluidVars']);
+			#var_dump($object);
 			foreach ($object as $k=>$v) {
-				$view->assign($k, $v);
+				$this->view->assign($k, $v);
 			}
 		}
-		return $view->render();
+		return $this->view->render();
  	}
  	
  }
