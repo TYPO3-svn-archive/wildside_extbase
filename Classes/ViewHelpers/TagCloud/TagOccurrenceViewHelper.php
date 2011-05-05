@@ -1,4 +1,4 @@
-<?php
+<?php 
 /***************************************************************
 *  Copyright notice
 *
@@ -23,30 +23,33 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-/**
- * Explodes arrays notated as CSV, optional glue. 
- * Data-only assist; does not render content
- *
- * @package TYPO3
- * @subpackage Fluid
- * @version
- */
-class Tx_WildsideExtbase_ViewHelpers_ExplodeViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
+
+class Tx_WildsideExtbase_ViewHelpers_TagCloud_TagOccurrenceViewHelper extends Tx_WildsideExtbase_ViewHelpers_TagCloudViewHelper {
 	
 	/**
-	 * Explode a CSV string to an array. Useful in loops for example:
-	 * <f:for each="{ws:explode(csv: '1,2,3)}" as="item"></f:for>
-	 * @param string $csv The string to be exploded
-	 * @param string $glue String on which to explode
-	 * @return array
+	 * @return void
 	 */
-	public function render($csv=NULL, $glue=',') {
-		if ($csv == NULL) {
-			$csv = $this->renderChildren();
-		}
-		$arr = explode($glue, $csv);
-		return $arr;
+	public function initializeArguments() {
+		$this->registerArgument('tag', 'string', "Name of the tag - if empty, tries to get from content. If that is empty too, it's Exception butter jelly time!");
+		$this->registerArgument('occurrences', 'int', 'Number of occurrences to add. Defaults to 1 - one occurrence! 2 - two occurrences! 3 - three occurrences! Hah-hah-hah.', FALSE, 1);
 	}
+	
+	/**
+	 * @return string
+	 */
+	public function render() {
+		if ($this->arguments['tag']) {
+			$tagName = $this->arguments['tag'];
+		} else {
+			$tagName = $this->renderChildren();
+		}
+		if (strlen(trim($tagName)) == 0) {
+			throw new Exception('Cannot register an occurrence of a tag with no name');
+		}
+		$this->registerOccurrence($tagName, $this->arguments['occurrences']);
+		return NULL;
+	}
+	
 }
 
 ?>

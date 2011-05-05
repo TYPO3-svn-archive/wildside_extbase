@@ -37,8 +37,8 @@ table.data { margin-bottom: 8px; }
 	display: inline-block;
 	width: 20px;
 }
-.paginate_active { font-weight: bold; text-decoration: none !important; }
 .dataTables_paginate .first,
 .dataTables_paginate .previous { float: left; width: auto; }
 .dataTables_paginate .last,
 .dataTables_paginate .next { float: right; width: auto; }
+.dataTables_paginate .paginate_active { font-weight: bold; text-decoration: none; }
