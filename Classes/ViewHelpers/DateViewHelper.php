@@ -37,9 +37,13 @@ class Tx_WildsideExtbase_ViewHelpers_DateViewHelper extends Tx_WildsideExtbase_C
 	 * @param string $format The format of the date to be returned, PHP-date format
 	 * @param float $timestamp The timestamp to be formatted
 	 * @param string $date Optional string-formatted date, parsed into $timestamp
+	 * @param DateTime $dateTime If your source is a DateTime object, use this parameter
 	 * @return string
 	 */
-	public function render($format, $timestamp=NULL, $date=NULL) {
+	public function render($format, $timestamp=NULL, $date=NULL, DateTime $dateTime=NULL) {
+		if ($dateTime) {
+			return $dateTime->format($format);
+		}
 		if (!$timestamp && $date) {
 			$timestamp = strtotime($date);
 		}
