@@ -29,15 +29,19 @@
  * @package TYPO3
  * @subpackage Fluid
  * @version
+ * @deprecated
  */
 class Tx_WildsideExtbase_ViewHelpers_TcaViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
 	 * Translates TCA multichoice field values (int) into the key used for the value
+	 * DEPRECATED - will be removed shortly
+	 * 
 	 * @param string $modelObject The model object's TCA key
 	 * @param string $field The name of the field to get $value key from
 	 * @param int $value The value for which to detect the corresponding key
 	 * @return string
+	 * @deprecated
 	 */
 	public function render($modelObject, $field, $value=NULL) {
 		global $TCA;
@@ -46,7 +50,7 @@ class Tx_WildsideExtbase_ViewHelpers_TcaViewHelper extends Tx_WildsideExtbase_Co
 		}
 		$tcaItems = $TCA[$modelObject]['columns'][$field]['config']['items'];
 		$key = $tcaItems[$value][0];
-		return $key;
+		return $key . " <!-- WARNING: DEPRECATED VIEWHELPER USAGE: ws:tca -->";
 	}
 }
 	

@@ -30,6 +30,7 @@ class Tx_WildsideExtbase_Utility_Geocoder implements t3lib_Singleton {
 	 * 
 	 * @param string $address The address to geocode
 	 * @return array
+	 * @api
 	 */
 	public function geocode($address) {
 		$address = urlencode($address);

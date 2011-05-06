@@ -44,6 +44,7 @@ class Tx_WildsideExtbase_Utility_DataSourceParser implements t3lib_Singleton {
 	/**
 	 * @param array $sources
 	 * @return array
+	 * @api
 	 */
 	public function parseDataSources(array $sources) {
 		foreach ($sources as $k=>$v) {
@@ -55,6 +56,7 @@ class Tx_WildsideExtbase_Utility_DataSourceParser implements t3lib_Singleton {
 	/**
 	 * @param Tx_WildsideExtbase_Domain_Model_DataSource $source
 	 * @return Tx_WildsideExtbase_Domain_Model_DataSource
+	 * @api
 	 */
 	public function parseDataSource(Tx_WildsideExtbase_Domain_Model_DataSource $source) {
 		$data = $this->gatherData($source);
@@ -63,6 +65,11 @@ class Tx_WildsideExtbase_Utility_DataSourceParser implements t3lib_Singleton {
 	}
 	
 	/**
+	 * Gather data from source by running the type of data gathering. NOT marked
+	 * as API method; use "parseSource" or "parseSources" - future filtering etc.
+	 * will be added through these functions while this function will remain a 
+	 * "uncached raw data output" function which MAY be marked API in the future.
+	 * 
 	 * @param Tx_WildsideExtbase_Domain_Model_DataSource $source
 	 * @return array
 	 */
@@ -86,6 +93,7 @@ class Tx_WildsideExtbase_Utility_DataSourceParser implements t3lib_Singleton {
 	
 	/**
 	 * Fetch data by $query
+	 * 
 	 * @param string $query
 	 * @return array
 	 */

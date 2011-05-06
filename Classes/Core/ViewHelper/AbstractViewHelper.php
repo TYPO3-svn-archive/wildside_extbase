@@ -42,11 +42,13 @@ abstract class Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper extends Tx_
 	}
 	
 	/**
-	 * Get all values (or values specified in $properties
+	 * Get all values (or values specified in $properties).
+	 * DEPRECATED - functionality now covered by PropertyMapper singleton
 	 * 
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $object
 	 * @param array $properties
 	 * @return object
+	 * @deprecated
 	 */
 	public function getValues(Tx_Extbase_DomainObject_AbstractDomainObject $object, array $properties=array()) {
 		$className = get_class($object);
@@ -76,21 +78,31 @@ abstract class Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper extends Tx_
 		return $values;
 	}
 	
+	/**
+	 * Get a StandaloneView for $templateFile
+	 * 
+	 * @param string $templateFile
+	 * @return Tx_Fluid_View_StandaloneView
+	 * @api
+	 */
 	public function getTemplate($templateFile) {
 		$template = $this->objectManager->get('Tx_Fluid_View_StandaloneView');
 		$template->setTemplatePathAndFilename($templateFile);
 		return $template;
 	}
 	
-	
 	/**
 	 * Injects $code in header data
 	 *
-	 * @param string $code
-	 * @param bool $header
-	 * @param string $key
+	 * @param string $code A rendered tag suitable for <head>
+	 * @param string $type Optional, if left out we assume the code is already wrapped
+	 * @param string $key Optional key for referencing later through $GLOBALS['TSFE']->additionalHeaderData, defaults to md5 cheksum of tag
+	 * @api
 	 */
-	public function process($code=NULL, $key=NULL) {
+	public function includeHeader($code, $type=NULL, $key=NULL) {
+		if ($type !== NULL) {
+			$code = $this->wrap($code, NULL, $type);
+		}
 		if ($key === NULL) {
 			$key = md5($code);
 		}
@@ -98,27 +110,19 @@ abstract class Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper extends Tx_
 	}
 	
 	/**
-	 * Injects $code in header data
-	 *
-	 * @param string $code
-	 * @param string $type Optional, if left out we assume the code is already wrapped
-	 * @param string $key
-	 */
-	public function includeHeader($code, $type=NULL, $key=NULL) {
-		if ($type !== NULL) {
-			$code = $this->wrap($code, NULL, $type);
-		}
-		return $this->process($code, $key);
-	}
-	
-	/**
-	 * Wrap the code in proper HTML tags
+	 * Wrap the code in proper HTML tags. Supports CSS and Javascript only - or returns input $code
+	 * 
 	 * @param string $code The code, JS or CSS, to be wrapped
 	 * @param string $filename If specified, file is used instead of source inject
 	 * @param string $type Type of wrapping (css/js)
 	 * @return string
+	 * @api
 	 */
-	public function wrap($code=NULL, $file=NULL, $type=NULL) {
+	protected function wrap($code=NULL, $file=NULL, $type=NULL) {
+		/**
+		 * Type-support for old js/css inject ViewHelpers - will be removed along with those two
+		 * @deprecated
+		 */
 		if ($type === NULL) {
 			$type = $this->type;
 		}
@@ -140,12 +144,15 @@ abstract class Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper extends Tx_
 	}
 	
 	/**
-	 * Concatenate files into a string
+	 * Concatenate files into a string. You can use this in your subclassed extensions to 
+	 * combine css/js files in sequence to generate a single output file or code chunk 
+	 * 
 	 * @param array $files
 	 * @param boolean $saveToFile
 	 * @return string Contents or filename if $saveToFile was specified
+	 * @api
 	 */
-	public function concatenate(array $files, $saveToFile=FALSE, $extension=self::TYPE_JAVASCRIPT) {
+	protected function concatenate(array $files, $saveToFile=FALSE, $extension=self::TYPE_JAVASCRIPT) {
 		$contents = "";
 		foreach ($files as $file) {
 			$contents .= file_get_contents(PATH_site . $file);
@@ -159,12 +166,14 @@ abstract class Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper extends Tx_
 	}
 	
 	/**
-	 * Save to a temporary file
+	 * Save $contents to a temporary file, for example a combined .css file
+	 * 
 	 * @param string $contents Contents of the file
 	 * @param string $uniqid Unique id of the temporary file
 	 * @param string $extension Extensin of the filename
+	 * @api
 	 */
-	public function saveToTempFile($contents, $uniqid, $extension) {
+	protected function saveToTempFile($contents, $uniqid, $extension) {
 		$tempFilePath = "typo3temp/{$uniqid}.{$extension}"; 
 		$tempFile = PATH_site . $tempFilePath;
 		file_put_contents($tempFile, $contents);
@@ -173,11 +182,13 @@ abstract class Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper extends Tx_
 	
 	/**
 	 * Include a list of files with optional concat, compress and cache 
+	 * 
 	 * @param array $filenames Filenames to include
 	 * @param boolean $cache If true, the file is cached (makes sens if $concat or one of the other options is specified)
 	 * @param boolean $concat If true, files are concatenated
 	 * @param boolean $compress If true, files are compressed
 	 * @return string The MD5 checksum of files (which is also the additionalHeaderData array key if you $concat = TRUE)
+	 * @api
 	 */
 	public function includeFiles(array $filenames, $cache=FALSE, $concat=FALSE, $compress=FALSE) {
 		$pathinfo = pathinfo($filename);
@@ -202,10 +213,12 @@ abstract class Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper extends Tx_
 	
 	/**
 	 * Include a single file with optional concat, compress and cache 
+	 * 
 	 * @param array $filenames Filenames to include
 	 * @param boolean $cache If true, the file is cached (makes sens if $concat or one of the other options is specified)
 	 * @param boolean $compress If true, files are compressed
 	 * @return void
+	 * @api
 	 */
 	public function includeFile($filename, $cache=FALSE, $compress=FALSE) {
 		$pathinfo = pathinfo($filename);
@@ -232,8 +245,9 @@ abstract class Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper extends Tx_
 	}
 	
 	/**
-	 * Pack/compress code
+	 * Pack/compress Javascript code
 	 * @param string $code
+	 * @api
 	 */
 	public function pack($code) {
 		$encoding = 62; // see value in Tx_WildsideExtbase_Utility_JavascriptPacker

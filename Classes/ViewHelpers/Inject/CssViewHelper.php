@@ -40,6 +40,7 @@ class Tx_WildsideExtbase_ViewHelpers_Inject_CssViewHelper extends Tx_WildsideExt
 	 * @param string $file
 	 * @param string $css
 	 * @param string $key
+	 * @deprecated
 	 */
 	public function render($file=NULL, $css=NULL, $key=NULL) {
 		if ($file) {
