@@ -23,10 +23,9 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-
-class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_ViewHelpers_InjectViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
-	protected $type = Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_JAVASCRIPT;
+	#protected $type = 'js';
 	
 	protected $tagName = 'div';
 	
@@ -97,6 +96,7 @@ class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Vi
 		$elementId = 'gm' . rand($min, $max);
 		
 		$this->includeFile($api);
+		
 		$this->templateVariableContainer->add('layers', array());
 		$this->templateVariableContainer->add('infoWindows', array());
 		
@@ -110,7 +110,7 @@ class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Vi
 		
 		$options = $this->getMapOptions();
 		
-		$init = <<< INIT
+		$js = <<< INIT
 var markers = [];
 var {$instanceName};
 var {$instanceName}timeout;
@@ -171,21 +171,13 @@ INIT;
 }
 CSS;
 
-		$code = $this->wrap($init);
-		$this->process($code, Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_JAVASCRIPT);
-		
-		// change type - next comes CSS inclusion
-		$this->type = Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_STYLESHEET;
-		
-		$css = $this->wrap($css);
-		$this->process($css, Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_STYLESHEET);
+		$this->includeHeader($js, 'js');
+		$this->includeHeader($css, 'css');
 		
 		$this->tag->addAttribute('id', $elementId);
 		$this->tag->addAttribute('class', $this->arguments['class']);
 		
 		$this->tag->setContent($children);
-		
-		#$this->templateVariableContainer->remove('layers');
 		
 		return $this->tag->render();
 	}
@@ -212,9 +204,7 @@ CSS;
 		}
 		$arguments = $this->getArguments();
 		foreach ($arguments as $name=>$value) {
-			#if (isset($config[$name]) == FALSE) {
-				$config[$name] = $value;
-			#}
+			$config[$name] = $value;
 		}
 		$this->reassign('config', $config);
 		return $config;
@@ -313,7 +303,6 @@ CSS;
 		$lines = array_merge($lines, $this->getOptions($marker));
 		foreach ($lines as $k=>$v) {
 			$key = substr($v, 0, strpos($v, ':'));
-			#var_dump($key);
 			if (in_array($key, $removables)) {
 				unset($lines[$k]);
 			}

@@ -25,32 +25,17 @@
 
 /**
  * Injector, JS
+ * DEPRECATED - but will stay for a good great while - replaced by ScriptViewHelper
  *
  * @package TYPO3
  * @subpackage Fluid
  * @version
+ * @deprecated
  */
-class Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper extends Tx_WildsideExtbase_ViewHelpers_InjectViewHelper {
-	
-	public $type = Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_JAVASCRIPT;
+class Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper extends Tx_WildsideExtbase_ViewHelpers_ScriptViewHelper {
 	
 	/**
-	 * Inject JS file in the header code.
-	 * 
-	 * Usage example, header file include from Resources/Public/js/:
-	 * <ws:inject.js file="{f:uri.resource(path: 'js/file.js')}" />
-	 * Optionally, supply a header key if you call the inject method several
-	 * times, each time with a different md5() hash value (unlikely...)
-	 * but still only need a single inclusion:
-	 * <ws:inject.js file="{f:uri.resource(path: 'js/file.js')}" key="myUniqueKey" />
-	 * - Will be accessible through $GLOBALS['additionalHeaderData][$key] as well.
-	 * 
-	 * Usage example, <script></script> code injected in <head>:
-	 * <ws:inject.js>
-	 * var myJsVariable = '{record.uid}';
-	 * </ws:inject.js>
-	 * Note that fluid variables and loops are all usable inside <ws.inject.js>. As
-	 * with the above example a custom $key for additionalHeaderData may be provided.
+	 * DEPRECATED - $file parameter has been changed to $src in ScriptViewHelper
 	 * 
 	 * @param string $js
 	 * @param mixed $file String filename or array of filenames
@@ -60,21 +45,13 @@ class Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper extends Tx_WildsideExtb
 	 * @param string $key
 	 */
 	public function render($js=NULL, $file=NULL, $cache=FALSE, $concat=FALSE, $compress=FALSE) {
-		if ($js === NULL && $file === NULL) {
-			$js = $this->renderChildren();
-		}
 		if ($file) {
-			if (is_array($file)) {
-				$this->includeFiles($file, $cache, $compress);
-			} else {
-				$this->includeFile($file, $cache, $compress);
-			}
-		} else if ($js) {
-			$code = $this->wrap($js, $file);
-			$this->process($code, $key);
+			$this->includeFile($file);
+		} else {
+			return '<!-- inline script injection is deprecated in this ViewHelper - use <ws:script>...</ws:script> -->';
 		}
-		return '';
 	}
+	
 }
 	
 

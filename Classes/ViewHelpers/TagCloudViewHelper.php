@@ -24,7 +24,7 @@
 ***************************************************************/
 
 
-class Tx_WildsideExtbase_ViewHelpers_TagCloudViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_TagCloudViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	public $tagName = 'div';
 	
@@ -244,16 +244,11 @@ class Tx_WildsideExtbase_ViewHelpers_TagCloudViewHelper extends Tx_Fluid_Core_Vi
 		$movie = t3lib_extMgm::siteRelPath('wildside_extbase') . 'Resources/Public/Flash/com.roytanck.wpcumulus.swf';
 		$tagcloud = $this->renderTags($tags);
 		$tagcloud = str_replace( "&nbsp;", " ", $tagcloud);
-		$encodedTagCloud = addslashes('<tags>' . $tagcloud . '</tags>');	
-		$injector = $this->objectManager->get('Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper');
+		$encodedTagCloud = addslashes('<tags>' . $tagcloud . '</tags>');
 		$hostedLibrary = "http://ajax.googleapis.com/ajax/libs/swfobject/2/swfobject.js";
-		$injector->render(NULL, $hostedLibrary);
 		$expressInstall = "http://www.adobe.com/go/getflashplayer";
 		$distribute = $this->arguments['distribute'] ? 'true' : 'false';
 		$script = <<< SCRIPT
-		
-		
-
 swfobject.embedSWF("{$movie}", "{$elementId}", "{$this->arguments['width']}", "{$this->arguments['height']}", "9", "{$expressInstall}", 
 {
 	tcolor: '0x{$this->arguments['color']}',
@@ -264,9 +259,9 @@ swfobject.embedSWF("{$movie}", "{$elementId}", "{$this->arguments['width']}", "{
 	tagcloud: '{$encodedTagCloud}',
 	tcolor2: '0x{$this->arguments['color']}'
 });
-
 SCRIPT;
-		$injector->render($script);
+		$this->includeFile($hostedLibrary);
+		$this->includeHeader($script, 'js');
 		return "<div id='{$elementId}'></div>";
 	}
 	

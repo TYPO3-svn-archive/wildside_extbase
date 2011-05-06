@@ -25,6 +25,7 @@ table.data { margin-bottom: 8px; }
 	padding: 4px;
 	background-color: #EFEFEF;
 	text-align: center;
+	overflow: auto;
 }
 .dataTables_filter { text-align: left; }
 .dataTables_length { float: right; }

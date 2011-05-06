@@ -25,33 +25,27 @@
 
 /**
  * Injector, CSS
+ * DEPRECATED - but will stay for a good great while. Replaced by StyleViewHelper
  *
  * @package TYPO3
  * @subpackage Fluid
  * @version
+ * @deprecated
  */
-class Tx_WildsideExtbase_ViewHelpers_Inject_CssViewHelper extends Tx_WildsideExtbase_ViewHelpers_InjectViewHelper {
-	
-	public $type = Tx_WildsideExtbase_ViewHelpers_InjectViewHelper::TYPE_STYLESHEET;
+class Tx_WildsideExtbase_ViewHelpers_Inject_CssViewHelper extends Tx_WildsideExtbase_ViewHelpers_StyleViewHelper {
 	
 	/**
-	 * Inject CSS file in header or code. See examples in Inject/JsViewHelper.php;
-	 * the pragma is identical - only the output wrapper tags are different.
+	 * DEPRECATED - and parameter $file has changed to $href in StyleViewHelper
 	 * 
 	 * @param string $file
 	 * @param string $css
 	 * @param string $key
 	 */
 	public function render($file=NULL, $css=NULL, $key=NULL) {
-		if ($css === NULL && $file === NULL) {
-			$css = $this->renderChildren();
-		}
 		if ($file) {
-			$code = $this->includeFile($file);
-			return $code;
-		} else if ($css) {
-			$code = "<style type='text/css'>{$css}</style>";
-			return $this->process($code, $key);
+			$this->includeFile($file);
+		} else {
+			return '<!-- inline style injection is deprecated in this ViewHelper - use <ws:style>...</ws:style> -->';
 		}
 	}
 }

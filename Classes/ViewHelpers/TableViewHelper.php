@@ -24,7 +24,7 @@
 ***************************************************************/
 
 
-class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
 	 * @var Tx_WildsideExtbase_Utility_PropertyMapper $propertyMapper
@@ -311,7 +311,7 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $object
 	 * @return array
 	 */
-	private function getValues($object) {
+	public function getValues($object) {
 		$annotationName = $this->arguments['annotationName'];
 		$annotaionValue = $this->arguments['annotationValue'];
 		if (!$annotationName) {
@@ -365,13 +365,11 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_Fluid_Core_ViewH
 	 */
 	private function addScripts() {
 		$scriptFile1 = t3lib_extMgm::extRelPath('wildside_extbase') . 'Resources/Public/Javascript/com/jquery/plugins/jquery.dataTables.min.js';
-		
 		$bPaginate = $this->jsBoolean($this->arguments['bPaginate']);
 		$bFilter = $this->jsBoolean($this->arguments['bFilter']);
 		$bInfo = $this->jsBoolean($this->arguments['bInfo']);
 		$bSaveState = $this->jsBoolean($this->arguments['bSaveState']);
 		$oLanguage = json_encode($this->arguments['oLanguage']);
-		
 		$init = <<< INITSCRIPT
 var tableSorter;
 jQuery(document).ready(function() {
@@ -389,10 +387,8 @@ jQuery(document).ready(function() {
 } );	
 
 INITSCRIPT;
-		
-		$injector = $this->objectManager->get('Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper');
-		$injector->render(NULL, $scriptFile1);
-		$injector->render($init);
+		$this->includeFile($scriptFile1);
+		$this->includeHeader($init, 'js');
 	}
 	
 	/**
@@ -419,9 +415,8 @@ INITSCRIPT;
 }
 CSS;
 		$file = t3lib_extMgm::siteRelPath('wildside_extbase') . 'Resources/Public/Stylesheet/Table.css'; 
-		$injector = $this->objectManager->get('Tx_WildsideExtbase_ViewHelpers_Inject_CssViewHelper');
-		$injector->render($file);
-		$injector->render(NULL, $css);
+		$this->includeHeader($css, 'css');
+		$this->includeFile($file);
 	}
 	
 }
