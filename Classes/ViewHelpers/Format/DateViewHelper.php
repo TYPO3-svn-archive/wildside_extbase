@@ -24,33 +24,34 @@
 ***************************************************************/
 
 /**
- * Renders title (or any other field) of the first available child inside ObjectStorage
- * DEPRECATED - functionality covered by {myObjectStorage.0}
+ * Formats timestamps/dates
  *
  * @package TYPO3
  * @subpackage Fluid
  * @version
- * @deprecated
  */
-class Tx_WildsideExtbase_ViewHelpers_FirstChildViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_Format_DateViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
-	 * Render name of first child inside an ObjectStorage
-	 * @param Tx_Extbase_Persistence_ObjectStorage $storage
-	 * @param string $field If specified, renders the provided field. If null, field "name" is rendered 
+	 * Render a select
+	 * @param string $format The format of the date to be returned, PHP-date format
+	 * @param float $timestamp The timestamp to be formatted
+	 * @param string $date Optional string-formatted date, parsed into $timestamp
+	 * @param DateTime $dateTime If your source is a DateTime object, use this parameter
+	 * @return string
 	 */
-	public function render(Tx_Extbase_Persistence_ObjectStorage $storage=NULL, $field=NULL) {
-		if ($storage !== NULL && $storage->count() > 0) {
-			if ($field) {
-				$object = $storage->current();
-				$func = 'get'.ucfirst($field);
-				return $object->$func();
-			} else {
-				return $storage->current()->getName();
-			}
-		} else {
-			return '<!-- empty ObjectStorage instance -->';
+	public function render($format, $timestamp=NULL, $date=NULL, DateTime $dateTime=NULL) {
+		if ($dateTime) {
+			return $dateTime->format($format);
 		}
+		if (!$timestamp && $date) {
+			$timestamp = strtotime($date);
+		}
+		if (!$timestamp && !$date) {
+			$timestamp = $this->renderChildren();
+		}
+		$str = date($format, $timestamp);
+		return $str;
 	}
 }
 	

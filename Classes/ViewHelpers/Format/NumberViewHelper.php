@@ -24,33 +24,29 @@
 ***************************************************************/
 
 /**
- * Renders title (or any other field) of the first available child inside ObjectStorage
- * DEPRECATED - functionality covered by {myObjectStorage.0}
+ * Helps with formatting numbers
  *
  * @package TYPO3
  * @subpackage Fluid
  * @version
- * @deprecated
  */
-class Tx_WildsideExtbase_ViewHelpers_FirstChildViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_Format_NumberViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
 	/**
-	 * Render name of first child inside an ObjectStorage
-	 * @param Tx_Extbase_Persistence_ObjectStorage $storage
-	 * @param string $field If specified, renders the provided field. If null, field "name" is rendered 
+	 * Render a select
+	 * @param float $number The number to be formatted
+	 * @param int $decimals The number of decimals to output
+	 * @param string $dsep The character used as decimal separator
+	 * @param string $tsep The character used as thousands separator
+	 * @param string $unit The unit to use as suffix for the rendered number
+	 * @return string
 	 */
-	public function render(Tx_Extbase_Persistence_ObjectStorage $storage=NULL, $field=NULL) {
-		if ($storage !== NULL && $storage->count() > 0) {
-			if ($field) {
-				$object = $storage->current();
-				$func = 'get'.ucfirst($field);
-				return $object->$func();
-			} else {
-				return $storage->current()->getName();
-			}
-		} else {
-			return '<!-- empty ObjectStorage instance -->';
+	public function render($number, $decimals=NULL, $dsep=NULL, $tsep=NULL, $unit=NULL) {
+		$str = number_format($number, $decimals, $dsep, $tsep);
+		if ($unit) {
+			$str .= $unit;
 		}
+		return $str;
 	}
 }
 	

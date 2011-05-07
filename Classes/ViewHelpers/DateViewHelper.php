@@ -25,34 +25,15 @@
 
 /**
  * Formats timestamps/dates
+ * DEPRECATED - use Format/Date
  *
  * @package TYPO3
  * @subpackage Fluid
  * @version
+ * @deprecated
  */
-class Tx_WildsideExtbase_ViewHelpers_DateViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
-	
-	/**
-	 * Render a select
-	 * @param string $format The format of the date to be returned, PHP-date format
-	 * @param float $timestamp The timestamp to be formatted
-	 * @param string $date Optional string-formatted date, parsed into $timestamp
-	 * @param DateTime $dateTime If your source is a DateTime object, use this parameter
-	 * @return string
-	 */
-	public function render($format, $timestamp=NULL, $date=NULL, DateTime $dateTime=NULL) {
-		if ($dateTime) {
-			return $dateTime->format($format);
-		}
-		if (!$timestamp && $date) {
-			$timestamp = strtotime($date);
-		}
-		if (!$timestamp && !$date) {
-			$timestamp = $this->renderChildren();
-		}
-		$str = date($format, $timestamp);
-		return $str;
-	}
+class Tx_WildsideExtbase_ViewHelpers_DateViewHelper extends Tx_WildsideExtbase_ViewHelpers_Format_DateViewHelper {
+
 }
 	
 
