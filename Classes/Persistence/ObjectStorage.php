@@ -145,6 +145,55 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 	}
 	
 	/**
+	 * @param int $limit
+	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
+	 */
+	public function limit($limit) {
+		$query = $this->createQuery();
+		$query->limit($limit);
+		return $query->execute();
+	}
+	
+	/**
+	 * Quick search - tries to find matching objects through a very simple search.
+	 * Only option possible is $exact=TRUE/FALSE - if you need other searches to be 
+	 * performed you need to use $query = $objectStorage->createQuery(); and
+	 * configure your query to your likings by QOM methods. You can chain this at 
+	 * a fairly low execution time cost: 
+	 * 
+	 * $objectStorage->search('owner', $ownerUid)->search('name', $qStr);
+	 * Which first filters to match only the user's items and then searches those 
+	 * for matches of $qStr in property "name". Since $ownerUid is an integer, 
+	 * the function assumes $exact=TRUE. Same goes for objects of any type. 
+	 * DomainObjects are compared by classname and UID.
+	 *  
+	 * @param string $property Name of the property to search in 
+	 * @param mixed $search
+	 * @param boolean $exact
+	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
+	 */
+	public function search($property, $search, $exact=TRUE) {
+		$query = $this->createQuery();
+		if ($exact || is_integer($search) || is_object($search)) {
+			$constraint = $query->equals($property, $search);
+		} else {
+			$constraint = $query->like($property, "%{$search}%");
+		}
+		$query->matching($constraint);
+		return $query->execute();
+	}
+	
+	/**
+	 * @param int $offset
+	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
+	 */
+	public function offset($offset) {
+		$query = $this->createQuery();
+		$query->offset($offset);
+		return $query->execute();
+	}
+	
+	/**
 	 * Sets the number of items displayed per page
 	 * 
 	 * @param unknown_type $perPage
