@@ -23,10 +23,16 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+/**
+ * Accordion integration for jQuery UI - remember to load jQueryUI yourself
+ * For example through <ws:script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" />
+ * 
+ * @author Claus Due, Wildside A/S
+ * @uses jQueryUI
+ */
+class Tx_WildsideExtbase_ViewHelpers_JQuery_AccordionViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 
-class Tx_WildsideExtbase_ViewHelpers_AccordionViewHelper extends Tx_Fluid_Core_ViewHelper_AbstractTagBasedViewHelper {
-
-	protected $tagName = 'table';
+	protected $tagName = 'div';
 	
 	/**
 	 * Initialization
@@ -82,15 +88,12 @@ class Tx_WildsideExtbase_ViewHelpers_AccordionViewHelper extends Tx_Fluid_Core_V
 	 * @return void
 	 */
 	private function addScripts() {
-		
 		$scriptFile = t3lib_extMgm::siteRelPath('wildside_extbase') . 'Resources/Public/Javascript/com/jquery/plugins/jquery.accordion.js';
-		
 		$disabled = ($this->arguments['disabled'] === TRUE ? 'true' : 'false');
 		$autoHeight = ($this->arguments['autoHeight'] === TRUE ? 'true' : 'false');
 		$clearStyle = ($this->arguments['clearStyle'] === TRUE ? 'true' : 'false');
 		$collapsible = ($this->arguments['collapsible'] === TRUE ? 'true' : 'false');
 		$fillSpace = ($this->arguments['fillSpace'] === TRUE ? 'true' : 'false');
-		
 		$init = <<< INITSCRIPT
 jQuery(document).ready(function() {
 	var options = {
@@ -106,12 +109,8 @@ jQuery(document).ready(function() {
 	jQuery('.wildside-extbase-accordion').accordion(options);
 });
 INITSCRIPT;
-		
-		$injector = $this->objectManager->get('Tx_WildsideExtbase_ViewHelpers_Inject_JsViewHelper');
-		$injector->render($init);
-		
-		$injector->render(NULL, $scriptFile);
-		$injector->render(NULL, 'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js');
+		$this->includeFile($scriptFile);
+		$this->includeHeader($init, 'js');
 	}
 	
 }
