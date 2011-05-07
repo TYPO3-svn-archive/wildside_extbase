@@ -248,6 +248,72 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 	}
 	
 	/**
+	 * Adds a member before another identified member
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $add
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $before
+	 */
+	public function attachBefore(
+			Tx_Extbase_DomainObject_AbstractDomainObject $add, 
+			Tx_Extbase_DomainObject_AbstractDomainObject $before) {
+		$storage = $this->objectManager->get(get_class(self));
+		$beforeUid = $before->getUid();
+		foreach ($this as $item) {
+			$itemUid = $item->getUid();
+			if ($itemUid === $beforeUid) {
+				$storage->attach($add);
+			}
+			$storage->attach($item);
+		}
+		return $storage;
+	}
+	
+	/**
+	 * Adds a member after another identified member
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $add
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $after
+	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
+	 * @api
+	 */
+	public function attachAfter(
+			Tx_Extbase_DomainObject_AbstractDomainObject $add, 
+			Tx_Extbase_DomainObject_AbstractDomainObject $after) {
+		$storage = $this->objectManager->get(get_class(self));
+		$afterUid = $before->getUid();
+		foreach ($this as $item) {
+			$storage->attach($item);
+			$itemUid = $item->getUid();
+			if ($itemUid === $afterUid) {
+				$storage->attach($add);
+			}
+		}
+		return $storage;
+	}
+	
+	/**
+	 * Adds a member at a particular index, or end if index does not exist.
+	 * Shifts other members one position down
+	 * 
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $add
+	 * @param int $index
+	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
+	 * @api
+	 */
+	public function attachAt(Tx_Extbase_DomainObject_AbstractDomainObject $add, $index) {
+		$storage = $this->objectManager->get(get_class(self));
+		if ($index >= $this->count()) {
+			$this->attach($add);
+		}
+		foreach ($this as $item) {
+			if ($currentIndex == $index) {				
+				$storage->attach($add);
+			}
+			$storage->attach($item);
+			$currentIndex++;
+		}
+		return $storage;
+	}
+	
+	/**
 	 * Overloaded property getter. Makes a few predefined dynamic variables available (in Fluid, too),
 	 * for example as {do.mn.limit.5}. See Tx_WildsideExtbase_Object_AbstractOverloader.
 	 * 
