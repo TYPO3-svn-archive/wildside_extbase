@@ -8,11 +8,13 @@ Tx_Extbase_Utility_Extension::configurePlugin(
 	'API',
 	array(
 		'FileuploadWidget' => 'upload',
-		'RecordSelectorWidget' => 'search'
+		'RecordSelectorWidget' => 'search',
+		'Hash' => 'request'
 	),
 	array(
 		'FileuploadWidget' => 'upload',
-		'RecordSelectorWidget' => 'search'
+		'RecordSelectorWidget' => 'search',
+		'Hash' => 'request'
 	)
 );
 

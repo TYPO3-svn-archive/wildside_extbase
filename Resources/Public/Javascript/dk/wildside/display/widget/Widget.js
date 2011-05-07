@@ -234,6 +234,8 @@ dk.wildside.display.widget.Widget.prototype.refresh = function() {
 };
 
 dk.wildside.display.widget.Widget.prototype.dispatchRequest = function(request, parameterWrap) {
+	// TODO: use new request with action=request, controller=Hash and arguments fieldNames:array and fieldNamePrefix:string
+	// TODO: insert resulting __hmac into request data
 	var responder = new dk.wildside.net.Dispatcher(request).dispatchRequest(request, parameterWrap);
 	var data = responder.getData();
 	var messages = responder.getMessages();

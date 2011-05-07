@@ -114,8 +114,40 @@
  * @copyright Copyright belongs to the respective authors
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
  */
-class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistence_ObjectStorage {
+class Tx_WildsideExtbase_Persistence_ObjectStorage implements Countable, Iterator, ArrayAccess, Tx_Extbase_Persistence_ObjectMonitoringInterface  {
 	
+	/**
+	 * This field is only needed to make debugging easier:
+	 * If you call current() on a class that implements Iterator, PHP will return the first field of the object
+	 * instead of calling the current() method of the interface.
+	 * We use this unusual behavior of PHP to return the warning below in this case.
+	 *
+	 * @var string
+	 */
+	private $warning = 'You should never see this warning. If you do, you probably used PHP array functions like current() on the Tx_WildsideExtbase_Persistence_ObjectStorage. To retrieve the first result, you can use the current() method.';
+
+	/**
+	 * An array holding the objects and the stored information. The key of the array items ist the 
+	 * spl_object_hash of the given object.
+	 *
+	 * array(
+	 * 	$this->hash($object) =>
+	 * 		array(
+	 *			'obj' => $object,
+	 * 			'inf' => $information
+	 *		)
+	 * )
+	 * 
+	 * @var array
+	 */
+	protected $storage = array();
+
+	/**
+	 * A flag indication if the object storage was modified after reconstitution (eg. by adding a new object)
+	 * @var bool
+	 */
+	protected $isModified = FALSE;
+		
 	/**
 	 * @var Tx_WildsideExtbase_Object_QueryManager
 	 */
@@ -136,6 +168,7 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 	/**
 	 * Paginage this ObjectStorage. Returns an array of O
 	 * @param int $itemsPerPage
+	 * @api
 	 */
 	public function paginate($itemsPerPage=-1) {
 		if ($itemsPerPage > 0) {
@@ -146,15 +179,11 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 	
 	/**
 	 * @param int $limit
-	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
+	 * @return void
+	 * @api
 	 */
 	public function limit($limit) {
-		$query = $this->createQuery();
-		$query->limit($limit);
-		$storage = $query->execute();
-		$this->removeAll($this);
-		$this->addAll($storage);
-		return $this;
+		$this->storage = array_slice($this->storage, 0, $limit, TRUE);
 	}
 	
 	/**
@@ -188,21 +217,32 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 	
 	/**
 	 * @param int $offset
-	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
+	 * @return void
+	 * @api
 	 */
 	public function offset($offset) {
-		$query = $this->createQuery();
-		$query->offset($offset);
-		$storage = $query->execute();
-		$this->removeAll($this);
-		$this->addAll($storage);
-		return $this;
+		$this->storage = array_slice($this->storage, $offset, NULL, TRUE);
+	}
+	
+	/**
+	 * Slice this ObjectStorage - the internal storage gets updated
+	 * @param int $offset
+	 * @param int $length
+	 * @return void
+	 * @api
+	 */
+	public function slice($offset, $length=NULL) {
+		$this->offset($offset);
+		if ($length) {
+			$this->limit($length);
+		}  
 	}
 	
 	/**
 	 * Sets the number of items displayed per page
 	 * 
 	 * @param unknown_type $perPage
+	 * @return void
 	 * @api
 	 */
 	public function setItemsPerPage($perPage) {
@@ -257,46 +297,80 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 	 * Adds a member before another identified member
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $add
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $before
+	 * @param mixed $information The data to associate with the object.
+	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
 	 */
 	public function attachBefore(
 			Tx_Extbase_DomainObject_AbstractDomainObject $add, 
-			Tx_Extbase_DomainObject_AbstractDomainObject $before) {
-		$storage = $this->objectManager->get(get_class(self));
-		$beforeUid = $before->getUid();
-		foreach ($this as $item) {
-			$itemUid = $item->getUid();
-			if ($itemUid === $beforeUid) {
-				$storage->attach($add);
-			}
-			$storage->attach($item);
+			Tx_Extbase_DomainObject_AbstractDomainObject $before, 
+			$information=NULL) {
+		$this->rewind();
+		if ($this->contains($add)) {
+			return $this;
+		} else if (isset($this->contains($before)) === FALSE) {
+			$this->attach($add);
+			return $this;
+		} else {
+			$this->insertAt($add, $before);
+			return $this;
 		}
-		$this->removeAll($this);
-		$this->addAll($storage);
-		return $this;
 	}
 	
 	/**
 	 * Adds a member after another identified member
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $add
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $after
+	 * @param mixed $information The data to associate with the object.
 	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
 	 * @api
 	 */
 	public function attachAfter(
 			Tx_Extbase_DomainObject_AbstractDomainObject $add, 
-			Tx_Extbase_DomainObject_AbstractDomainObject $after) {
-		$storage = $this->objectManager->get(get_class(self));
-		$afterUid = $before->getUid();
-		foreach ($this as $item) {
-			$storage->attach($item);
-			$itemUid = $item->getUid();
-			if ($itemUid === $afterUid) {
-				$storage->attach($add);
-			}
+			Tx_Extbase_DomainObject_AbstractDomainObject $after,
+			$information=NULL) {
+		$this->rewind();
+		if ($this->contains($add)) {
+			return $this;
+		} else if (isset($this->contains($after)) === FALSE) {
+			$this->attach($add);
+			return $this;
+		} else {
+			$this->insertAt($add, $after, FALSE, $information);
+			return $this;
 		}
-		$this->removeAll($this);
-		$this->addAll($storage);
-		return $this;
+	}
+	
+	/**
+	 * Adds an object to internal storage before/after a particular hash's index count
+	 * 
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $object
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $offsetObject
+	 * @param boolean $before If TRUE, inserts $object before position $hash, otherwise after
+	 * @param mixed $information The data to associate with the object.
+	 * @return void
+	 */
+	protected function insertAt($object, $offsetObject, $before=TRUE, $information=NULL) {
+		$this->rewind();
+		$index = 0;
+		$hash = $this->hash($offsetObject);
+		foreach ($this as $key=>$item) {
+			if ($key === $hash) {
+				// insert here by splitting and splicing arrays
+				if ($before === TRUE) {
+					$index--;
+				}
+				if ($index < 0) {
+					$index = 0;
+				}
+				$a1 = array_slice($this->storage, 0, $index, TRUE);
+				$a2 = $index < count($this->storage) ? array_slice($this->storage, $index, NULL, TRUE) : array();
+				$this->storage = $a1;
+				$this->attach($object, $information);
+				$this->storage = array_merge($this->storage, $a2);
+				return;
+			}
+			$index++;
+		}
 	}
 	
 	/**
@@ -305,23 +379,23 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 	 * 
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $add
 	 * @param int $index
+	 * @param mixed $information The data to associate with the object.
 	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
 	 * @api
 	 */
-	public function attachAt(Tx_Extbase_DomainObject_AbstractDomainObject $add, $index) {
+	public function attachAt(Tx_Extbase_DomainObject_AbstractDomainObject $add, $index, $information) {
+		$this->rewind();
 		$storage = $this->objectManager->get(get_class(self));
 		if ($index >= $this->count()) {
-			$this->attach($add);
+			$this->attach($add, $information);
 		}
-		foreach ($this as $item) {
+		foreach ($this as $key=>$item) {
 			if ($currentIndex == $index) {				
-				$storage->attach($add);
+				$this->insertAt($add, $key, TRUE, $information);
+				return $this;
 			}
-			$storage->attach($item);
 			$currentIndex++;
 		}
-		$this->removeAll($this);
-		$this->addAll($storage);
 		return $this;
 	}
 	
@@ -353,6 +427,225 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 	public function __call($func, $arguments) {
 		
 	}
+	
+	
+	/**
+	 * Rewind the iterator to the first storage element.
+	 *
+	 * @return void
+	 */
+	public function rewind() {
+		reset($this->storage);
+	}
+
+	/**
+	 * Checks if the array pointer of the storage points to a valid position
+	 *
+	 * @return void
+	 */
+	public function valid() {
+		return current($this->storage);
+	}
+
+	/**
+	 * Returns the index at which the iterator currently is. This is different from the SplObjectStorage 
+	 * as the key in this implementation is the object hash.
+	 *
+	 * @return string The index corresponding to the position of the iterator.
+	 */
+	public function key() {
+		return key($this->storage);
+	}
+
+	/**
+	 * Returns the current storage entry.
+	 *
+	 * @return object The object at the current iterator position.
+	 */
+	public function current() {
+		$item = current($this->storage);
+		return $item['obj'];
+	}
+
+	/**
+	 * Moves the iterator to the next object in the storage.
+	 *
+	 * @return void
+	 */
+	public function next() {
+		next($this->storage);
+	}
+
+	/**
+	 * Counts the number of objects in the storage.
+	 *
+	 * @return int The number of objects in the storage.
+	 */
+	public function count() {
+		return count($this->storage);
+	}
+
+	protected function hash($object) {
+		return get_class($object) . ':' . $object->getUid();
+	}
+	
+	/**
+	 * Associate data to an object in the storage. offsetSet() is an alias of attach(). 
+	 *
+	 * @param object $object The object to add.
+	 * @param mixed $information The data to associate with the object.
+	 * @return void
+	 */
+	public function offsetSet($object, $information) {
+		$this->isModified = TRUE;
+		$this->storage[$this->hash($object)] = array('obj' => $object, 'inf' => $information);
+	}
+
+	/**
+	 * Checks whether an object exists in the storage.
+	 *
+	 * @param string $object The object to look for.
+	 * @return boolean Returns TRUE if the object exists in the storage, and FALSE otherwise.
+	 */
+	public function offsetExists($object) {
+		return isset($this->storage[$this->hash($object)]);
+	}
+
+	/**
+	 * Removes an object from the storage. offsetUnset() is an alias of detach().
+	 *
+	 * @param Object $object The object to remove.
+	 * @return void
+	 */
+	public function offsetUnset($object) {
+		$this->isModified = TRUE;
+		unset($this->storage[$this->hash($object)]);
+	}
+
+	/**
+	 * Returns the data associated with an object in the storage.
+	 *
+	 * @param string $object The object to look for.
+	 * @return mixed The data previously associated with the object in the storage. 
+	 */
+	public function offsetGet($object) {
+		return $this->storage[$this->hash($object)]['inf'];
+	}
+
+	/**
+	 * Checks if the storage contains the object provided.
+	 *
+	 * @param Object $object The object to look for.
+	 * @return boolean Returns TRUE if the object is in the storage, FALSE otherwise.
+	 */
+	public function contains($object) {
+		return $this->offsetExists($object);
+	}
+
+	/**
+	 * Adds an object inside the storage, and optionaly associate it to some data.
+	 *
+	 * @param object $object The object to add.
+	 * @param mixed $information The data to associate with the object.
+	 * @return void
+	 */
+	public function attach($object, $information = NULL) {
+		$this->offsetSet($object, $information);
+	}
+
+	/**
+	 * Removes the object from the storage.
+	 *
+	 * @param Object $object The object to remove.
+	 * @return void
+	 */
+	public function detach($object) {
+		$this->offsetUnset($object);
+	}
+	
+	/**
+	 * Returns the data, or info, associated with the object pointed by the current iterator position.
+	 *
+	 * @return mixed The data associated with the current iterator position.
+	 */
+	public function getInfo() {
+		$item = current($this->storage);
+		return $item['inf'];
+	}
+	
+	/**
+	 * @param array $data
+	 */
+	public function setInfo($data) {
+		$this->isModified = TRUE;
+		$key = key($this->storage);
+		$this->storage[$key]['inf']  = $data;
+	}
+
+	/**
+	 * Adds all objects-data pairs from a different storage in the current storage.
+	 *
+	 * @param Tx_Extbase_Persistence_ObjectStorage $storage The storage you want to import.
+	 * @return void
+	 */
+	public function addAll(Tx_Extbase_Persistence_ObjectStorage $storage) {
+		foreach ($storage as $object) {
+			$this->attach($object, $storage->getInfo());
+		}
+	}
+
+	/**
+	 * Removes objects contained in another storage from the current storage.
+	 *
+	 * @param Tx_Extbase_Persistence_ObjectStorage $storage The storage containing the elements to remove.
+	 * @return void
+	 */
+	public function removeAll(Tx_Extbase_Persistence_ObjectStorage $storage) {
+		foreach ($storage as $object) {
+			$this->detach($object);
+		}
+	}
+	
+	/**
+	 * Returns this object storage as an array
+	 *
+	 * @return array The object storage
+	 */
+	public function toArray() {
+		$array = array();
+		foreach ($this->storage as $item) {
+			$array[] = $item['obj'];
+		}
+		return $array;
+	}
+
+	public function serialize() {
+		throw new RuntimeException('An ObjectStorage instance cannot be serialized.', 1267700868);
+	}
+
+	public function unserialize($serialized) {
+		throw new RuntimeException('A ObjectStorage instance cannot be unserialized.', 1267700870);
+	}
+	
+	/**
+	 * Register an object's clean state, e.g. after it has been reconstituted
+	 * from the database
+	 *
+	 * @return void
+	 */
+	public function _memorizeCleanState() {
+		$this->isModified = FALSE;
+	}
+
+	/**
+	 * Returns TRUE if the properties were modified after reconstitution
+	 *
+	 * @return boolean
+	 */
+	public function _isDirty() {
+		return $this->isModified;
+	}
+	
 	
 }
 
