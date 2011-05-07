@@ -23,72 +23,12 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+/**
+ * @deprecated
+ */
+class Tx_WildsideExtbase_ViewHelpers_VarViewHelper extends Tx_WildsideExtbase_ViewHelpers_Data_VarViewHelper {
+	
 
-class Tx_WildsideExtbase_ViewHelpers_VarViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
-	
-	/**
-	 * Get or set a variable
-	 * @param string $name
-	 * @param mixed $value
-	 * @param string $type
-	 */
-	public function render($name, $value=NULL, $type=NULL) {
-		if ($value === NULL) {
-			$value = $this->renderChildren();
-		}
-		if (trim($value) === '') {
-			// we are echoing a variable
-			return $this->templateVariableContainer->get($name);
-		} else {
-			// we are setting a variable
-			if ($type === NULL) {
-				if (is_object($value)) {
-					$type = 'object';
-				} else if (is_string($value)) {
-					$type = 'string';
-				} else if (is_int($value)) {
-					$type = 'integer';
-				} else if (is_float($value)) {
-					$type = 'float';
-				} else if (is_array($value)) {
-					$type = 'array';
-				}
-			}
-			$value = $this->typeCast($value, $type);
-			if ($this->templateVariableContainer->exists($name)) {
-				$this->templateVariableContainer->remove($name);
-			}
-			$this->templateVariableContainer->add($name, $value);
-		}
-		return '';
-	}
-	
-	/**
-	 * Type-cast a value with type $type
-	 * @param mixed $value
-	 * @param string $type
-	 */
-	private function typeCast($value, $type) {
-		switch ($type) {
-			case 'integer':
-				$value = intval($value);
-				break;
-			case 'float':
-				$value = floatval($value);
-				break;
-			case 'object':
-				$value = (object) $value;
-				break;
-			case 'array':
-				// cheat a bit; assume CSV
-				$value = (array) explode(',', $value);
-				break;
-			case 'string':
-			default:
-				$value = (string) $value;
-		}
-		return $value;
-	}
 }
 
 ?>

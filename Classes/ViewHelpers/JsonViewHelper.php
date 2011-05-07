@@ -23,20 +23,11 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-class Tx_WildsideExtbase_ViewHelpers_JsonViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
+/**
+ * @deprecated
+ */
+class Tx_WildsideExtbase_ViewHelpers_JsonViewHelper extends Tx_WildsideExtbase_ViewHelpers_Data_JsonViewHelper {
 	
-	
-	/**
-	 * Encodes $data as JSON using internal JSON encoding
-	 * @param mixed $data Either an array or an object containing data to be encoded
-	 * @return string
-	 */
-	public function render($data) {
-		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
-		$jsonHandler = $objectManager->get('Tx_WildsideExtbase_Utility_JSON');
-		$string = $jsonHandler->encode($data);
-		return (string) $string;
-	}
 }
 
 ?>

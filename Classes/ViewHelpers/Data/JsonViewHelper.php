@@ -1,5 +1,4 @@
 <?php 
-
 /***************************************************************
 *  Copyright notice
 *
@@ -24,11 +23,19 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-/**
- * @deprecated
- */
-class Tx_WildsideExtbase_ViewHelpers_DataSourceViewHelper extends Tx_WildsideExtbase_ViewHelpers_Data_SourceViewHelper {
+class Tx_WildsideExtbase_ViewHelpers_Data_JsonViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
 	
+	
+	/**
+	 * Encodes $data as JSON using internal JSON encoding
+	 * @param mixed $data Either an array or an object containing data to be encoded
+	 * @return string
+	 */
+	public function render($data) {
+		$jsonHandler = $this->objectManager->get('Tx_WildsideExtbase_Utility_JSON');
+		$string = $jsonHandler->encode($data);
+		return (string) $string;
+	}
 }
 
 ?>
