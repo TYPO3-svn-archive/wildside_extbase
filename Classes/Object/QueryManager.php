@@ -22,33 +22,26 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+
 /**
- * Repository base class
- *
- * @version $Id$
- * @copyright Copyright belongs to the respective authors
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * Allows running storage-type Query requests on 
+ * 
+ * @author Claus Due, Wildside A/S
  */
-abstract class Tx_WildsideExtbase_Persistence_Repository extends Tx_Extbase_Persistence_Repository {
-
-
+class Tx_WildsideExtbase_Object_QueryManager implements t3lib_Singleton {
+	
 	/**
-	 * Find by list of uids
+	 * Creates a query for searching through members of this ObjectStorage
 	 * 
-	 * @param $uids
-	 * @return Tx_Extbase_Persistence_ObjectStorage
+	 * @param mixed $original Original value - object, array, ObjectStorage or QueryResult
+	 * @return Tx_WildsideExtbase_Object_Query
+	 * @api
 	 */
-	public function findByUids($uids) {
-		if (is_array($uids) == FALSE) {
-			$uids = explode(',', $uids);
-		}
-		$query = $this->createQuery();
-		$query->matching($query->in('uid', $uids));
-		$results = $query->execute();
-		return $results;
+	public function createQuery($original) {
+		$query = $this->objectManager->get('Tx_WildsideExtbase_Object_Query');
+		$query->setOriginal($original);
+		return $query;
 	}
-	
-	
 	
 }
 

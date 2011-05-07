@@ -23,32 +23,17 @@
 ***************************************************************/
 
 /**
- * Repository base class
- *
- * @version $Id$
- * @copyright Copyright belongs to the respective authors
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License, version 3 or later
+ * Special class returned as overloaded value, allowing array-type access to the 
+ * ObjectStorage/array/object/QueryResult manipulation indicated by the classname
  */
-abstract class Tx_WildsideExtbase_Persistence_Repository extends Tx_Extbase_Persistence_Repository {
-
-
+class Tx_WildsideExtbase_Object_Limiter extends Tx_WildsideExtbase_Object_AbstractOverloader {
+	
 	/**
-	 * Find by list of uids
-	 * 
-	 * @param $uids
-	 * @return Tx_Extbase_Persistence_ObjectStorage
+	 * @param offset
 	 */
-	public function findByUids($uids) {
-		if (is_array($uids) == FALSE) {
-			$uids = explode(',', $uids);
-		}
-		$query = $this->createQuery();
-		$query->matching($query->in('uid', $uids));
-		$results = $query->execute();
-		return $results;
+	public function offsetGet ($offset) {
+		
 	}
-	
-	
 	
 }
 
