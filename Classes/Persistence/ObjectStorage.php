@@ -124,7 +124,7 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 	/**
 	 * @var int
 	 */
-	protected $perPage = 25;
+	protected $itemsPerPage = 25;
 	
 	/**
 	 * @param Tx_WildsideExtbase_Object_QueryManager $queryManager
@@ -151,7 +151,10 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 	public function limit($limit) {
 		$query = $this->createQuery();
 		$query->limit($limit);
-		return $query->execute();
+		$storage = $query->execute();
+		$this->removeAll($this);
+		$this->addAll($storage);
+		return $this;
 	}
 	
 	/**
@@ -190,7 +193,10 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 	public function offset($offset) {
 		$query = $this->createQuery();
 		$query->offset($offset);
-		return $query->execute();
+		$storage = $query->execute();
+		$this->removeAll($this);
+		$this->addAll($storage);
+		return $this;
 	}
 	
 	/**
@@ -264,7 +270,9 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 			}
 			$storage->attach($item);
 		}
-		return $storage;
+		$this->removeAll($this);
+		$this->addAll($storage);
+		return $this;
 	}
 	
 	/**
@@ -286,7 +294,9 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 				$storage->attach($add);
 			}
 		}
-		return $storage;
+		$this->removeAll($this);
+		$this->addAll($storage);
+		return $this;
 	}
 	
 	/**
@@ -310,7 +320,9 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage extends Tx_Extbase_Persistenc
 			$storage->attach($item);
 			$currentIndex++;
 		}
-		return $storage;
+		$this->removeAll($this);
+		$this->addAll($storage);
+		return $this;
 	}
 	
 	/**
