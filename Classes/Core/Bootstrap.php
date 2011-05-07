@@ -33,6 +33,19 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 	private $mapper;
 	private $jsonService;
 	
+	/**
+	 * @param Tx_WildsideExtbase_Object_ObjectManager $objectManager
+	 */
+	public function injectWildsideObjectManager(Tx_WildsideExtbase_Object_ObjectManager $objectManager) {
+		$this->injectObjectManager($objectManager);
+	}
+	
+	/**
+	 * Runs the request
+	 * 
+	 * @param string $content
+	 * @param array $configuration
+	 */
 	public function run($content, $configuration) {
 		$this->initialize($configuration);
 		$this->mapper = $this->objectManager->get('Tx_WildsideExtbase_Utility_PropertyMapper');
@@ -101,12 +114,9 @@ class Tx_WildsideExtbase_Core_Bootstrap extends Tx_Extbase_Core_Bootstrap {
 	}
 	
 	private function detectModelObject($content) {
-		$sub = explode(':', $content);
-		$dataType = array_shift($sub);
-		$uid = array_pop($sub);
-		$argument = $this->objectManager->get('Tx_Extbase_MVC_Controller_Argument', 'content', $dataType);
-		$object = $argument->setValue($uid)->getValue(); // hopefully a transformation to an object
-		if ($object instanceof Tx_Extbase_DomainObject_DomainObjectInterface) {
+		list ($dataType, $uid) = explode(':', $content);
+		if (class_exists($dataType) && intval($uid) > 0) {
+			$object = $this->objectManager->get($content);
 			$data = $this->mapper->getValuesByAnnotation($object, 'json', TRUE);
 		} else {
 			$data = $content;

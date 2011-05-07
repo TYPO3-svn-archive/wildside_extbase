@@ -31,14 +31,14 @@
 class Tx_WildsideExtbase_Object_QueryManager implements t3lib_Singleton {
 	
 	/**
-	 * @var Tx_Extbase_Object_Manager
+	 * @var Tx_Extbase_Object_ObjectManager
 	 */
 	protected $objectManager;
 	
 	/**
-	 * @param Tx_Extbase_Object_Manager $objectManager
+	 * @param Tx_Extbase_Object_ObjectManager $objectManager
 	 */
-	public function injectObjectManager(Tx_Extbase_Object_Manager $objectManager) {
+	public function injectObjectManager(Tx_Extbase_Object_ObjectManager $objectManager) {
 		$this->objectManager = $objectManager;
 	}
 	
