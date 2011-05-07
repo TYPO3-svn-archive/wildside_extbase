@@ -23,32 +23,10 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-
-
-class Tx_WildsideExtbase_ViewHelpers_SpriteViewHelper extends Tx_WildsideExtbase_Core_ViewHelper_AbstractViewHelper {
-	
-	/**
-	 * Render the Field
-	 * 
-	 * @param string $displayType If specified, overrides JS instance type
-	 * @param string $name Label, if any, to assign in this.config
-	 * @param string $value Value, if any, to assign in this.config
-	 */
-	public function render($displayType='dk.wildside.display.Sprite', $name=NULL, $value=NULL) {
-		$children = $this->renderChildren();
-		$json = new stdClass();
-		$json->displayType = $displayType;
-		$json->name = $name;
-		$json->value = $value;
-		
-		$jsonString = json_encode($json);
-		
-		$html = "<div class='wildside-extbase-sprite'>";
-		$html .= "<div class='wildside-extbase-json'>{$jsonString}</div>";
-		$html .= $children;
-		$html .= "</div>";
-		return $html;
-	}
+/**
+ * @deprecated
+ */
+class Tx_WildsideExtbase_ViewHelpers_SpriteViewHelper extends Tx_WildsideExtbase_ViewHelpers_Extbase_SpriteViewHelper {
 	
 }
 
