@@ -82,7 +82,7 @@
  * return $this->queryManager->promote($queryResult);
  * 
  * ... then instead of a QueryResult instance, an Tx_WildsideExtbase_Persistence_ObjectStorage
- * fullf of objects is returned. Of course you can do this in your controller too but it makes 
+ * full of objects is returned. Of course you can do this in your controller too but it makes 
  * a bit more sense in a Repository. Afterwards, you $this->view->assign('items', $outputItems);
  * and get support in your Fluid template for {items.page.5} for example.
  * 

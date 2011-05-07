@@ -53,23 +53,29 @@ class Tx_WildsideExtbase_Object_Query extends Tx_Extbase_Persistence_Query {
 	protected $original;
 	
 	/**
-	 * Returns a filtered copy of the same type as $original
+	 * Returns a filtered copy of the same type as $original.
+	 * Subclasses under Object/Query all override this method with their own Query matching logic
+	 * 
 	 * @return mixed
+	 * @api
 	 */
 	public function execute() {
 		$type = $this->getOriginalType();
 		$treatmentType = 'ObjectStorage'; // shifts to 'array', 'object' or 'QueryResult'. Default is 'ObjectStorage'
 		if ($this->original instanceof ArrayAccess || is_array($this->original)) {
-			$treatmentType = 'array';
+			$treatmentType = 'Array';
 		} else if (is_object($this->instance) && $this->instance instanceof Tx_Extbase_Persistence_ObjectStorage === FALSE) {
-			$treatmentType = 'object';
+			$treatmentType = 'Object';
 		} else if ($this->original instanceof QueryResult) {
-			
+			$treatmentType = 'QueryResult';
 		}
+		$className = "Tx_WildsideExtbase_Object_Query_{$treatmentType}";
+		return $this->objectManager->get($className)->setOriginal($this->original)->execute();
 	}
 	
 	/**
 	 * Sets the originating object/array/ObjectStorage
+	 * 
 	 * @param mixed $original
 	 * @api
 	 */
@@ -79,6 +85,7 @@ class Tx_WildsideExtbase_Object_Query extends Tx_Extbase_Persistence_Query {
 	
 	/**
 	 * Gets the originating object/array/ObjectStorage
+	 * 
 	 * @return mixed
 	 * @api
 	 */
@@ -88,7 +95,9 @@ class Tx_WildsideExtbase_Object_Query extends Tx_Extbase_Persistence_Query {
 	
 	/**
 	 * Get the datatype of the originating object - determines how query should be processed
+	 * 
 	 * @return string
+	 * @api
 	 */
 	public function getOriginalType() {
 		return get_class($this->original);

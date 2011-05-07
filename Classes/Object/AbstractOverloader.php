@@ -98,7 +98,7 @@ abstract class Tx_WildsideExtbase_Object_AbstractOverloader implements ArrayAcce
 	 * @param offset
 	 */
 	public function offsetExists ($offset) {
-		
+		return FALSE;
 	}
 
 	/**
@@ -114,7 +114,7 @@ abstract class Tx_WildsideExtbase_Object_AbstractOverloader implements ArrayAcce
 	 * @param value
 	 */
 	public function offsetSet ($offset, $value) {
-		
+		return NULL;
 	}
 
 	/**

@@ -31,6 +31,18 @@
 class Tx_WildsideExtbase_Object_QueryManager implements t3lib_Singleton {
 	
 	/**
+	 * @var Tx_Extbase_Object_Manager
+	 */
+	protected $objectManager;
+	
+	/**
+	 * @param Tx_Extbase_Object_Manager $objectManager
+	 */
+	public function injectObjectManager(Tx_Extbase_Object_Manager $objectManager) {
+		$this->objectManager = $objectManager;
+	}
+	
+	/**
 	 * Creates a query for searching through members of this ObjectStorage
 	 * 
 	 * @param mixed $original Original value - object, array, ObjectStorage or QueryResult
@@ -41,6 +53,20 @@ class Tx_WildsideExtbase_Object_QueryManager implements t3lib_Singleton {
 		$query = $this->objectManager->get('Tx_WildsideExtbase_Object_Query');
 		$query->setOriginal($original);
 		return $query;
+	}
+	
+	/**
+	 * Promotes a QueryResult to an Tx_WildsideExtbase_Persistence_ObjectStorage
+	 * 
+	 * @param Tx_Extbase_Persistence_QueryResult $queryResult
+	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
+	 */
+	public function promote(Tx_Extbase_Persistence_QueryResult $queryResult) {
+		$promoted = $this->objectManager->get('Tx_WildsideExtbase_Persistence_ObjectStorage');
+		foreach ($queryResult as $item) {
+			$promoted->attach($item);
+		}
+		return $promoted;
 	}
 	
 }
