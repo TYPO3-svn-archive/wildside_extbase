@@ -37,15 +37,14 @@ class Tx_WildsideExtbase_ViewHelpers_StyleViewHelper extends Tx_WildsideExtbase_
 	 * the pragma is identical - only the output wrapper tags are different.
 	 * 
 	 * @param string $href
-	 * @return void
+	 * @return string
 	 */
 	public function render($href=NULL) {
 		if ($href) {
 			$this->includeFile($href);
 		} else if ($href === NULL) {
 			$css = $this->renderChildren();
-			$code = $this->wrap($css, NULL, 'css');
-			$this->process($code);
+			$this->process($css, 'css');
 		}
 	}
 }

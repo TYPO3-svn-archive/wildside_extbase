@@ -143,6 +143,27 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage implements Countable, Iterato
 	protected $storage = array();
 
 	/**
+	 * Stores which field we are sorting members by
+	 * 
+	 * @var string
+	 */
+	protected $sortBy;
+	
+	/**
+	 * Stores which property to sort by if the $sortBy value is itself a DomainObject
+	 * 
+	 * @var string $memberSortBy
+	 */
+	protected $memberSortBy;
+	
+	/**
+	 * Stores if we are sorting ASC
+	 * 
+	 * @var boolean
+	 */
+	protected $sortAsc = FALSE;
+	
+	/**
 	 * A flag indication if the object storage was modified after reconstitution (eg. by adding a new object)
 	 * @var bool
 	 */
@@ -163,27 +184,6 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage implements Countable, Iterato
 	 */
 	public function injectQueryManager(Tx_WildsideExtbase_Object_QueryManager $queryManager) {
 		$this->queryManager = $queryManager;
-	}
-	
-	/**
-	 * Paginage this ObjectStorage. Returns an array of O
-	 * @param int $itemsPerPage
-	 * @api
-	 */
-	public function paginate($itemsPerPage=-1) {
-		if ($itemsPerPage > 0) {
-			$this->setItemsPerPage($itemsPerPage);
-		}
-		return $this->getPages();
-	}
-	
-	/**
-	 * @param int $limit
-	 * @return void
-	 * @api
-	 */
-	public function limit($limit) {
-		$this->storage = array_slice($this->storage, 0, $limit, TRUE);
 	}
 	
 	/**
@@ -213,29 +213,6 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage implements Countable, Iterato
 		}
 		$query->matching($constraint);
 		return $query->execute();
-	}
-	
-	/**
-	 * @param int $offset
-	 * @return void
-	 * @api
-	 */
-	public function offset($offset) {
-		$this->storage = array_slice($this->storage, $offset, NULL, TRUE);
-	}
-	
-	/**
-	 * Slice this ObjectStorage - the internal storage gets updated
-	 * @param int $offset
-	 * @param int $length
-	 * @return void
-	 * @api
-	 */
-	public function slice($offset, $length=NULL) {
-		$this->offset($offset);
-		if ($length) {
-			$this->limit($length);
-		}  
 	}
 	
 	/**
@@ -288,17 +265,149 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage implements Countable, Iterato
 	 * 
 	 * @return Tx_WildsideExtbase_Object_Query
 	 * @api
+	 * @author Claus Due, Wildside A/S
 	 */
 	public function createQuery() {
 		return $this->queryManager->createQuery($this);
 	}
 	
 	/**
-	 * Adds a member before another identified member
+	 * Paginage this ObjectStorage. Returns an array of O
+	 * 
+	 * @param int $itemsPerPage
+	 * @api
+	 * @author Claus Due, Wildside A/S
+	 */
+	public function paginate($itemsPerPage=-1) {
+		if ($itemsPerPage > 0) {
+			$this->setItemsPerPage($itemsPerPage);
+		}
+		return $this->getPages();
+	}
+	
+	/**
+	 * Limit this ObjectStorage (like SQL limit)
+	 * 
+	 * @param int $limit
+	 * @return void
+	 * @api
+	 * @author Claus Due, Wildside A/S
+	 */
+	public function limit($limit) {
+		$this->storage = array_slice($this->storage, 0, $limit, TRUE);
+	}
+	
+	/**
+	 * Offset this ObjectStorage (like SQL offset)
+	 * 
+	 * @param int $offset
+	 * @return void
+	 * @api
+	 */
+	public function offset($offset) {
+		$this->storage = array_slice($this->storage, $offset, NULL, TRUE);
+	}
+	
+	/**
+	 * Slice this ObjectStorage - the internal storage gets updated
+	 * 
+	 * @param int $offset
+	 * @param int $length
+	 * @return void
+	 * @api
+	 * @author Claus Due, Wildside A/S
+	 */
+	public function slice($offset, $length=NULL) {
+		$this->offset($offset);
+		if ($length) {
+			$this->limit($length);
+		}  
+	}
+	
+	/**
+	 * Sort this ObjectStorage
+	 * 
+	 * @param string $sortBy Property to sort by, can be object but not array/ObjectStorage. DateTime supported (uses timestamp)
+	 * @param string $order ASC or DESC
+	 * @param string $memberSortBy If the value you sort on is itself a Domain Object, specify this as the property which contains the value to sort by
+	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
+	 * @api
+	 * @author Claus Due, Wildside A/S
+	 */
+	public function sort($sortBy, $order='ASC', $memberSortBy=NULL) {
+		if ($this->count() == 0) {
+			return $this;
+		}
+		$this->sortBy = $sortBy;
+		$this->sortAsc = $order === 'ASC';
+		$this->memberSortBy = $memberSortBy;
+		$this->storage = uasort($this->storage, array($this, 'sortCompare'));
+		return $this;
+	}
+	
+	/**
+	 * Comparison method for usort
+	 * 
+	 * @param mixed $a
+	 * @param mixed $b
+	 * @return int
+	 * @author Claus Due, Wildside A/S
+	 */
+	protected function sortCompare($a, $b) {
+		if (is_string($a)) {
+			$comp = strcmp($a, $b);
+			if ($this->sortAsc === FALSE) {
+				// reverse output
+				if ($comp < 0) {
+					return 1;
+				} else if ($comp > 0) {
+					return -1;
+				} else {
+					return $comp;
+				}
+			}
+		} else if (is_numeric($a)) {
+			if ($a === $b) {
+				return 0;
+			} else if ($a > $b) { 
+				return $this->sortAsc ? 1 : -1;
+			} else if ($a > $b) {
+				return $this->sortAsc ? -1 : 1;
+			}
+		} else if (is_object($a)) {
+			// throw if $a uses Iterator
+			if ($a instanceof Iterator) {
+				throw new Exception("Invalid sort property, cannot sort by Iterator", 1304870321);
+			}
+			if ($a instanceof DateTime) {
+				$a = $a->getTimestamp();
+			}
+			if ($b instanceof DateTime) {
+				$b = $b->getTimestamp();
+			}
+			if ($a instanceof Tx_Extbase_DomainObject_AbstractDomainObject) {
+				if (!$this->memberSortBy) {
+					throw new Exception("Asked to sort by DomainObject but memberSortBy parameter was not specified", 1304871195);
+				}
+				$getter = "get" . ucfirst($this->memberSortBy);
+				$a = $a->$getter();
+				$b = $b->$getter();
+				return $this->sortCompare($a, $b);
+			}
+		} else if (is_array($a)) {
+			throw new Exception("Invalid sort property, cannot sort by array", 1304870358);
+		}
+	}
+	
+	/**
+	 * Adds a member before another identified member. Returns $this for chaining
+	 * 
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $add
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $before
 	 * @param mixed $information The data to associate with the object.
 	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
+	 * @api
+	 * @author Claus Due, Wildside A/S
 	 */
 	public function attachBefore(
 			Tx_Extbase_DomainObject_AbstractDomainObject $add, 
@@ -317,12 +426,14 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage implements Countable, Iterato
 	}
 	
 	/**
-	 * Adds a member after another identified member
+	 * Adds a member after another identified member. Returns $this for chaining
+	 * 
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $add
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $after
 	 * @param mixed $information The data to associate with the object.
 	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
 	 * @api
+	 * @author Claus Due, Wildside A/S
 	 */
 	public function attachAfter(
 			Tx_Extbase_DomainObject_AbstractDomainObject $add, 
@@ -340,14 +451,72 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage implements Countable, Iterato
 		}
 	}
 	
+	
+	/**
+	 * Adds a member at a particular index, or end if index does not exist.
+	 * Shifts other members one position down. Returns $this for chaining.
+	 * 
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $add
+	 * @param int $index
+	 * @param mixed $information The data to associate with the object.
+	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
+	 * @api
+	 * @author Claus Due, Wildside A/S
+	 */
+	public function attachAt(Tx_Extbase_DomainObject_AbstractDomainObject $add, $index, $information) {
+		$this->rewind();
+		$storage = $this->objectManager->get(get_class(self));
+		if ($index >= $this->count()) {
+			$this->attach($add, $information);
+		}
+		foreach ($this as $key=>$item) {
+			if ($currentIndex == $index) {
+				$this->insertAt($add, $key, TRUE, $information);
+				$this->detach($item);
+				return $this;
+			}
+			$currentIndex++;
+		}
+		return $this;
+	}
+	
+	/**
+	 * Replace one member with another
+	 * 
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $add
+	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $replace
+	 * @param mixed $information
+	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
+	 * @api
+	 * @author Claus Due, Wildside A/S
+	 */
+	public function replace(
+			Tx_Extbase_DomainObject_AbstractDomainObject $add,
+			Tx_Extbase_DomainObject_AbstractDomainObject $replace,
+			$information=NULL) {
+		if ($this->contains($replace) === FALSE) {
+			throw new Exception('Tried to replace a member which did not exist', 1304872573);
+		}
+		$hash = $this->hash($replace);
+		foreach ($this as $key=>$item) {
+			if ($key === $hash) {
+				$this->insertAt($add, $index, TRUE, $information);
+				$this->remove($item);
+			}
+		}
+		return $this;
+	}
+	
 	/**
 	 * Adds an object to internal storage before/after a particular hash's index count
+	 * PURELY INTERNAL
 	 * 
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $object
 	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $offsetObject
 	 * @param boolean $before If TRUE, inserts $object before position $hash, otherwise after
 	 * @param mixed $information The data to associate with the object.
 	 * @return void
+	 * @author Claus Due, Wildside A/S
 	 */
 	protected function insertAt($object, $offsetObject, $before=TRUE, $information=NULL) {
 		$this->rewind();
@@ -371,32 +540,6 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage implements Countable, Iterato
 			}
 			$index++;
 		}
-	}
-	
-	/**
-	 * Adds a member at a particular index, or end if index does not exist.
-	 * Shifts other members one position down
-	 * 
-	 * @param Tx_Extbase_DomainObject_AbstractDomainObject $add
-	 * @param int $index
-	 * @param mixed $information The data to associate with the object.
-	 * @return Tx_WildsideExtbase_Persistence_ObjectStorage
-	 * @api
-	 */
-	public function attachAt(Tx_Extbase_DomainObject_AbstractDomainObject $add, $index, $information) {
-		$this->rewind();
-		$storage = $this->objectManager->get(get_class(self));
-		if ($index >= $this->count()) {
-			$this->attach($add, $information);
-		}
-		foreach ($this as $key=>$item) {
-			if ($currentIndex == $index) {				
-				$this->insertAt($add, $key, TRUE, $information);
-				return $this;
-			}
-			$currentIndex++;
-		}
-		return $this;
 	}
 	
 	/**
@@ -485,6 +628,11 @@ class Tx_WildsideExtbase_Persistence_ObjectStorage implements Countable, Iterato
 		return count($this->storage);
 	}
 
+	/**
+	 * Get SPL hash value for $object
+	 * 
+	 * @param mixed $object
+	 */
 	protected function hash($object) {
 		return get_class($object) . ':' . $object->getUid();
 	}

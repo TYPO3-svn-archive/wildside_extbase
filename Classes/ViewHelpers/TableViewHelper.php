@@ -104,7 +104,6 @@ class Tx_WildsideExtbase_ViewHelpers_TableViewHelper extends Tx_WildsideExtbase_
 	 * @return string
 	 */
 	public function render() {
-		#return var_export($this->arguments['data'], TRUE);
 		
 		$this->addClassAttribute();
 		if ($this->arguments['sortable']) {

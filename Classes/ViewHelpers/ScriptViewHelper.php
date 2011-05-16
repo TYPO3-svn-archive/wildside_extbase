@@ -55,12 +55,12 @@ class Tx_WildsideExtbase_ViewHelpers_ScriptViewHelper extends Tx_WildsideExtbase
 	 * @param bool $concat If true, files are concatenated (makes sense if $file is array)
 	 * @param bool $compress If true, files are compressed using JSPacker
 	 * @param string $key
+	 * @return string
 	 */
 	public function render($src=NULL, $cache=FALSE, $concat=FALSE, $compress=FALSE) {
 		if ($src === NULL) {
 			$js = $this->renderChildren();
-			$code = $this->wrap($js, NULL, 'js');
-			$this->process($code);
+			$this->includeHeader($js, 'js');
 		} else if (is_array($src)) {
 			$this->includeFiles($src, $cache, $compress);
 		} else {

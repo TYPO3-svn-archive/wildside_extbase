@@ -34,7 +34,7 @@ class Tx_WildsideExtbase_ViewHelpers_MapViewHelper extends Tx_WildsideExtbase_Co
 		$this->registerUniversalTagAttributes();
 		$this->registerTagAttribute('lat', 'float', 'Lattitude');
 		$this->registerTagAttribute('lng', 'float', 'Longitude');
-		$this->registerTagAttribute('name', 'string', 'Name');
+		#$this->registerTagAttribute('name', 'string', 'Name');
 		$this->registerTagAttribute('icon', 'string', 'Icon filename');
 		$this->registerTagAttribute('iconCenterX', 'int', 'Icon pivot coordinate X');
 		$this->registerTagAttribute('iconCenterY', 'int', 'Icon pivot coordinate Y');
@@ -129,7 +129,7 @@ var {$instanceName}refreshList = function() {
 		}
 	};
 
-	if (tableSorter) {
+	if (typeof tableSorter != 'undefined') {
 		tableSorter.fnDraw();
 	};
 };
@@ -260,7 +260,7 @@ CSS;
 			} else if (is_bool($value)) {
 				$value = $value ? 'true' : 'false';
 			}
-			$lines[] = "{$name}:{$value}";
+			$lines[] = "\"{$name}\":{$value}";
 		}
 		return $lines;
 	}
