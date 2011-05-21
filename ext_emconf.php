@@ -12,13 +12,13 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Wildside Extbase Framework',
-	'description' => 'Extbase Extension support framework. Includes a wide range of ViewHelpers, AJAX features and frontend plugins. New features added on a regular basis - check for updates often!',
+	'description' => 'DEPRECATED - replaced by extension Fluid Extbase Development, extension key "fed" (installs as dependency). Will be maintained until release of Extbase/Fluid version 1.4',
 	'category' => 'misc',
 	'author' => 'Claus Due',
 	'author_email' => 'claus@wildside.dk',
 	'author_company' => 'Wildside A/S',
 	'shy' => '',
-	'dependencies' => 'cms,extbase,fluid',
+	'dependencies' => 'cms,extbase,fluid,fed',
 	'conflicts' => '',
 	'priority' => '',
 	'module' => '',
@@ -35,6 +35,7 @@ $EM_CONF[$_EXTKEY] = array(
 			'cms' => '',
 			'extbase' => '',
 			'fluid' => '',
+			'fed' => ''
 		),
 		'conflicts' => array(
 		),

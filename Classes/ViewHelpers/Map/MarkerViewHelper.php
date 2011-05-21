@@ -34,12 +34,10 @@ class Tx_WildsideExtbase_ViewHelpers_Map_MarkerViewHelper extends Tx_WildsideExt
 		parent::initializeArguments();
 		$this->registerTagAttribute('clickable', 'boolean', 'If true, the marker receives mouse and touch events. Default value is true.');
 		$this->registerTagAttribute('cursor', 'string', 'Mouse cursor to show on hover');	
-		$this->registerTagAttribute('draggable', 'boolean ', 'If true, the marker can be dragged. Default value is false.');
-		#$this->registerTagAttribute('icon', 'mixed', 'Icon filename or Object of MarkerImage options');
+		$this->registerTagAttribute('draggable', 'boolean', 'If true, the marker can be dragged. Default value is false.');
 		$this->registerTagAttribute('flat', 'boolean', 'If true, the marker shadow will not be displayed.');
-		$this->registerTagAttribute('raiseOnDrag ', 'boolean ', 'If false, disables raising and lowering the marker on drag. This option is true by default.');
-		#$this->registerTagAttribute('title', 'string ', 'Rollover text');
-		$this->registerTagAttribute('visible', 'boolean ', 'If true, the marker is visible');
+		$this->registerTagAttribute('raiseOnDrag', 'boolean', 'If false, disables raising and lowering the marker on drag. This option is true by default.');
+		$this->registerTagAttribute('visible', 'boolean', 'If true, the marker is visible');
 		$this->registerTagAttribute('zIndex', 'float', 'All Markers are displayed on the map in order of their zIndex, with higher values displaying in front of Markers with lower values. By default, Markers are displayed according to their latitude, with Markers of lower latitudes appearing in front of Markers at higher latitudes.');
 		$this->registerTagAttribute('infobox', 'string', 'Optional infobox HTML');
 	}
